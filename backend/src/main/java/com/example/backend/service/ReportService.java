@@ -16,10 +16,16 @@ public class ReportService {
         String municipality = extractLine(text, "市区町村:");
         String district = extractLine(text, "丁目:");
         String addressDetails = extractLine(text, "番地以降:");
-        String summary = extractLine(text, "事件概要:");
+        String summary = extractLine(text, "不審者情報:");
 
         // 住所→緯度経度に変換
-        // todo: 都道府県〜番地以降の住所を繋げる
+        // NOTE: 一般ユーザーが不審者情報を登録できるようにする際は、正確に住所登録できるよう追加考慮が必要。都道府県+番地のようなあり得ない住所は弾きたい。
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.isEmpty(prefecture) ? "" : prefecture);
+        sb.append(StringUtils.isEmpty(municipality) ? "" : municipality);
+        sb.append(StringUtils.isEmpty(district) ? "" : district);
+        sb.append(StringUtils.isEmpty(addressDetails) ? "" : addressDetails);
+        String address = sb.toString();
         GeoPoint location = geocodeService.getLatLng(address);
 
         // DB保存
