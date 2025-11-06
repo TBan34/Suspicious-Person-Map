@@ -1,3 +1,12 @@
+package com.example.backend.service;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import com.example.backend.entity.ReportEntity;
+import com.example.backend.repository.ReportRepository;
+import com.example.backend.service.GeocodeService;
+import com.example.backend.model.GeoPoint;
+import java.time.LocalDateTime;
 @Service
 public class ReportService {
 
@@ -11,7 +20,7 @@ public class ReportService {
 
     public void processReportMessage(String userId, String text) {
         // 簡易パース例
-        String tag = extractLine(text, "分類:");
+        String tag = extractLine(text, "タグ:");
         String prefecture = extractLine(text, "都道府県:");
         String municipality = extractLine(text, "市区町村:");
         String district = extractLine(text, "丁目:");
@@ -29,13 +38,15 @@ public class ReportService {
         GeoPoint location = geocodeService.getLatLng(address);
 
         // DB保存
-        Report report = new Report();
+        ReportEntity report = new ReportEntity();
         report.setUserId(userId);
         report.setTag(tag);
         report.setPrefecture(prefecture);
         report.setMunicipality(municipality);
         report.setDistrict(district);
         report.setAddressDetails(addressDetails);
+        report.setLatitude(location.getLatitude());
+        report.setLongitude(location.getLongitude());
         report.setSummary(summary);
         report.setCreated(LocalDateTime.now());
         reportRepository.save(report);

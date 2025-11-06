@@ -1,3 +1,12 @@
+package com.example.backend.service;
+
+import com.example.backend.model.GeoPoint;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Google Maps API＞Geocoding APIを使用し、座標取得。
  */

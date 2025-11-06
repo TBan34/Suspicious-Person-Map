@@ -1,4 +1,4 @@
-package com.example.lineapp.controller;
+package com.example.backend.controller;
 
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
@@ -24,4 +24,6 @@ public class LineWebhookController {
         // 受信メッセージを解析・DB登録処理へ
         reportService.processReportMessage(userId, text);
     }
+
+    // 位置情報メッセージ（LocationMessageContent）の実装は今回見送り
 }
