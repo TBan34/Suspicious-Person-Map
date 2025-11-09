@@ -1,22 +1,19 @@
 package com.example.backend.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import com.example.backend.entity.ReportEntity;
 import com.example.backend.repository.ReportRepository;
-import com.example.backend.service.GeocodeService;
 import com.example.backend.model.GeoPoint;
 import java.time.LocalDateTime;
+
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
-
-    public ReportService(ReportRepository reportRepository, GeocodeService geocodeService) {
-        this.reportRepository = reportRepository;
-        this.geocodeService = geocodeService;
-    }
 
     public void processReportMessage(String userId, String text) {
         // 簡易パース例
