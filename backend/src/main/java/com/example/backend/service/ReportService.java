@@ -10,16 +10,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * LINEから不審者情報メッセージを受信し、DBに保存する。
+ * 不審者情報周りのサービスロジック
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+    // 不審者情報の各項目
+    private static class REPORT_ITEMS {
+        private static final String TAG = "タグ:";
+        private static final String PREFECTURE = "都道府県:";
+        private static final String MUNICIPALITY = "市区町村:";
+        private static final String DISTRICT = "丁目:";
+        private static final String ADDRESS_DETAILS = "番地以降:";
+        private static final String SUMMARY = "概要:";
+    }
 
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
 
+    /*
+     * 不審者情報を登録する。
+     * userId: ユーザーID
+     * text: 不審者情報メッセージ
+     */
     @Transactional
     public void processReportMessage(String userId, String text) {
 
@@ -27,12 +41,12 @@ public class ReportService {
         paramCheck(userId, text);
         
         // 不審者情報の抽出
-        String tag = extractLine(text, "タグ:");
-        String prefecture = extractLine(text, "都道府県:");
-        String municipality = extractLine(text, "市区町村:");
-        String district = extractLine(text, "丁目:");
-        String addressDetails = extractLine(text, "番地以降:");
-        String summary = extractLine(text, "概要:");
+        String tag = extractLine(text, REPORT_ITEMS.TAG);
+        String prefecture = extractLine(text, REPORT_ITEMS.PREFECTURE);
+        String municipality = extractLine(text, REPORT_ITEMS.MUNICIPALITY);
+        String district = extractLine(text, REPORT_ITEMS.DISTRICT);
+        String addressDetails = extractLine(text, REPORT_ITEMS.ADDRESS_DETAILS);
+        String summary = extractLine(text, REPORT_ITEMS.SUMMARY);
 
         // 住所情報チェック　※番地以降の情報は任意
         addressCheck(prefecture, municipality, district);
@@ -41,7 +55,7 @@ public class ReportService {
         // 座標情報取得（緯度経度）
         GeoPoint location = geocodeService.getLatLng(address);
 
-        // DB保存
+        // Entity作成
         ReportEntity report = new ReportEntity();
         report.setUserId(userId);
         report.setTag(tag);
@@ -54,6 +68,7 @@ public class ReportService {
         report.setSummary(summary);
         // createdは@CreatedDateにより自動設定される
         
+        // 登録処理
         ReportEntity saved = reportRepository.save(report);
         log.info("Successfully saved report with id: {} for userId: {}", saved.getId(), userId);
     }
@@ -64,11 +79,14 @@ public class ReportService {
      * text: 不審者情報メッセージ
      */
     private void paramCheck(String userId, String text) {
+
+        // ユーザーIDがnullまたは空の場合
         if (StringUtils.isBlank(userId)) {
             log.warn("Received message with empty userId");
             throw new IllegalArgumentException("UserId cannot be empty");
         }
 
+        // 不審者情報メッセージがnullまたは空の場合
         if (StringUtils.isBlank(text)) {
             log.warn("Received empty message from userId: {}", userId);
             throw new IllegalArgumentException("Message text cannot be empty");
@@ -82,9 +100,8 @@ public class ReportService {
      * return: 抽出結果
      */
     private String extractLine(String text, String item) {
-        if (StringUtils.isBlank(text)) {
-            return null;
-        }
+
+        // 不審者情報を項目単位で抽出
         for (String line : text.split("\n")) {
             if (line.startsWith(item)) {
                 return line.replace(item, "").trim();
@@ -101,14 +118,18 @@ public class ReportService {
      */
     // NOTE: 文字数のバリデーションは要検討
     private void addressCheck(String prefecture, String municipality, String district) {
+
+        // 必須チェック：　都道府県
         if (StringUtils.isBlank(prefecture)) {
             throw new IllegalArgumentException("prefecture cannot be empty");
         }
 
+        // 必須チェック：　市区町村
         if (StringUtils.isBlank(municipality)) {
             throw new IllegalArgumentException("municipality cannot be empty");
         }
 
+        // 必須チェック：　丁目
         if (StringUtils.isBlank(district)) {
             throw new IllegalArgumentException("district cannot be empty");
         }
@@ -123,6 +144,8 @@ public class ReportService {
      * return: 住所情報
      */
     private String buildAddress(String prefecture, String municipality, String district, String addressDetails) {
+
+        // 後続のGeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するため、住所情報を結合する。
         StringBuilder sb = new StringBuilder();
         sb.append(prefecture);
         sb.append(municipality);
