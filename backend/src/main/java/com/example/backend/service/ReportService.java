@@ -9,6 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * LINEから不審者情報メッセージを受信し、DBに保存する。
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,35 +22,23 @@ public class ReportService {
 
     @Transactional
     public void processReportMessage(String userId, String text) {
-        if (StringUtils.isBlank(userId)) {
-            log.warn("Received message with empty userId");
-            throw new IllegalArgumentException("UserId cannot be empty");
-        }
-        
-        if (StringUtils.isBlank(text)) {
-            log.warn("Received empty message from userId: {}", userId);
-            throw new IllegalArgumentException("Message text cannot be empty");
-        }
 
-        log.info("Processing report message from userId: {}", userId);
+        // パラメータチェック
+        paramCheck(userId, text);
         
-        // 簡易パース例
+        // 不審者情報の抽出
         String tag = extractLine(text, "タグ:");
         String prefecture = extractLine(text, "都道府県:");
         String municipality = extractLine(text, "市区町村:");
         String district = extractLine(text, "丁目:");
         String addressDetails = extractLine(text, "番地以降:");
-        String summary = extractLine(text, "不審者情報:");
+        String summary = extractLine(text, "概要:");
 
-        // 住所→緯度経度に変換
-        // NOTE: 一般ユーザーが不審者情報を登録できるようにする際は、正確に住所登録できるよう追加考慮が必要。都道府県+番地のようなあり得ない住所は弾きたい。
+        // 住所情報チェック　※番地以降の情報は任意
+        addressCheck(prefecture, municipality, district);
+        // 住所情報結合
         String address = buildAddress(prefecture, municipality, district, addressDetails);
-        
-        if (address.trim().isEmpty()) {
-            log.warn("Empty address provided, cannot geocode. userId: {}", userId);
-            throw new IllegalArgumentException("Address is required. Please provide at least prefecture or municipality.");
-        }
-        
+        // 座標情報取得（緯度経度）
         GeoPoint location = geocodeService.getLatLng(address);
 
         // DB保存
@@ -67,38 +58,78 @@ public class ReportService {
         log.info("Successfully saved report with id: {} for userId: {}", saved.getId(), userId);
     }
 
-    private String buildAddress(String prefecture, String municipality, String district, String addressDetails) {
-        StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotBlank(prefecture)) {
-            sb.append(prefecture);
+    /*
+     * パラメータチェック
+     * userId: ユーザーID
+     * text: 不審者情報メッセージ
+     */
+    private void paramCheck(String userId, String text) {
+        if (StringUtils.isBlank(userId)) {
+            log.warn("Received message with empty userId");
+            throw new IllegalArgumentException("UserId cannot be empty");
         }
-        if (StringUtils.isNotBlank(municipality)) {
-            if (sb.length() > 0) {
-                sb.append(municipality);
-            }
+
+        if (StringUtils.isBlank(text)) {
+            log.warn("Received empty message from userId: {}", userId);
+            throw new IllegalArgumentException("Message text cannot be empty");
         }
-        if (StringUtils.isNotBlank(district)) {
-            if (sb.length() > 0) {
-                sb.append(district);
-            };
-        }
-        if (StringUtils.isNotBlank(addressDetails)) {
-            if (sb.length() > 0) {
-                sb.append(addressDetails);
-            }
-        }
-        return sb.toString();
     }
 
-    private String extractLine(String text, String prefix) {
+    /*
+     * 不審者情報の抽出
+     * text: 不審者情報メッセージ
+     * item: 抽出対象項目
+     * return: 抽出結果
+     */
+    private String extractLine(String text, String item) {
         if (StringUtils.isBlank(text)) {
-            return "";
+            return null;
         }
         for (String line : text.split("\n")) {
-            if (line.startsWith(prefix)) {
-                return line.replace(prefix, "").trim();
+            if (line.startsWith(item)) {
+                return line.replace(item, "").trim();
             }
         }
-        return "";
+        return null;
+    }
+
+    /*
+     * 住所情報チェック
+     * prefecture: 都道府県
+     * municipality: 市区町村
+     * district: 丁目
+     */
+    // NOTE: 文字数のバリデーションは要検討
+    private void addressCheck(String prefecture, String municipality, String district) {
+        if (StringUtils.isBlank(prefecture)) {
+            throw new IllegalArgumentException("prefecture cannot be empty");
+        }
+
+        if (StringUtils.isBlank(municipality)) {
+            throw new IllegalArgumentException("municipality cannot be empty");
+        }
+
+        if (StringUtils.isBlank(district)) {
+            throw new IllegalArgumentException("district cannot be empty");
+        }
+    }
+
+    /*
+     * 住所情報結合
+     * prefecture: 都道府県
+     * municipality: 市区町村
+     * district: 丁目
+     * addressDetails: 番地以降
+     * return: 住所情報
+     */
+    private String buildAddress(String prefecture, String municipality, String district, String addressDetails) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefecture);
+        sb.append(municipality);
+        sb.append(district);
+        if (StringUtils.isNotBlank(addressDetails)) {
+            sb.append(addressDetails);
+        }
+        return sb.toString();
     }
 }

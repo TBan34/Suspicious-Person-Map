@@ -24,10 +24,10 @@ public class ReportEntity {
     @Column(name = "tag", length = 100)
     private String tag;
 
-    @Column(name = "prefecture", length = 50)
+    @Column(name = "prefecture", length = 4)
     private String prefecture;
 
-    @Column(name = "municipality", length = 100)
+    @Column(name = "municipality", length = 7)
     private String municipality;
 
     @Column(name = "district", length = 100)

@@ -22,7 +22,7 @@ public class LineWebhookController {
             String userId = event.getSource().getUserId();
             String text = event.getMessage().getText();
 
-            log.info("Received text message from userId: {}, message length: {}", userId, text != null ? text.length() : 0);
+            log.info("Received text message from userId: {}, text: {}", userId, text);
 
             // 受信メッセージを解析・DB登録処理へ
             reportService.processReportMessage(userId, text);
