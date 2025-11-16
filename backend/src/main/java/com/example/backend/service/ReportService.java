@@ -103,8 +103,10 @@ public class ReportService {
 
         // 不審者情報を項目単位で抽出
         for (String line : text.split("\n")) {
-            if (line.startsWith(item)) {
-                return line.replace(item, "").trim();
+            String trimmedLine = line.trim();
+            if (trimmedLine.startsWith(item)) {
+                String result = trimmedLine.replace(item, "").trim();
+                return result;
             }
         }
         return null;
@@ -148,11 +150,16 @@ public class ReportService {
         // 後続のGeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するため、住所情報を結合する。
         StringBuilder sb = new StringBuilder();
         sb.append(prefecture);
+        sb.append(" ");
         sb.append(municipality);
+        sb.append(" ");
         sb.append(district);
+        
         if (StringUtils.isNotBlank(addressDetails)) {
+            sb.append(" ");
             sb.append(addressDetails);
         }
+        
         return sb.toString();
     }
 }
