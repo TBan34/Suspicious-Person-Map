@@ -20,6 +20,10 @@ import java.util.stream.Collectors;
 public class ReportController {
     private final ReportRepository reportRepository;
 
+    /*
+     * 不審者情報を取得する。
+     * return: 不審者情報Dto
+     */
     @GetMapping
     public List<ReportDto> getReports() {
         return reportRepository.findAll().stream()
@@ -27,6 +31,11 @@ public class ReportController {
                 .collect(Collectors.toList());
     }
 
+    /*
+     * Entity→Dto変換
+     * reportEntity: 不審者情報Entity
+     * return: 不審者情報Dto
+     */
     private ReportDto convertToDto(ReportEntity entity) {
         return new ReportDto(
                 entity.getId(),

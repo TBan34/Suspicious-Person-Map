@@ -8,6 +8,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+/**
+ * 不審者情報Entity
+ */
 @Entity
 @Table(name = "reports")
 @Getter
