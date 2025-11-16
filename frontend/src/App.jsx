@@ -1,18 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import MapView from './components/MapView';
 import { getReports } from './services/api';
+import AddressList from './components/AddressList';
+import MapView from './components/MapView';
+import ReportDetail from './components/ReportDetail';
+import './App.css';
 
 function App() {
   const [reports, setReports] = useState([]);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getReports().then(setReports);
+    const fetchReports = async () => {
+      try {
+        const data = await getReports();
+        setReports(data);
+      } catch (error) {
+        console.error('Failed to fetch reports:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
   }, []);
 
+  const handleReportSelect = (report) => {
+    setSelectedReport(report);
+  };
+
+  const handleMarkerClick = (report) => {
+    setSelectedReport(report);
+  };
+
   return (
-    <div>
-      <h1>地域報告マップ</h1>
-      <MapView reports={reports} />
+    <div className="app">
+      <header className="app-header">
+        <h1>不審者情報マップ</h1>
+      </header>
+
+      <main className="app-main">
+        <aside className="sidebar-left">
+          <AddressList 
+            reports={reports} 
+            onSelect={handleReportSelect}
+            selectedReport={selectedReport}
+          />
+        </aside>
+
+        <section className="map-section">
+          {loading ? (
+            <div className="loading">読み込み中...</div>
+          ) : (
+            <MapView 
+              reports={reports}
+              onMarkerClick={handleMarkerClick}
+              selectedReport={selectedReport}
+            />
+          )}
+        </section>
+
+        <aside className="sidebar-right">
+          <ReportDetail report={selectedReport} />
+        </aside>
+      </main>
+
+      <footer className="app-footer">
+        <h2>不審者情報マップ</h2>
+      </footer>
     </div>
   );
 }
