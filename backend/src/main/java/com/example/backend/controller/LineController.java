@@ -2,7 +2,6 @@ package com.example.backend.controller;
 
 import com.example.backend.service.ReportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.linecorp.bot.model.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,12 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 @Slf4j
 @RestController
 @RequestMapping("/line")
@@ -49,7 +42,7 @@ public class LineController {
             }
 
             // ReportService呼び出し
-            // reportService.processReportMessage("test-user", "test message");
+            reportService.processReportMessage("test-user", "test message");
             log.info("ReportService called successfully");
 
             return ResponseEntity.ok("OK");
