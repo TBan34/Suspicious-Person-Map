@@ -5,6 +5,8 @@ import com.example.backend.model.GeoPoint;
 import com.example.backend.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,11 +104,16 @@ public class ReportService {
     private String extractLine(String text, String item) {
 
         // 不審者情報を項目単位で抽出
-        for (String line : text.split("\n")) {
-            String trimmedLine = line.trim();
-            if (trimmedLine.startsWith(item)) {
-                String result = trimmedLine.replace(item, "").trim();
-                return result;
+        String[] lines = text.split("[\r\n]+"); // OSごとの改行コードを考慮し分割
+        List<String> lineList = Arrays.asList(lines);
+        for (String line : lineList) {
+            String singleLine = line.trim();
+            if (singleLine.startsWith(item)) {
+                // 「都道府県：福岡県」 → 「福岡県」のように値抽出
+                String value = singleLine.substring(item.length());
+                return value.replace(":", "")
+                            .replace("：", "")
+                            .trim();
             }
         }
         return null;
