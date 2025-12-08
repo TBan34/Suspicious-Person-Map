@@ -1,9 +1,11 @@
 package com.example.backend.controller;
 
 import com.example.backend.service.ReportService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,17 +37,25 @@ public class LineController {
         log.info("Signature: {}", signature);
 
         try {
-            // シンプルなテキスト処理のみ
-            if (body.contains("test")) {
-                log.info("Test message received");
-                return ResponseEntity.ok("OK");
+            JsonNode root = objectMapper.readTree(body);
+            JsonNode events = root.path("events");
+
+            if (events.isArray() && events.size() > 0) {
+                for (JsonNode event : events) {
+                    String userId = event.path("source").path("userId").asText(null);
+                    String text   = event.path("message").path("text").asText(null);
+    
+                    if (StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(text)) {
+                        // ReportService呼び出し
+                        reportService.processReportMessage(userId, text);
+                        log.info("ReportService called successfully");
+                    }
+    
+                    return ResponseEntity.ok("OK");
+                }
             }
 
-            // ReportService呼び出し
-            reportService.processReportMessage("test-user", "test message");
-            log.info("ReportService called successfully");
-
-            return ResponseEntity.ok("OK");
+            return ResponseEntity.ok("None");
 
         } catch (Exception e) {
             log.error("Webhook error", e);
