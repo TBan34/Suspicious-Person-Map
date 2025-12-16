@@ -49,6 +49,8 @@ public class GeocodeService {
             // Geocoding API URL
             String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" +
                     URLEncoder.encode(address, StandardCharsets.UTF_8) +
+                    "&language=ja" + 
+                    "&region=jp" +
                     "&key=" + apiKey;
             log.debug("Calling Geocoding API for address: {}", address);
 
