@@ -54,6 +54,8 @@ public class ReportService {
         addressCheck(prefecture, municipality, district);
         // 住所情報結合
         String address = buildAddress(prefecture, municipality, district, addressDetails);
+        // 住所情報の正規化
+        address = normalizeAddress(address);
         // 座標情報取得（緯度経度）
         GeoPoint location = geocodeService.getLatLng(address);
 
@@ -157,9 +159,7 @@ public class ReportService {
         // 後続のGeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するため、住所情報を結合する。
         StringBuilder sb = new StringBuilder();
         sb.append(prefecture);
-        sb.append(" ");
         sb.append(municipality);
-        sb.append(" ");
         sb.append(district);
         
         if (StringUtils.isNotBlank(addressDetails)) {
@@ -168,5 +168,22 @@ public class ReportService {
         }
         
         return sb.toString();
+    }
+
+        /*
+     * 住所情報の正規化
+     * address: 住所情報
+     * return: 住所情報
+     */
+    private String normalizeAddress(String address) {
+
+        return address
+            .replace(" ", "")
+            .replace("　", "")
+            .replace("丁目", "-")
+            .replace("丁", "-")
+            .replace("番地", "-")
+            .replace("番", "-")
+            .replace("号", "");
     }
 }
