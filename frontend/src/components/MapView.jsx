@@ -98,7 +98,8 @@ function MapView({ reports, onMarkerClick, selectedReport }) {
       >
         {reports &&
           reports.map((report) => {
-            if (!report.latitude || !report.longitude) return null;
+
+            if (report.latitude == null || report.longitude == null) return null;
 
             const isSelected = selectedReport?.id === report.id;
 
@@ -106,8 +107,8 @@ function MapView({ reports, onMarkerClick, selectedReport }) {
               <Marker
                 key={report.id}
                 position={{
-                  lat: report.latitude,
-                  lng: report.longitude,
+                  lat: Number(report.latitude),
+                  lng: Number(report.longitude),
                 }}
                 icon={RED_MARKER_ICON}
                 onClick={() => handleMarkerClick(report)}
