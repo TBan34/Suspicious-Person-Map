@@ -180,7 +180,6 @@ public class ReportService {
         return address
             .replace(" ", "")
             .replace("　", "")
-            .replace("丁", "丁目")
             .replace("番地", "-")
             .replace("番", "-")
             .replace("号", "");
