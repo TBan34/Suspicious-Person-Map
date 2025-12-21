@@ -5,7 +5,7 @@ function ReportDetail({ report }) {
   if (!report) {
     return (
       <div className="report-detail">
-        <h2 className="report-detail-title">不審者情報の詳細</h2>
+        <h2 className="report-detail-title">詳細情報</h2>
         <div className="report-detail-empty">
           <p>GoogleMapのピンをクリックすることで、</p>
           <p>発生場所と概要をここに表示します</p>
@@ -43,7 +43,7 @@ function ReportDetail({ report }) {
 
   return (
     <div className="report-detail">
-      <h2 className="report-detail-title">不審者情報の詳細</h2>
+      <h2 className="report-detail-title">詳細情報</h2>
 
       <div className="report-detail-content">
         <div className="report-detail-section">
@@ -105,12 +105,6 @@ function ReportDetail({ report }) {
           </div>
         )}
 
-        {report.userId && (
-          <div className="report-detail-section">
-            <h3 className="report-detail-section-title">報告者ID</h3>
-            <p className="report-detail-user-id">{report.userId}</p>
-          </div>
-        )}
       </div>
     </div>
   );

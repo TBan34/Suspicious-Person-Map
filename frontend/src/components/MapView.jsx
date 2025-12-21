@@ -124,11 +124,7 @@ function MapView({ reports, onMarkerClick, selectedReport }) {
       </GoogleMap>
 
       <div className="map-info">
-        <p className="map-info-item">※1. 赤色のピンで表示</p>
-        <p className="map-info-item">
-          ※2. ユーザーはマウス操作等でMapの移動が可能
-        </p>
-        <p className="map-info-item">※3. デフォルト表示は福岡県福岡市</p>
+        <p className="map-info-item">ピンを選択することで不審者情報の詳細が確認できます</p>
       </div>
     </div>
   );

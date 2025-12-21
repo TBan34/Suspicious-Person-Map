@@ -26,7 +26,6 @@ function AddressList({ reports, onSelect, selectedReport }) {
     return (
       <div className="address-list">
         <h2 className="address-list-title">住所一覧</h2>
-        <p className="address-list-note">※都道府県+市区町村</p>
         <div className="address-list-empty">データがありません</div>
       </div>
     );
@@ -35,7 +34,6 @@ function AddressList({ reports, onSelect, selectedReport }) {
   return (
     <div className="address-list">
       <h2 className="address-list-title">住所一覧</h2>
-      <p className="address-list-note">※都道府県+市区町村</p>
       
       <div className="address-list-content">
         {groupedReports.map((group, index) => (
