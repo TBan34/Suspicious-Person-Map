@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.Normalizer;
 
 /**
  * 不審者情報周りのサービスロジック
@@ -163,25 +164,33 @@ public class ReportService {
         sb.append(district);
         
         if (StringUtils.isNotBlank(addressDetails)) {
-            sb.append(" ");
             sb.append(addressDetails);
         }
         
         return sb.toString();
     }
 
-        /*
+    /*
      * 住所情報の正規化
      * address: 住所情報
      * return: 住所情報
      */
     private String normalizeAddress(String address) {
 
-        return address
-            .replace(" ", "")
-            .replace("　", "")
-            .replace("番地", "-")
-            .replace("番", "-")
-            .replace("号", "");
+        if (StringUtils.isEmpty(address)) {
+            return null;
+        }
+
+        // 1) 前後の空白・改行除去
+        address = address.trim();
+
+        // 2) 全角英数字・記号を半角寄せ（３→3、－→- など）
+        address = Normalizer.normalize(address, Normalizer.Form.NFKC);
+
+        // 3) 空白の除去
+        address.replace(" ", "");
+        address.replace("　", "");
+
+        return address;
     }
 }
