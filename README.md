@@ -1,9 +1,50 @@
-# Suspicious-Person-Map
-LINEメッセージで共有された不審者情報をもとにした不審者マップ（作成途中）  
-※登録イメージ：LINE Webhook → Geocoding API → DB登録
+# 不審者情報マップ 🗺️
 
-<img width="276" height="245" alt="スクリーンショット 2025-12-17 23 13 32" src="https://github.com/user-attachments/assets/d4de5589-aca8-4ad9-88a4-7baa4caec61f" />
+LINEメッセージで共有された不審者情報を地図上に可視化する Web アプリケーションです。  
+※処理イメージ：LINE MessagingAPI → Geocoding API → DB登録 → データ取得し画面表示
 
-![IMG_9985](https://github.com/user-attachments/assets/2c94455e-df5d-42b8-a07b-b52cccb4fd27)
+![SuspiciousPersonMap](images/SuspiciousPersonMap.png)
 
-<img width="1426" height="663" alt="スクリーンショット 2025-12-17 23 14 10" src="https://github.com/user-attachments/assets/dc41ee2f-5e40-47cc-9bd8-1bc0f64e8476" />
+---
+
+## 🔍 概要
+
+- Google Maps を利用した地図表示
+- 不審者情報をピンで表示
+- ピンをクリックすると詳細情報を確認可能
+
+---
+
+## 🛠 使用技術
+
+### フロントエンド
+- React
+- Vite
+- JavaScript
+- CSS
+
+### バックエンド
+- Java
+- Spring Boot
+- LINE Messaging API
+- Google Maps Geocoding API
+
+### データベース
+- PostgreSQL
+
+### インフラ・その他
+- GitHub
+- Docker
+- Cursor Editer
+
+## 📌 注意事項
+- Google Maps API Keyが必要です。
+
+## その他
+- LINE Developersにて、アカウントを作成
+
+![MessagingAPI](images/MessagingAPI.png)
+
+- テンプレートに沿って不審者情報を送信する
+
+![Message](images/Message.png)
