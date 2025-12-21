@@ -20,6 +20,9 @@
   padding: 1.5rem 2rem;
   border-bottom: 2px solid #2d2d2d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .app-header h1 {
@@ -27,6 +30,10 @@
   font-weight: 600;
   color: #ffffff;
   letter-spacing: 0.5px;
+}
+
+.header-logo {
+  height: 40px;
 }
 
 .app-main {

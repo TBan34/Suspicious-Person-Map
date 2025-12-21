@@ -4,6 +4,7 @@ import AddressList from './components/AddressList';
 import MapView from './components/MapView';
 import ReportDetail from './components/ReportDetail';
 import './App.css';
+import logo from "./assets/SuspiciousPersonMapLogo.png";
 
 function App() {
   const [reports, setReports] = useState([]);
@@ -36,6 +37,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
+        <img src={logo} alt="ロゴ" className="header-logo" />
         <h1>不審者情報マップ</h1>
       </header>
 
