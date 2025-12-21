@@ -7,8 +7,8 @@ function ReportDetail({ report }) {
       <div className="report-detail">
         <h2 className="report-detail-title">詳細情報</h2>
         <div className="report-detail-empty">
-          <p>GoogleMapのピンをクリックすることで、</p>
-          <p>発生場所と概要をここに表示します</p>
+          <p>ピンをクリックすることで、</p>
+          <p>不審者情報の詳細を表示します</p>
         </div>
       </div>
     );
