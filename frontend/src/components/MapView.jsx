@@ -41,6 +41,11 @@ function MapView({ reports, onMarkerClick, selectedReport }) {
         },
         {
           featureType: 'all',
+          elementType: 'labels.text.stroke',
+          stylers: [{ color: '#0b0b0b' }, { weight: 3 }],
+        },
+        {
+          featureType: 'all',
           elementType: 'labels.text.fill',
           stylers: [{ color: '#e0e0e0' }],
         },
