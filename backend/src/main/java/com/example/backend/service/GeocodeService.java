@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URLEncoder;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -97,7 +99,7 @@ public class GeocodeService {
         fallbackAddresses.add(address.replaceAll("区.*$", "区"));
 
         // 市町村まで
-        fallbackAddresses.add(address.replaceAll("^(.*?[市区町村]).*$", "$1"));
+        fallbackAddresses.add(address.replaceAll("^(.*?[市町村]).*$", "$1"));
 
         return fallbackAddresses.stream()
                 .distinct()
@@ -111,17 +113,20 @@ public class GeocodeService {
      */
     private GeoPoint callGeocodingApi(String address) {
         try {
-            // Geocoding API URL
-            String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" +
-                    URLEncoder.encode(address, StandardCharsets.UTF_8) +
-                    "&components=country:JP" +
-                    "&language=ja" + 
-                    "&key=" + apiKey;
+            URI uri = UriComponentsBuilder
+                .fromUriString("https://maps.googleapis.com/maps/api/geocode/json")
+                .queryParam("address", address)
+                .queryParam("language", "ja")
+                .queryParam("region", "jp")
+                .queryParam("key", apiKey)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUri();
             log.debug("Calling Geocoding API for address: {}", address);
-            log.info("Geocoding request URL = {}", url);
+            log.info("Geocoding request URI = {}", uri);
 
             // Geocoding API実行
-            String response = restTemplate.getForObject(url, String.class);
+            String response = restTemplate.getForObject(uri, String.class);
             log.info("Geocoding raw response for {}: {}", address, response);
             JsonNode jsonNode = objectMapper.readTree(response);
             
@@ -162,17 +167,42 @@ public class GeocodeService {
             }
 
             // Geometryがnullの場合、エラー
-            JsonNode geometry = results.get(0).get("geometry");
+            log.info("Geocoding results = {}", results);
+            //JsonNode geometry = results.get(0).get("geometry");
             // if (geometry == null) {
             //     throw new RuntimeException("Invalid response structure: missing geometry");
             // }
-            if (geometry != null) {
-                JsonNode location = geometry.get("location");
-                double lat = location.get("lat").asDouble();
-                double lng = location.get("lng").asDouble();
-                log.debug("Successfully geocoded address: {} -> lat: {}, lng: {}", address, lat, lng);
+            // if (geometry != null) {
+            //     JsonNode location = geometry.get("location");
+            //     double lat = location.get("lat").asDouble();
+            //     double lng = location.get("lng").asDouble();
+            //     log.debug("Successfully geocoded address: {} -> lat: {}, lng: {}", address, lat, lng);
 
-                return new GeoPoint(lat, lng);
+            //     return new GeoPoint(lat, lng);
+            // }
+
+            for (JsonNode result : results) {
+                if (result.path("partial_match").asBoolean()) {
+                    continue;
+                }
+
+                boolean hasRoute = false;
+                for (JsonNode type : result.path("types")) {
+                    if (StringUtils.equals("route", type.asText())) {
+                        hasRoute = true;
+                    }
+                }
+                if (hasRoute) {
+                    continue;
+                }
+
+                if (result.has("geometry")) {
+                    JsonNode location = result.get("geometry").get("location");
+                    double lat = location.get("lat").asDouble();
+                    double lng = location.get("lng").asDouble();
+                    log.debug("Successfully geocoded address: {} -> lat: {}, lng: {}", address, lat, lng);
+                    return new GeoPoint(lat, lng);
+                }
             }
             // 緯度経度が取得できない場合、エラー
             // if (location == null || !location.has("lat") || !location.has("lng")) {
