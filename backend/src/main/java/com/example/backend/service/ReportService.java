@@ -75,7 +75,7 @@ public class ReportService {
         
         // 登録処理
         ReportEntity saved = reportRepository.save(report);
-        log.info("Successfully saved report with id: {} for userId: {}", saved.getId(), userId);
+        log.info("不審者情報の登録に成功しました。IDは「{}」、ユーザーIDは「{}」です。", saved.getId(), userId);
     }
 
     /*
@@ -87,14 +87,14 @@ public class ReportService {
 
         // ユーザーIDがnullまたは空の場合
         if (StringUtils.isBlank(userId)) {
-            log.warn("Received message with empty userId");
-            throw new IllegalArgumentException("UserId cannot be empty");
+            log.warn("ユーザーIDがありません");
+            throw new IllegalArgumentException("ユーザーIDは必須です");
         }
 
         // 不審者情報メッセージがnullまたは空の場合
         if (StringUtils.isBlank(text)) {
-            log.warn("Received empty message from userId: {}", userId);
-            throw new IllegalArgumentException("Message text cannot be empty");
+            log.warn("不審者情報がありません: {}");
+            throw new IllegalArgumentException("不審者情報は必須です");
         }
     }
 
@@ -133,17 +133,17 @@ public class ReportService {
 
         // 必須チェック：　都道府県
         if (StringUtils.isBlank(prefecture)) {
-            throw new IllegalArgumentException("prefecture cannot be empty");
+            throw new IllegalArgumentException("都道府県は必須です");
         }
 
         // 必須チェック：　市区町村
         if (StringUtils.isBlank(municipality)) {
-            throw new IllegalArgumentException("municipality cannot be empty");
+            throw new IllegalArgumentException("市区町村は必須です");
         }
 
         // 必須チェック：　丁目
         if (StringUtils.isBlank(district)) {
-            throw new IllegalArgumentException("district cannot be empty");
+            throw new IllegalArgumentException("丁目は必須です");
         }
     }
 
@@ -157,7 +157,7 @@ public class ReportService {
      */
     private String buildAddress(String prefecture, String municipality, String district, String addressDetails) {
 
-        // 後続のGeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するため、住所情報を結合する。
+        // GeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するために住所情報を結合する。
         StringBuilder sb = new StringBuilder();
         sb.append(prefecture);
         sb.append(municipality);

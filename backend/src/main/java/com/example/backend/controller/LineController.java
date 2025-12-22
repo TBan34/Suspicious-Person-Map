@@ -48,7 +48,6 @@ public class LineController {
                     if (StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(text)) {
                         // ReportService呼び出し
                         reportService.processReportMessage(userId, text);
-                        log.info("ReportService called successfully");
                     }
     
                     return ResponseEntity.ok("OK");
@@ -58,8 +57,8 @@ public class LineController {
             return ResponseEntity.ok("None");
 
         } catch (Exception e) {
-            log.error("Webhook error", e);
-            return ResponseEntity.status(500).body("Internal Error: " + e.getMessage());
+            log.error("Webhookエラー", e);
+            return ResponseEntity.status(500).body("Internalエラー: " + e.getMessage());
         }
     }
 }
