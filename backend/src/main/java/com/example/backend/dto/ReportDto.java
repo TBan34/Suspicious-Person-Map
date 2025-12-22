@@ -13,16 +13,37 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportDto {
+    // ID
     private Long id;
+
+    // ユーザーID(LINE)
     private String userId;
+
+    // タグ
     private String tag;
+
+    // 都道府県
     private String prefecture;
+
+    // 市区町村
     private String municipality;
+
+    // 丁目
     private String district;
+
+    // 番地以降
     private String addressDetails;
+
+    // 緯度
     private double latitude;
+
+    // 経度
     private double longitude;
+
+    // 概要
     private String summary;
+
+    // 作成日
     private LocalDateTime created;
 }
 
