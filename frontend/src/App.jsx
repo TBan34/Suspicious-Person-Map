@@ -38,7 +38,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <img src={logo} alt="ロゴ" className="header-logo" />
-        <h1>不審者情報マップ</h1>
+        <h1>不審者マップ</h1>
       </header>
 
       <main className="app-main">
@@ -68,7 +68,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <h2>不審者情報マップ</h2>
+        <h2>©TBan34</h2>
       </footer>
     </div>
   );
