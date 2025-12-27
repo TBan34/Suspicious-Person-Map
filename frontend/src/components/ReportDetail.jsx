@@ -15,9 +15,14 @@ function ReportDetail({ report }) {
   }
 
   const formatDate = (dateString) => {
+    console.log("ReportDetail report:", report);
+    console.log("occurDate:", report?.occurDate);
     if (!dateString) return '日時不明';
     try {
-      const date = new Date(dateString);
+      const normalized = dateString.replace(' ', 'T');
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return dateString; // 変換できなければ生文字列
+
       return date.toLocaleString('ja-JP', {
         year: 'numeric',
         month: '2-digit',
@@ -47,6 +52,13 @@ function ReportDetail({ report }) {
 
       <div className="report-detail-content">
         <div className="report-detail-section">
+          {report.occurDate && (
+            <div className="report-detail-section">
+              <h3 className="report-detail-section-title">発生日時</h3>
+              <p className="report-detail-date">{formatDate(report.occurDate)}</p>
+            </div>
+          )}
+
           <h3 className="report-detail-section-title">発生場所</h3>
           <p className="report-detail-address">{buildAddress()}</p>
           {report.prefecture && report.municipality && (
@@ -79,32 +91,6 @@ function ReportDetail({ report }) {
             <span className="report-detail-tag">{report.tag}</span>
           </div>
         )}
-
-        <div className="report-detail-section">
-          <h3 className="report-detail-section-title">座標</h3>
-          <div className="report-detail-coordinates">
-            <div className="report-detail-coordinate-item">
-              <span className="report-detail-coordinate-label">緯度:</span>
-              <span className="report-detail-coordinate-value">
-                {report.latitude.toFixed(6)}
-              </span>
-            </div>
-            <div className="report-detail-coordinate-item">
-              <span className="report-detail-coordinate-label">経度:</span>
-              <span className="report-detail-coordinate-value">
-                {report.longitude.toFixed(6)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {report.created && (
-          <div className="report-detail-section">
-            <h3 className="report-detail-section-title">登録日時</h3>
-            <p className="report-detail-date">{formatDate(report.created)}</p>
-          </div>
-        )}
-
       </div>
     </div>
   );

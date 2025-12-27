@@ -1,10 +1,12 @@
 package com.example.backend.service;
 
+import com.example.backend.common.util.DateUtils;
 import com.example.backend.entity.ReportEntity;
 import com.example.backend.model.GeoPoint;
 import com.example.backend.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +24,7 @@ public class ReportService {
     // 不審者情報の各項目
     private static class REPORT_ITEMS {
         private static final String TAG = "タグ:";
+        private static final String OCCUR_DATE = "日時:";
         private static final String PREFECTURE = "都道府県:";
         private static final String MUNICIPALITY = "市区町村:";
         private static final String DISTRICT = "丁目:";
@@ -45,12 +48,15 @@ public class ReportService {
         
         // 不審者情報の抽出
         String tag = extractLine(text, REPORT_ITEMS.TAG);
+        String occurDate = extractLine(text, REPORT_ITEMS.OCCUR_DATE);
         String prefecture = extractLine(text, REPORT_ITEMS.PREFECTURE);
         String municipality = extractLine(text, REPORT_ITEMS.MUNICIPALITY);
         String district = extractLine(text, REPORT_ITEMS.DISTRICT);
         String addressDetails = extractLine(text, REPORT_ITEMS.ADDRESS_DETAILS);
         String summary = extractLine(text, REPORT_ITEMS.SUMMARY);
 
+        // 発生日時の型変換（String→LocalDateTime）
+        LocalDateTime ldtOccurDate = DateUtils.parseToLocalDateTime(occurDate);
         // 住所情報チェック　※番地以降の情報は任意
         addressCheck(prefecture, municipality, district);
         // 住所情報結合
@@ -64,6 +70,7 @@ public class ReportService {
         ReportEntity report = new ReportEntity();
         report.setUserId(userId);
         report.setTag(tag);
+        report.setOccurDate(ldtOccurDate);
         report.setPrefecture(prefecture);
         report.setMunicipality(municipality);
         report.setDistrict(district);

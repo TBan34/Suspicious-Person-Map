@@ -30,6 +30,10 @@ public class ReportEntity {
     @Column(name = "tag", length = 100)
     private String tag;
 
+    // 発生日時
+    @Column(name = "occurDate", length = 100)
+    private LocalDateTime occurDate;
+
     // 都道府県
     @Column(name = "prefecture", length = 4)
     private String prefecture;

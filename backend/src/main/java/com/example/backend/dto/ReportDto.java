@@ -22,6 +22,9 @@ public class ReportDto {
     // タグ
     private String tag;
 
+    // 発生日時
+    private LocalDateTime occurDate;
+
     // 都道府県
     private String prefecture;
 
