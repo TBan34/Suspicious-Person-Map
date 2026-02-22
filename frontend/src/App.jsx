@@ -38,7 +38,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <img src={logo} alt="ロゴ" className="header-logo" />
-        <h1>不審者マップ</h1>
+        <h1>福岡市不審者マップ</h1>
       </header>
 
       <main className="app-main">

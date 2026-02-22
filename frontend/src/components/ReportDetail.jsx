@@ -54,12 +54,12 @@ function ReportDetail({ report }) {
         <div className="report-detail-section">
           {report.occurDate && (
             <div className="report-detail-section">
-              <h3 className="report-detail-section-title">発生日時</h3>
+              <h3 className="report-detail-section-title">日時</h3>
               <p className="report-detail-date">{formatDate(report.occurDate)}</p>
             </div>
           )}
 
-          <h3 className="report-detail-section-title">発生場所</h3>
+          <h3 className="report-detail-section-title">場所</h3>
           <p className="report-detail-address">{buildAddress()}</p>
           {report.prefecture && report.municipality && (
             <div className="report-detail-location">
