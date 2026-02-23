@@ -85,10 +85,12 @@ function ReportDetail({ report }) {
           </div>
         )}
 
-        {report.tag && (
+        {(report.tag1 || report.tag2 || report.tag3) && (
           <div className="report-detail-section">
             <h3 className="report-detail-section-title">タグ</h3>
-            <span className="report-detail-tag">{report.tag}</span>
+            {report.tag1 && <span className="report-detail-tag">{report.tag1}</span>}
+            {report.tag2 && <span className="report-detail-tag">{report.tag2}</span>}
+            {report.tag3 && <span className="report-detail-tag">{report.tag3}</span>}
           </div>
         )}
       </div>
