@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.common.constant.CommonConst;
 import com.example.backend.common.util.DateUtils;
 import com.example.backend.entity.ReportEntity;
 import com.example.backend.model.GeoPoint;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,13 +49,13 @@ public class ReportService {
         paramCheck(userId, text);
         
         // 不審者情報の抽出
-        String tag = extractLine(text, REPORT_ITEMS.TAG);
-        String occurDate = extractLine(text, REPORT_ITEMS.OCCUR_DATE);
-        String prefecture = extractLine(text, REPORT_ITEMS.PREFECTURE);
-        String municipality = extractLine(text, REPORT_ITEMS.MUNICIPALITY);
-        String district = extractLine(text, REPORT_ITEMS.DISTRICT);
-        String addressDetails = extractLine(text, REPORT_ITEMS.ADDRESS_DETAILS);
-        String summary = extractLine(text, REPORT_ITEMS.SUMMARY);
+        List<String> tags = extractLineToMultiple(text, REPORT_ITEMS.TAG);
+        String occurDate = extractLineToSingle(text, REPORT_ITEMS.OCCUR_DATE);
+        String prefecture = extractLineToSingle(text, REPORT_ITEMS.PREFECTURE);
+        String municipality = extractLineToSingle(text, REPORT_ITEMS.MUNICIPALITY);
+        String district = extractLineToSingle(text, REPORT_ITEMS.DISTRICT);
+        String addressDetails = extractLineToSingle(text, REPORT_ITEMS.ADDRESS_DETAILS);
+        String summary = extractLineToSingle(text, REPORT_ITEMS.SUMMARY);
 
         // 発生日時の型変換（String→LocalDateTime）
         LocalDateTime ldtOccurDate = DateUtils.parseToLocalDateTime(occurDate);
@@ -69,7 +71,18 @@ public class ReportService {
         // Entity作成
         ReportEntity report = new ReportEntity();
         report.setUserId(userId);
-        report.setTag(tag);
+        int tagCounter = CommonConst.COUNT.ZERO;
+        for (String tag : tags) {
+            if (tagCounter == CommonConst.COUNT.ZERO) {
+                report.setTag1(tag);
+                tagCounter++;
+            } else if (tagCounter == CommonConst.COUNT.ONE) {
+                report.setTag2(tag);
+                tagCounter++;
+            } else if (tagCounter == CommonConst.COUNT.TWO) {
+                report.setTag3(tag);
+            }
+        }
         report.setOccurDate(ldtOccurDate);
         report.setPrefecture(prefecture);
         report.setMunicipality(municipality);
@@ -109,9 +122,9 @@ public class ReportService {
      * 不審者情報の抽出
      * text: 不審者情報メッセージ
      * item: 抽出対象項目
-     * return: 抽出結果
+     * return: 単一の抽出結果
      */
-    private String extractLine(String text, String item) {
+    private String extractLineToSingle(String text, String item) {
 
         // 不審者情報を項目単位で抽出
         String[] lines = text.split("[\r\n]+"); // OSごとの改行コードを考慮し分割
@@ -124,6 +137,39 @@ public class ReportService {
                 return value.replace(":", "")
                             .replace("：", "")
                             .trim();
+            }
+        }
+        return null;
+    }
+
+        /*
+     * 不審者情報の抽出
+     * text: 不審者情報メッセージ
+     * item: 抽出対象項目
+     * return: 複数の抽出結果
+     */
+    private List<String> extractLineToMultiple(String text, String item) {
+
+        // 不審者情報を項目単位で抽出
+        String[] lines = text.split("[\r\n]+"); // OSごとの改行コードを考慮し分割
+        List<String> lineList = Arrays.asList(lines);
+        List<String> valuesWithItem = null;
+        for (String line : lineList) {
+            String singleLine = line.trim();
+            if (singleLine.startsWith(item)) {
+                // 「タグ：不審な声かけ、撮影行為」 → 「不審な声かけ、撮影行為」のように値抽出
+                // 空行、カンマ、読点を考慮
+                valuesWithItem = Arrays.asList(line.split("\\s*[,、]\\s*"));
+                List<String> values = new ArrayList<>();
+                for (String value : valuesWithItem) {
+                    if (value.startsWith(item)) {
+                        value = value.substring(item.length());
+                    }
+                    value.replace(":", "")
+                         .replace("：", "");
+                    values.add(value);
+                }
+                return values;
             }
         }
         return null;

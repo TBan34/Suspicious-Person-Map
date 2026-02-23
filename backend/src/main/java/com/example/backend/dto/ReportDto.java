@@ -19,8 +19,14 @@ public class ReportDto {
     // ユーザーID(LINE)
     private String userId;
 
-    // タグ
-    private String tag;
+    // タグ1
+    private String tag1;
+
+    // タグ2
+    private String tag2;
+
+    // タグ3
+    private String tag3;
 
     // 発生日時
     private LocalDateTime occurDate;

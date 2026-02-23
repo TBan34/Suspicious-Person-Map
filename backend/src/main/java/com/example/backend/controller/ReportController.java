@@ -40,7 +40,9 @@ public class ReportController {
         return new ReportDto(
                 entity.getId(),
                 entity.getUserId(),
-                entity.getTag(),
+                entity.getTag1(),
+                entity.getTag2(),
+                entity.getTag3(),
                 entity.getOccurDate(),
                 entity.getPrefecture(),
                 entity.getMunicipality(),

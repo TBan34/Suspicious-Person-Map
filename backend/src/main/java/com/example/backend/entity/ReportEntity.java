@@ -26,9 +26,17 @@ public class ReportEntity {
     @Column(name = "user_id", nullable = false, length = 255)
     private String userId;
 
-    // タグ
-    @Column(name = "tag", length = 100)
-    private String tag;
+    // タグ1
+    @Column(name = "tag1", length = 10)
+    private String tag1;
+
+    // タグ2
+    @Column(name = "tag2", length = 10)
+    private String tag2;
+
+    // タグ3
+    @Column(name = "tag3", length = 10)
+    private String tag3;
 
     // 発生日時
     @Column(name = "occurDate", length = 100)
