@@ -95,7 +95,7 @@ public class ReportService {
         
         // 登録処理
         ReportEntity saved = reportRepository.save(report);
-        log.info("不審者情報の登録に成功しました。IDは「{}」、ユーザーIDは「{}」です。", saved.getId(), userId);
+        log.info("不審者情報の登録に成功しました。reportId={}", saved.getId());
     }
 
     /*
