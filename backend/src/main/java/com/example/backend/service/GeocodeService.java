@@ -53,7 +53,7 @@ public class GeocodeService {
             for (String fallbackAddress : fallbackAddresses) {
                 GeoPoint point = callGeocodingApi(fallbackAddress);
                 if (point != null) {
-                    log.info("Geocoding APIの実行に成功しました: {}", fallbackAddress);
+                    log.debug("Geocoding APIの実行に成功しました: {}", fallbackAddress);
                     return point;
                 }
             }
@@ -116,8 +116,8 @@ public class GeocodeService {
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
-            log.info("Geocoding API呼出し住所: {}", address);
-            log.info("Geocoding リクエストURI = {}", uri);
+            log.debug("Geocoding API呼出し住所: {}", address);
+            log.debug("Geocoding リクエストURI = {}", uri);
 
             // Geocoding API実行
             String response = restTemplate.getForObject(uri, String.class);
@@ -132,14 +132,14 @@ public class GeocodeService {
                     ? jsonNode.get("error_message").asText()
                     : "no error_message";
 
-                log.warn("Geocoding APIが異常終了または返却結果なし. status={}, error_message={}, address={}",
+                log.debug("Geocoding APIが異常終了または返却結果なし. status={}, error_message={}, address={}",
                     status, errorMessage, address);
 
                 return null;
             }
 
             JsonNode results = jsonNode.get("results");
-            log.info("Geocoding results = {}", results);
+            log.debug("Geocoding results = {}", results);
 
             for (JsonNode result : results) {
                 // 曖昧な情報の場合、次の取得結果へ
