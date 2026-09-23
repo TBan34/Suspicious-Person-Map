@@ -113,7 +113,6 @@ public class GeocodeService {
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
             log.debug("Geocoding API呼出し住所: {}", address);
-            log.debug("Geocoding リクエストURI = {}", uri);
 
             // Geocoding API実行
             String response = restTemplate.getForObject(uri, String.class);
@@ -166,7 +165,11 @@ public class GeocodeService {
 
         // RestTemplateの通信エラー
         } catch (RestClientException e) {
-            throw new RuntimeException("RestTemplateの通信エラーが発生しました: " + address, e);
+            // RestClientExceptionのメッセージにはAPIキー付きURIが含まれる可能性があるため、原因例外を連結しない。
+            throw new RuntimeException(
+                "RestTemplateの通信エラーが発生しました: " + address
+                    + ", exceptionType=" + e.getClass().getSimpleName()
+            );
         
         // 上記以外のエラー
         } catch (Exception e) {
