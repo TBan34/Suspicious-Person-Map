@@ -20,9 +20,10 @@ import java.util.stream.Collectors;
 public class ReportController {
     private final ReportRepository reportRepository;
 
-    /*
-     * 不審者情報を取得する。
-     * return: 不審者情報Dto
+    /**
+     * 保存されている不審者情報を画面表示用 DTO として取得する。
+     *
+     * @return 不審者情報 DTO の一覧
      */
     @GetMapping
     public List<ReportDto> getReports() {
@@ -31,10 +32,11 @@ public class ReportController {
                 .collect(Collectors.toList());
     }
 
-    /*
-     * Entity→Dto変換
-     * reportEntity: 不審者情報Entity
-     * return: 不審者情報Dto
+    /**
+     * 不審者情報 Entity を画面表示用 DTO に変換する。
+     *
+     * @param entity 変換対象の不審者情報 Entity
+     * @return 画面表示用の不審者情報 DTO
      */
     private ReportDto convertToDto(ReportEntity entity) {
         return new ReportDto(

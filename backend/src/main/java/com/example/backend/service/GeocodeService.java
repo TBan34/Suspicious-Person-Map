@@ -40,36 +40,31 @@ public class GeocodeService {
     @Value("${google.api.key}")
     private String apiKey;
 
-    /*
-     * 座標情報を取得する。
-     * address: 住所情報
-     * return: 座標情報
+    /**
+     * 住所を段階的に簡略化しながら Geocoding API を呼び出し、座標情報を取得する。
+     *
+     * @param address 座標へ変換する住所
+     * @return 完全一致した住所の座標情報
      */
     public GeoPoint getLatLng(String address) {
+        List<String> fallbackAddresses = createFallbackAddresses(address);
 
-        try {
-            List<String> fallbackAddresses = createFallbackAddresses(address);
-
-            for (String fallbackAddress : fallbackAddresses) {
-                GeoPoint point = callGeocodingApi(fallbackAddress);
-                if (point != null) {
-                    log.debug("Geocoding APIの実行に成功しました: {}", fallbackAddress);
-                    return point;
-                }
+        for (String fallbackAddress : fallbackAddresses) {
+            GeoPoint point = callGeocodingApi(fallbackAddress);
+            if (point != null) {
+                log.debug("Geocoding APIの実行に成功しました: {}", fallbackAddress);
+                return point;
             }
-
-            throw new RuntimeException("有効な住所情報が見つかりませんでした: " + address);
-
-        } catch (Exception e) {
-            log.error("Geocoding APIの実行に失敗しました: {}", address, e);
-            throw new RuntimeException("Geocoding APIの実行に失敗しました: " + address, e);
         }
+
+        throw new RuntimeException("有効な住所情報が見つかりませんでした: " + address);
     }
 
-    /*
-     * 住所情報（フォールバック用）を取得する。
-     * address: 住所情報
-     * return: 住所情報（フォールバック用）
+    /**
+     * Geocoding API の再試行に使用する、段階的に簡略化した住所候補を生成する。
+     *
+     * @param address 簡略化の基準となる住所
+     * @return 重複を除いた住所候補の一覧
      */
     private List<String> createFallbackAddresses(String address) {
     
@@ -100,10 +95,11 @@ public class GeocodeService {
                 .toList();
     }
 
-        /*
-     * 座標情報を取得する。
-     * address: 住所情報
-     * return: 座標情報
+    /**
+     * 指定された住所で Geocoding API を呼び出し、完全一致した座標を抽出する。
+     *
+     * @param address Geocoding API に渡す住所
+     * @return 完全一致した座標情報。取得できない場合は null
      */
     private GeoPoint callGeocodingApi(String address) {
         try {
@@ -170,12 +166,10 @@ public class GeocodeService {
 
         // RestTemplateの通信エラー
         } catch (RestClientException e) {
-            log.error("RestTemplateの通信エラーが発生しました: {}", address, e);
             throw new RuntimeException("RestTemplateの通信エラーが発生しました: " + address, e);
         
         // 上記以外のエラー
         } catch (Exception e) {
-            log.error("Geocoding APIの呼び出しに失敗しました: {}", address, e);
             throw new RuntimeException("Geocoding APIの呼び出しに失敗しました: " + address, e);
         }
     }

@@ -31,12 +31,13 @@ public class DateUtils {
             .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
             .toFormatter(Locale.JAPAN);
 
-      /*
-     * String→LocalDateTimeの型変換
-     * strDate: 日付情報（例：2025年9月8日午後6時10分）
-     * return: 日付情報(LocalDateTime)
+    /**
+     * 日本語形式の日付文字列を LocalDateTime に変換する。
+     *
+     * @param strDate 日付文字列（例: 2025年9月8日午後6時10分）
+     * @return 変換後の日時。入力が null または空文字の場合は null
      */
-      public static LocalDateTime parseToLocalDateTime(String strDate) {
+    public static LocalDateTime parseToLocalDateTime(String strDate) {
 
         // Nullの場合、処理を終了
         if (StringUtils.isEmpty(strDate)) {

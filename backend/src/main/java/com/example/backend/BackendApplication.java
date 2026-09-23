@@ -8,6 +8,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class BackendApplication {
 
+	/**
+	 * Spring Boot アプリケーションを起動する。
+	 * レスポンス: なし。
+	 *
+	 * @param args アプリケーション起動時のコマンドライン引数
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 	}

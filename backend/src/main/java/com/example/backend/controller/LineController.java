@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
+import com.example.backend.exception.ReportProcessingException;
 import com.example.backend.service.ReportService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LineController {
 
+    private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
+
     private final ReportService reportService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${line.bot.channelSecret}")
     private String channelSecret;
 
+    /**
+     * LINE Webhook のイベントを受け取り、不審者情報の登録処理を実行する。
+     *
+     * @param body LINE Webhook のリクエスト本文
+     * @param signature LINE Webhook の署名
+     * @return Webhook の処理結果を表す HTTP レスポンス
+     */
     @PostMapping("/callback")
     public ResponseEntity<String> callback(
             @RequestBody String body,
@@ -56,9 +67,15 @@ public class LineController {
 
             return ResponseEntity.ok("None");
 
+        } catch (ReportProcessingException e) {
+            // ReportServiceで処理段階と例外を記録済みのため、ここでは重複出力しない。
+            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
+        } catch (JsonProcessingException e) {
+            log.error("LINE WebhookのJSON解析に失敗しました。stage=webhook_json_parsing", e);
+            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (Exception e) {
-            log.error("Webhookエラー", e);
-            return ResponseEntity.status(500).body("Internalエラー: " + e.getMessage());
+            log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing", e);
+            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         }
     }
 }
