@@ -1,6 +1,10 @@
 backend/src/main/resources/application.properties
+node_modules/
 *.log
 *.log.*
 *.gz
 *.DS_Store
 .vscode/launch.json
+
+# ローカル用のドキュメント整備メモ
+/docs/documentation-plan.md
