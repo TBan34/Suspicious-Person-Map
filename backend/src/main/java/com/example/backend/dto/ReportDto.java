@@ -16,9 +16,6 @@ public class ReportDto {
     // ID
     private Long id;
 
-    // ユーザーID(LINE)
-    private String userId;
-
     // タグ1
     private String tag1;
 
@@ -55,4 +52,3 @@ public class ReportDto {
     // 作成日
     private LocalDateTime created;
 }
-

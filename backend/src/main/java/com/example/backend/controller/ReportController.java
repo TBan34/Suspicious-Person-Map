@@ -39,7 +39,6 @@ public class ReportController {
     private ReportDto convertToDto(ReportEntity entity) {
         return new ReportDto(
                 entity.getId(),
-                entity.getUserId(),
                 entity.getTag1(),
                 entity.getTag2(),
                 entity.getTag3(),
