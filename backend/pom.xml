@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<line.bot.version>4.8.0</line.bot.version>
+		<line.bot.version>10.1.0</line.bot.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,9 +40,9 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
-  	  <groupId>com.linecorp.bot</groupId>
-    	<artifactId>line-bot-spring-boot</artifactId>
-    	<version>${line.bot.version}</version>
+			<groupId>com.linecorp.bot</groupId>
+			<artifactId>line-bot-parser</artifactId>
+			<version>${line.bot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
