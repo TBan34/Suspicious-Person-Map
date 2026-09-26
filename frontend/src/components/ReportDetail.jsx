@@ -15,8 +15,6 @@ function ReportDetail({ report }) {
   }
 
   const formatDate = (dateString) => {
-    console.log("ReportDetail report:", report);
-    console.log("occurDate:", report?.occurDate);
     if (!dateString) return '日時不明';
     try {
       const normalized = dateString.replace(' ', 'T');
@@ -30,7 +28,7 @@ function ReportDetail({ report }) {
         hour: '2-digit',
         minute: '2-digit',
       });
-    } catch (e) {
+    } catch {
       return dateString;
     }
   };
@@ -99,4 +97,3 @@ function ReportDetail({ report }) {
 }
 
 export default ReportDetail;
-

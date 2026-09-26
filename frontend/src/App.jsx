@@ -16,8 +16,8 @@ function App() {
       try {
         const data = await getReports();
         setReports(data);
-      } catch (error) {
-        console.error('Failed to fetch reports:', error);
+      } catch {
+        console.error('Failed to fetch reports');
       } finally {
         setLoading(false);
       }
