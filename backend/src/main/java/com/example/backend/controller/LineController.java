@@ -45,7 +45,6 @@ public class LineController {
 
         // 署名検証スキップ（テスト用）
         log.info("Body length: {}", body.length());
-        log.info("Signature: {}", signature);
 
         try {
             JsonNode root = objectMapper.readTree(body);
