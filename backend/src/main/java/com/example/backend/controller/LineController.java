@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.exception.ReportProcessingException;
+import com.example.backend.service.LineWebhookSignatureVerifier;
 import com.example.backend.service.ReportService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LineController {
 
+    private static final String BAD_REQUEST_MESSAGE = "Bad Request";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
 
     private final ReportService reportService;
+    private final LineWebhookSignatureVerifier lineWebhookSignatureVerifier;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Value("${line.bot.channelSecret}")
-    private String channelSecret;
 
     /**
      * LINE Webhook のイベントを受け取り、不審者情報の登録処理を実行する。
@@ -43,7 +42,12 @@ public class LineController {
 
         log.info("=== LINE /line/callback HIT ===");
 
-        // 署名検証スキップ（テスト用）
+        // LINE Platform から送信された正当なリクエストかを確認し、不正な場合は後続処理を行わない。
+        if (!lineWebhookSignatureVerifier.isValid(body, signature)) {
+            log.warn("LINE Webhookの署名検証に失敗しました。stage=webhook_signature_validation");
+            return ResponseEntity.badRequest().body(BAD_REQUEST_MESSAGE);
+        }
+
         log.info("Body length: {}", body.length());
 
         try {
