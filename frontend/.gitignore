@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # settings
-.env
+.env.development
