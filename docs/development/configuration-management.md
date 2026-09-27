@@ -28,7 +28,7 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 
 `application-dev.properties` の ignore 規則は、バックエンドが所有する `backend/.gitignore` に置く。
 
-現時点では設定ファイルだけを先行して用意している。`app.cors.allowed-origins` は `WebConfig` がまだ参照しておらず、test Profile もテストクラスから自動有効化されていない。利用開始には後続のコード変更とテストが必要である。
+`WebConfig` は `app.cors.allowed-origins` を参照する。自動テストは test Profile を有効化し、ローカルや本番の認証情報に依存しない。
 
 ### フロントエンド
 
@@ -39,7 +39,7 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 
 `.env.development` の ignore 規則は、フロントエンドが所有する `frontend/.gitignore` に置く。使用しない `.env` や `.env.production` を予防目的だけで作成しない。
 
-現時点では設定ファイルだけを先行して用意しており、`frontend/src/services/api.js` はまだ `VITE_API_BASE_URL` を参照していない。利用開始には後続のコード変更とビルド確認が必要である。
+`frontend/src/services/api.js` は `VITE_API_BASE_URL` を参照する。値は Vite のビルド時にJavaScriptへ組み込まれるため、環境ごとにビルド時の設定を用意する。
 
 ## 設定変更前の手順
 
