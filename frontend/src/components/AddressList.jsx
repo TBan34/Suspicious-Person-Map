@@ -28,7 +28,7 @@ function AddressList({ reports, onSelect, selectedReport }) {
   if (!reports || reports.length === 0) {
     return (
       <div className="address-list">
-        <h2 className="address-list-title">住所一覧</h2>
+        <h2 className="address-list-title">情報一覧</h2>
         <div className="address-list-empty">データがありません</div>
       </div>
     );
@@ -51,7 +51,10 @@ function AddressList({ reports, onSelect, selectedReport }) {
                 aria-controls={`address-group-body-${index}`}
                 id={`address-group-heading-${index}`}
               >
-                <span>{group.prefecture}{group.municipality}</span>
+                <span>
+                  {group.prefecture}
+                  {group.municipality}({group.reports.length})
+                </span>
                 <span className="address-group-header-icon" aria-hidden>
                   {isOpen ? '▼' : '▶'}
                 </span>
@@ -102,4 +105,3 @@ function AddressList({ reports, onSelect, selectedReport }) {
 }
 
 export default AddressList;
-
