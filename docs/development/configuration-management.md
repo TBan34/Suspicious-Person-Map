@@ -20,15 +20,29 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 
 | ファイル | 用途 | Git 管理 | 実値 |
 | --- | --- | --- | --- |
-| `backend/src/main/resources/application-dev.properties` | ローカル開発用 | 対象外 | 開発用の DB 認証情報、Google API キー、LINE チャネルシークレットを記載する |
-| `backend/src/main/resources/application-prod.properties` | 本番用 | 対象 | 実値は記載せず、デプロイ環境の環境変数を参照する |
+| `backend/src/main/resources/application-local-h2.properties` | Docker を使わないローカル動作確認用 | 対象 | 実値は記載せず、共通シークレットまたは環境変数を参照する |
+| `backend/src/main/resources/application-local-postgres.properties` | ローカル PostgreSQL 互換性確認用 | 対象 | 実値は記載せず、共通シークレットまたは環境変数を参照する |
+| `backend/config/application-local-secrets.properties` | ローカル Profile 共通の実値 | 対象外 | DB 認証情報、Google API キー、LINE チャネルシークレットを記載する |
+| `backend/.local-data/` | ファイル型 H2 のDBファイル | 対象外 | ローカル検証で登録したデータを保持する |
+| `backend/src/main/resources/application-prod.properties` | 未使用の本番用設定 | 対象 | 実値は記載せず、デプロイ環境の環境変数を参照する |
 | `backend/src/test/resources/application-test.properties` | 自動テスト用 | 対象 | 明らかなテスト用ダミー値だけを記載する |
 
 全環境共通の設定がないため、無印の `application.properties` は置かない。共通設定が発生した場合だけ追加し、認証情報の実値は記載しない。
 
-`application-dev.properties` の ignore 規則は、バックエンドが所有する `backend/.gitignore` に置く。
+`application-local-secrets.properties` と `.local-data/` の ignore 規則は、バックエンドが所有する `backend/.gitignore` に置く。新しい環境では既存のローカル実値ファイルをコピーして配置し、Git 管理する Profile 本体には実値を書かない。
 
-`WebConfig` は `app.cors.allowed-origins` を参照する。自動テストは test Profile を有効化し、ローカルや本番の認証情報に依存しない。
+`local-h2` はファイル型 H2 を使用し、日常的な LINE Webhook から画面反映までの確認に用いる。`local-postgres` はローカル PostgreSQL を使用し、DB互換性を確認するときだけ用いる。両Profileは `application-local-secrets.properties` を任意インポートし、同じ設定項目の環境変数がある場合は環境変数を優先する。
+
+| Profile | DB | 主な用途 |
+| --- | --- | --- |
+| `local-h2` | ファイル型 H2 | 通常のローカル動作確認 |
+| `local-postgres` | PostgreSQL | PostgreSQL 互換性のローカル確認 |
+| `test` | インメモリ H2 | Maven 自動テスト |
+| `prod` | 未決定 | 未使用の本番用設定 |
+
+`WebConfig` は `app.cors.allowed-origins` を参照する。自動テストは `test` Profile を有効化し、ローカルや本番の認証情報に依存しない。Profile 未指定時の暗黙的な接続先は設けず、用途に対応するProfileを明示する。
+
+各Profileの起動方法、H2の保存先、Dockerコンテナの現在値、本番用設定の現状は [`database.md`](database.md) を正本とする。
 
 ### フロントエンド
 
@@ -49,7 +63,7 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 | --- | --- |
 | 利用者 | Spring Boot、Vite、CI、ブラウザ |
 | 読み込み時期 | Spring Boot 起動時、Vite ビルド時、ブラウザ実行時 |
-| 対象環境 | dev、test、prod |
+| 対象環境 | local-h2、local-postgres、test、prod |
 | 設定内容 | DB URL、CORS Origin、API キー |
 | 秘密情報 | あり、なし、ブラウザへ公開される値 |
 | Git 管理 | 対象、対象外 |
@@ -62,7 +76,7 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 
 ### 設定元を一つにする
 
-同じ環境・同じ設定項目について、理由なく複数の設定元を作らない。たとえば、直接編集する `application-dev.properties` と、それを上書きする別のローカルpropertiesを同時に用意しない。
+同じ環境・同じ設定項目について、理由なく複数の設定元を作らない。ローカルの実値は `application-local-secrets.properties` に集約し、`local-h2` と `local-postgres` のProfile本体へ複製しない。環境変数による上書きは、CIや一時的な起動設定など設定ファイルを使わない場合に限定する。
 
 ### 秘密情報を書き込む前にignoreを設定する
 

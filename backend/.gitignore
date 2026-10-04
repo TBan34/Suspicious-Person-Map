@@ -5,7 +5,10 @@ target/
 !**/src/test/**/target/
 
 # ローカル開発用の実値を含む Spring Boot 設定
-src/main/resources/application-dev.properties
+config/application-local-secrets.properties
+
+# ファイル型 H2 のローカルデータ
+.local-data/
 
 ### STS ###
 .apt_generated

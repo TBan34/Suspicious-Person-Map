@@ -7,10 +7,10 @@
 set -euo pipefail
 
 readonly GEOCODING_API_URL="https://maps.googleapis.com/maps/api/geocode/json"
-# 実行時のカレントディレクトリに依存せず、リポジトリ内の開発用設定を参照する。
+# 実行時のカレントディレクトリに依存せず、リポジトリ内のローカル設定を参照する。
 readonly SCRIPT_DIRECTORY="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPOSITORY_ROOT="$(cd -- "${SCRIPT_DIRECTORY}/.." && pwd)"
-readonly DEVELOPMENT_PROPERTIES="${REPOSITORY_ROOT}/backend/src/main/resources/application-dev.properties"
+readonly LOCAL_SECRETS_FILE="${LOCAL_SECRETS_FILE:-${REPOSITORY_ROOT}/backend/config/application-local-secrets.properties}"
 
 # 引数の指定方法と実行例を標準エラー出力へ表示する。
 print_usage() {
@@ -26,19 +26,19 @@ read_api_key() {
     return
   fi
 
-  if [[ ! -r "${DEVELOPMENT_PROPERTIES}" ]]; then
+  if [[ ! -r "${LOCAL_SECRETS_FILE}" ]]; then
     return
   fi
 
-  # `google.api.key = VALUE` のような前後の空白を許容し、最初の設定値だけを取得する。
+  # `local.google.geocoding-api-key = VALUE` のような前後の空白を許容し、最初の設定値だけを取得する。
   awk '
-    /^[[:space:]]*google\.api\.key[[:space:]]*=/ {
+    /^[[:space:]]*local\.google\.geocoding-api-key[[:space:]]*=/ {
       sub(/^[^=]*=[[:space:]]*/, "")
       sub(/[[:space:]\r]+$/, "")
       print
       exit
     }
-  ' "${DEVELOPMENT_PROPERTIES}"
+  ' "${LOCAL_SECRETS_FILE}"
 }
 
 # 住所は空白を含む可能性があるため、引用符で囲んだ1つの引数として受け取る。
@@ -58,8 +58,8 @@ readonly ADDRESS="$1"
 readonly API_KEY="$(read_api_key)"
 
 if [[ -z "${API_KEY}" ]]; then
-  printf 'Error: Set GOOGLE_GEOCODING_API_KEY or google.api.key in %s.\n' \
-    "${DEVELOPMENT_PROPERTIES}" >&2
+  printf 'Error: Set GOOGLE_GEOCODING_API_KEY or local.google.geocoding-api-key in %s.\n' \
+    "${LOCAL_SECRETS_FILE}" >&2
   exit 1
 fi
 
