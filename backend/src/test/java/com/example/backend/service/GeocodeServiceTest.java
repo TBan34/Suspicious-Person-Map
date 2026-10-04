@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.example.backend.exception.GeocodingException;
 import com.example.backend.model.GeoPoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class GeocodeServiceTest {
 
     private static final String API_KEY = "test-secret-geocoding-api-key";
-    private static final String ADDRESS = "福岡県福岡市中央区天神1丁目1-1";
+    private static final String PREFECTURE = "福岡県";
+    private static final String MUNICIPALITY = "福岡市中央区";
+    private static final String DISTRICT = "天神1丁目";
+    private static final String ADDRESS_DETAILS = "1-1";
 
     /**
      * Geocoding 成功時のDEBUGログにAPIキーおよび完全なリクエストURIが含まれないことを確認する。
@@ -63,7 +67,12 @@ class GeocodeServiceTest {
         logger.addAppender(appender);
 
         try {
-            GeoPoint point = geocodeService.getLatLng(ADDRESS);
+            GeoPoint point = geocodeService.getLatLng(
+                PREFECTURE,
+                MUNICIPALITY,
+                DISTRICT,
+                ADDRESS_DETAILS
+            );
 
             assertThat(point.getLatitude()).isEqualTo(33.5902);
             assertThat(point.getLongitude()).isEqualTo(130.4017);
@@ -102,16 +111,59 @@ class GeocodeServiceTest {
         };
         GeocodeService geocodeService = createGeocodeService(restTemplate);
 
-        RuntimeException exception = assertThrows(
-            RuntimeException.class,
-            () -> geocodeService.getLatLng(ADDRESS)
+        GeocodingException exception = assertThrows(
+            GeocodingException.class,
+            () -> geocodeService.getLatLng(
+                PREFECTURE,
+                MUNICIPALITY,
+                DISTRICT,
+                ADDRESS_DETAILS
+            )
         );
 
         assertThat(exception.getMessage())
             .contains("exceptionType=RestClientException")
             .doesNotContain(API_KEY)
             .doesNotContain("key=");
+        assertThat(exception.getAddress())
+            .isEqualTo("福岡県福岡市中央区天神1丁目1-1");
         assertThat(exception.getCause()).isNull();
+    }
+
+    /**
+     * 許容する住所候補がすべて不採用の場合に、市区町村へ広げず専用例外を送出することを確認する。
+     */
+    @Test
+    void throwsDedicatedExceptionWhenAllAcceptableCandidatesFail() {
+        RestTemplate restTemplate = new RestTemplate() {
+            /**
+             * 外部通信を行わず、住所を特定できない固定レスポンスを返す。
+             *
+             * @param url Geocoding API のリクエストURI
+             * @param responseType レスポンスの変換先クラス
+             * @return ZERO_RESULTS を含むテスト用レスポンス
+             */
+            @Override
+            public <T> T getForObject(URI url, Class<T> responseType) {
+                return responseType.cast("{\"status\":\"ZERO_RESULTS\",\"results\":[]}");
+            }
+        };
+        GeocodeService geocodeService = createGeocodeService(restTemplate);
+
+        GeocodingException exception = assertThrows(
+            GeocodingException.class,
+            () -> geocodeService.getLatLng(
+                PREFECTURE,
+                MUNICIPALITY,
+                DISTRICT,
+                ADDRESS_DETAILS
+            )
+        );
+
+        assertThat(exception.getMessage())
+            .isEqualTo("入力された住所の範囲では有効な位置情報を取得できませんでした");
+        assertThat(exception.getAddress())
+            .isEqualTo("福岡県福岡市中央区天神1丁目1-1");
     }
 
     /**
@@ -121,7 +173,11 @@ class GeocodeServiceTest {
      * @return テスト用APIキーを設定した GeocodeService
      */
     private GeocodeService createGeocodeService(RestTemplate restTemplate) {
-        GeocodeService geocodeService = new GeocodeService(restTemplate, new ObjectMapper());
+        GeocodeService geocodeService = new GeocodeService(
+            restTemplate,
+            new ObjectMapper(),
+            new GeocodingAddressCandidateGenerator(new AddressNormalizer())
+        );
         ReflectionTestUtils.setField(geocodeService, "apiKey", API_KEY);
         return geocodeService;
     }

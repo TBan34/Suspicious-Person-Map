@@ -1,12 +1,11 @@
 package com.example.backend.service;
 
+import com.example.backend.exception.GeocodingException;
 import com.example.backend.model.GeoPoint;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
-import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Google MapsのGeocoding APIを使用し、座標情報を取得する。
@@ -36,63 +36,45 @@ public class GeocodeService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final GeocodingAddressCandidateGenerator addressCandidateGenerator;
 
     @Value("${google.api.key}")
     private String apiKey;
 
     /**
-     * 住所を段階的に簡略化しながら Geocoding API を呼び出し、座標情報を取得する。
+     * 必須住所部分を維持した候補で Geocoding API を呼び出し、座標情報を取得する。
      *
-     * @param address 座標へ変換する住所
-     * @return 完全一致した住所の座標情報
+     * @param prefecture 都道府県
+     * @param municipality 市区町村
+     * @param district 丁目
+     * @param addressDetails 番地以降の任意情報
+     * @return 採用条件を満たした住所候補の座標情報
      */
-    public GeoPoint getLatLng(String address) {
-        List<String> fallbackAddresses = createFallbackAddresses(address);
+    public GeoPoint getLatLng(
+            String prefecture,
+            String municipality,
+            String district,
+            String addressDetails) {
+        List<String> addressCandidates = addressCandidateGenerator.generate(
+            prefecture,
+            municipality,
+            district,
+            addressDetails
+        );
 
-        for (String fallbackAddress : fallbackAddresses) {
-            GeoPoint point = callGeocodingApi(fallbackAddress);
+        for (String addressCandidate : addressCandidates) {
+            GeoPoint point = callGeocodingApi(addressCandidate);
             if (point != null) {
-                log.debug("Geocoding APIの実行に成功しました: {}", fallbackAddress);
+                log.debug("Geocoding APIの実行に成功しました: {}", addressCandidate);
                 return point;
             }
         }
 
-        throw new RuntimeException("有効な住所情報が見つかりませんでした: " + address);
-    }
-
-    /**
-     * Geocoding API の再試行に使用する、段階的に簡略化した住所候補を生成する。
-     *
-     * @param address 簡略化の基準となる住所
-     * @return 重複を除いた住所候補の一覧
-     */
-    private List<String> createFallbackAddresses(String address) {
-    
-        // TODO: 住所情報（フォールバック用）の精度向上
-        // 末尾ハイフンの場合、削除
-        if (StringUtils.equals("-", address.substring(address.length() -1))) {
-            address = StringUtils.removeEnd(address, "-");
-        }
-
-        List<String> fallbackAddresses = new ArrayList<>();
-        fallbackAddresses.add(address);
-
-        // 丁目まで
-        fallbackAddresses.add(address.replaceAll("-\\d+$", ""));
-        fallbackAddresses.add(address.replaceAll("丁目.*$", "丁目"));
-
-        // 町名まで
-        fallbackAddresses.add(address.replaceAll("\\d+$", ""));
-
-        // 区まで
-        fallbackAddresses.add(address.replaceAll("区.*$", "区"));
-
-        // 市町村まで
-        fallbackAddresses.add(address.replaceAll("^(.*?[市町村]).*$", "$1"));
-
-        return fallbackAddresses.stream()
-                .distinct()
-                .toList();
+        String mostDetailedAddress = addressCandidates.get(0);
+        throw new GeocodingException(
+            "入力された住所の範囲では有効な位置情報を取得できませんでした",
+            mostDetailedAddress
+        );
     }
 
     /**
@@ -166,14 +148,15 @@ public class GeocodeService {
         // RestTemplateの通信エラー
         } catch (RestClientException e) {
             // RestClientExceptionのメッセージにはAPIキー付きURIが含まれる可能性があるため、原因例外を連結しない。
-            throw new RuntimeException(
-                "RestTemplateの通信エラーが発生しました: " + address
-                    + ", exceptionType=" + e.getClass().getSimpleName()
+            throw new GeocodingException(
+                "RestTemplateの通信エラーが発生しました。exceptionType="
+                    + e.getClass().getSimpleName(),
+                address
             );
         
         // 上記以外のエラー
         } catch (Exception e) {
-            throw new RuntimeException("Geocoding APIの呼び出しに失敗しました: " + address, e);
+            throw new GeocodingException("Geocoding APIの呼び出しに失敗しました", address, e);
         }
     }
 

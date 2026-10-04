@@ -6,7 +6,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.example.backend.model.GeoPoint;
 import com.example.backend.repository.ReportRepository;
+import com.example.backend.service.AddressNormalizer;
 import com.example.backend.service.GeocodeService;
+import com.example.backend.service.GeocodingAddressCandidateGenerator;
 import com.example.backend.service.LineWebhookSignatureVerifier;
 import com.example.backend.service.ReportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,19 +124,33 @@ class LineControllerTest {
      */
     @Test
     void doesNotLogReportProcessingExceptionTwice() {
-        GeocodeService geocodeService = new GeocodeService(new RestTemplate(), new ObjectMapper()) {
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
             /**
              * Geocoding 失敗を再現するため、常に例外を送出する。
              *
-             * @param address Geocoding 対象の住所
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
              * @return 正常終了しないため返却値なし
              */
             @Override
-            public GeoPoint getLatLng(String address) {
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
                 throw new RuntimeException("Geocoding失敗");
             }
         };
-        ReportService reportService = new ReportService(unusedReportRepository(), geocodeService);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            geocodeService,
+            new AddressNormalizer()
+        );
         LineController controller = createController(reportService);
         ListAppender<ILoggingEvent> serviceAppender = attachListAppender(ReportService.class);
         ListAppender<ILoggingEvent> controllerAppender = attachListAppender(LineController.class);
@@ -161,7 +177,11 @@ class LineControllerTest {
      */
     @Test
     void logsWebhookJsonParsingStage() {
-        ReportService reportService = new ReportService(unusedReportRepository(), null);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            null,
+            new AddressNormalizer()
+        );
         LineController controller = createController(reportService);
         ListAppender<ILoggingEvent> appender = attachListAppender(LineController.class);
 
@@ -228,7 +248,7 @@ class LineControllerTest {
          * レスポンス: 生成されたテスト用 ReportService。
          */
         RecordingReportService() {
-            super(null, null);
+            super(null, null, null);
         }
 
         /**

@@ -6,6 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.example.backend.common.constant.ReportProcessingStageEnum;
 import com.example.backend.entity.ReportEntity;
+import com.example.backend.exception.GeocodingException;
 import com.example.backend.exception.ReportProcessingException;
 import com.example.backend.model.GeoPoint;
 import com.example.backend.repository.ReportRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,7 +40,11 @@ class ReportServiceTest {
      */
     @Test
     void logsInputValidationItemAndValueState() {
-        ReportService reportService = new ReportService(unusedReportRepository(), null);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            null,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -68,7 +74,11 @@ class ReportServiceTest {
             "2025年9月8日午後6時10分",
             invalidOccurDate
         );
-        ReportService reportService = new ReportService(unusedReportRepository(), null);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            null,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -94,7 +104,11 @@ class ReportServiceTest {
     @Test
     void logsMissingAddressItemAtValidationPoint() {
         String messageWithoutMunicipality = VALID_REPORT_MESSAGE.replace("市区町村:福岡市\n", "");
-        ReportService reportService = new ReportService(unusedReportRepository(), null);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            null,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -121,19 +135,33 @@ class ReportServiceTest {
     @Test
     void logsReportCreationStageWithoutSensitiveValues() {
         String messageWithoutTags = VALID_REPORT_MESSAGE.replace("タグ:声かけ\n", "");
-        GeocodeService geocodeService = new GeocodeService(new RestTemplate(), new ObjectMapper()) {
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
             /**
              * Entity 生成処理まで進めるため、固定の座標情報を返す。
              *
-             * @param address Geocoding 対象の住所
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
             @Override
-            public GeoPoint getLatLng(String address) {
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
                 return new GeoPoint(33.5902, 130.4017);
             }
         };
-        ReportService reportService = new ReportService(unusedReportRepository(), geocodeService);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            geocodeService,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -158,20 +186,37 @@ class ReportServiceTest {
      */
     @Test
     void logsGeocodingStageAndAddressOnce() {
-        RuntimeException geocodingException = new RuntimeException("Geocoding失敗");
-        GeocodeService geocodeService = new GeocodeService(new RestTemplate(), new ObjectMapper()) {
+        GeocodingException geocodingException = new GeocodingException(
+            "Geocoding失敗",
+            "福岡県福岡市中央1丁目1-1"
+        );
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
             /**
              * Geocoding 失敗を再現するため、指定された例外を送出する。
              *
-             * @param address Geocoding 対象の住所
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
              * @return 正常終了しないため返却値なし
              */
             @Override
-            public GeoPoint getLatLng(String address) {
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
                 throw geocodingException;
             }
         };
-        ReportService reportService = new ReportService(unusedReportRepository(), geocodeService);
+        ReportService reportService = new ReportService(
+            unusedReportRepository(),
+            geocodeService,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -205,19 +250,33 @@ class ReportServiceTest {
     void logsDatabaseSaveStageAndSafeReportFieldsOnce() {
         RuntimeException databaseException = new RuntimeException("DB登録失敗");
         ReportRepository reportRepository = reportRepositoryThrowingOnSave(databaseException);
-        GeocodeService geocodeService = new GeocodeService(new RestTemplate(), new ObjectMapper()) {
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
             /**
              * DB 保存処理まで進めるため、固定の座標情報を返す。
              *
-             * @param address Geocoding 対象の住所
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
             @Override
-            public GeoPoint getLatLng(String address) {
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
                 return new GeoPoint(33.5902, 130.4017);
             }
         };
-        ReportService reportService = new ReportService(reportRepository, geocodeService);
+        ReportService reportService = new ReportService(
+            reportRepository,
+            geocodeService,
+            new AddressNormalizer()
+        );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
@@ -238,6 +297,113 @@ class ReportServiceTest {
         } finally {
             detachListAppender(appender);
         }
+    }
+
+    /**
+     * 番地以降が空欄の場合に、空文字ではなく null が Entity へ設定されて保存されることを確認する。
+     */
+    @Test
+    void savesNullWhenAddressDetailsIsEmpty() {
+        String messageWithEmptyAddressDetails = VALID_REPORT_MESSAGE.replace(
+            "番地以降:1-1",
+            "番地以降:"
+        );
+        AtomicReference<ReportEntity> savedReport = new AtomicReference<>();
+        ReportRepository reportRepository = reportRepositoryCapturingSavedReport(savedReport);
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
+            /**
+             * DB 保存処理まで進めるため、固定の座標情報を返す。
+             *
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
+             * @return テスト用の固定座標
+             */
+            @Override
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
+                return new GeoPoint(33.5902, 130.4017);
+            }
+        };
+        ReportService reportService = new ReportService(
+            reportRepository,
+            geocodeService,
+            new AddressNormalizer()
+        );
+
+        reportService.processReportMessage("line-user-id", messageWithEmptyAddressDetails);
+
+        assertThat(savedReport.get()).isNotNull();
+        assertThat(savedReport.get().getAddressDetails()).isNull();
+    }
+
+    /**
+     * 住所4項目が正規化され、Geocoding とデータベース保存で同じ値を使用することを確認する。
+     */
+    @Test
+    void usesNormalizedAddressItemsForGeocodingAndSave() {
+        String messageWithFullWidthDigits = VALID_REPORT_MESSAGE
+            .replace("都道府県:福岡県", "都道府県:福岡１県")
+            .replace("市区町村:福岡市", "市区町村:福岡２市")
+            .replace("丁目:中央1丁目", "丁目:中央３丁目")
+            .replace("番地以降:1-1", "番地以降:４番地５");
+        AtomicReference<List<String>> geocodedAddressItems = new AtomicReference<>();
+        AtomicReference<ReportEntity> savedReport = new AtomicReference<>();
+        ReportRepository reportRepository = reportRepositoryCapturingSavedReport(savedReport);
+        GeocodeService geocodeService = new GeocodeService(
+                new RestTemplate(),
+                new ObjectMapper(),
+                new GeocodingAddressCandidateGenerator(new AddressNormalizer())) {
+            /**
+             * Geocoding に渡された住所項目を記録し、固定の座標情報を返す。
+             *
+             * @param prefecture 都道府県
+             * @param municipality 市区町村
+             * @param district 丁目
+             * @param addressDetails 番地以降の任意情報
+             * @return テスト用の固定座標
+             */
+            @Override
+            public GeoPoint getLatLng(
+                    String prefecture,
+                    String municipality,
+                    String district,
+                    String addressDetails) {
+                geocodedAddressItems.set(List.of(
+                    prefecture,
+                    municipality,
+                    district,
+                    addressDetails
+                ));
+                return new GeoPoint(33.5902, 130.4017);
+            }
+        };
+        ReportService reportService = new ReportService(
+            reportRepository,
+            geocodeService,
+            new AddressNormalizer()
+        );
+
+        reportService.processReportMessage("line-user-id", messageWithFullWidthDigits);
+
+        assertThat(geocodedAddressItems.get()).containsExactly(
+            "福岡1県",
+            "福岡2市",
+            "中央3丁目",
+            "4-5"
+        );
+        assertThat(savedReport.get()).isNotNull();
+        assertThat(savedReport.get().getPrefecture()).isEqualTo("福岡1県");
+        assertThat(savedReport.get().getMunicipality()).isEqualTo("福岡2市");
+        assertThat(savedReport.get().getDistrict()).isEqualTo("中央3丁目");
+        assertThat(savedReport.get().getAddressDetails()).isEqualTo("4-5");
     }
 
     /**
@@ -268,6 +434,28 @@ class ReportServiceTest {
             (proxy, method, args) -> {
                 if (method.getName().equals("saveAndFlush")) {
                     throw exception;
+                }
+                throw new AssertionError("想定外のRepositoryメソッド呼び出しです: " + method.getName());
+            }
+        );
+    }
+
+    /**
+     * 保存対象の Entity を記録し、その Entity を返す ReportRepository を生成する。
+     *
+     * @param savedReport 保存対象の Entity を記録する参照
+     * @return 保存成功を再現する ReportRepository
+     */
+    private ReportRepository reportRepositoryCapturingSavedReport(
+            AtomicReference<ReportEntity> savedReport) {
+        return (ReportRepository) Proxy.newProxyInstance(
+            ReportRepository.class.getClassLoader(),
+            new Class<?>[]{ReportRepository.class},
+            (proxy, method, args) -> {
+                if (method.getName().equals("saveAndFlush")) {
+                    ReportEntity report = (ReportEntity) args[0];
+                    savedReport.set(report);
+                    return report;
                 }
                 throw new AssertionError("想定外のRepositoryメソッド呼び出しです: " + method.getName());
             }

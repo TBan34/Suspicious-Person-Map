@@ -4,6 +4,7 @@ import com.example.backend.common.constant.CommonConst;
 import com.example.backend.common.constant.ReportProcessingStageEnum;
 import com.example.backend.common.util.DateUtils;
 import com.example.backend.entity.ReportEntity;
+import com.example.backend.exception.GeocodingException;
 import com.example.backend.exception.ReportProcessingException;
 import com.example.backend.model.GeoPoint;
 import com.example.backend.repository.ReportRepository;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.text.Normalizer;
 
 /**
  * 不審者情報周りのサービスロジック
@@ -32,7 +32,6 @@ public class ReportService {
         String municipality,
         String district,
         String addressDetails,
-        String geocodingAddress,
         String summary
     ) {}
 
@@ -49,6 +48,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
+    private final AddressNormalizer addressNormalizer;
 
     /**
      * LINE から受信した不審者情報を検証・変換し、座標とともにデータベースへ登録する。
@@ -62,7 +62,7 @@ public class ReportService {
         try {
             validateInput(userId, text);
             ParsedReportData reportData = transformReportMessage(text);
-            GeoPoint location = geocode(reportData.geocodingAddress());
+            GeoPoint location = geocode(reportData);
             ReportEntity report = createReport(userId, reportData, location);
             saveReport(report);
         } catch (ReportProcessingException e) {
@@ -111,17 +111,22 @@ public class ReportService {
         try {
             List<String> tags = extractLineToMultiple(text, REPORT_ITEMS.TAG);
             String occurDateText = extractLineToSingle(text, REPORT_ITEMS.OCCUR_DATE);
-            String prefecture = extractLineToSingle(text, REPORT_ITEMS.PREFECTURE);
-            String municipality = extractLineToSingle(text, REPORT_ITEMS.MUNICIPALITY);
-            String district = extractLineToSingle(text, REPORT_ITEMS.DISTRICT);
-            String addressDetails = extractLineToSingle(text, REPORT_ITEMS.ADDRESS_DETAILS);
+            String prefecture = addressNormalizer.normalize(
+                extractLineToSingle(text, REPORT_ITEMS.PREFECTURE)
+            );
+            String municipality = addressNormalizer.normalize(
+                extractLineToSingle(text, REPORT_ITEMS.MUNICIPALITY)
+            );
+            String district = addressNormalizer.normalize(
+                extractLineToSingle(text, REPORT_ITEMS.DISTRICT)
+            );
+            String addressDetails = addressNormalizer.normalize(
+                extractLineToSingle(text, REPORT_ITEMS.ADDRESS_DETAILS)
+            );
             String summary = extractLineToSingle(text, REPORT_ITEMS.SUMMARY);
 
             LocalDateTime occurDate = parseOccurDate(occurDateText);
             addressCheck(prefecture, municipality, district);
-
-            String address = buildAddress(prefecture, municipality, district, addressDetails);
-            String geocodingAddress = normalizeAddress(address);
 
             return new ParsedReportData(
                 tags,
@@ -130,7 +135,6 @@ public class ReportService {
                 municipality,
                 district,
                 addressDetails,
-                geocodingAddress,
                 summary
             );
         } catch (ReportProcessingException e) {
@@ -167,17 +171,29 @@ public class ReportService {
     /**
      * 住所を Geocoding して座標情報を取得し、失敗時の処理情報を例外へ設定する。
      *
-     * @param address Geocoding 対象の住所
+     * @param reportData 抽出済みの住所項目を含む不審者情報
      * @return 住所に対応する座標情報
      */
-    private GeoPoint geocode(String address) {
+    private GeoPoint geocode(ParsedReportData reportData) {
         try {
-            return geocodeService.getLatLng(address);
+            return geocodeService.getLatLng(
+                reportData.prefecture(),
+                reportData.municipality(),
+                reportData.district(),
+                reportData.addressDetails()
+            );
+        } catch (GeocodingException e) {
+            throw new ReportProcessingException(
+                ReportProcessingStageEnum.GEOCODING,
+                "address",
+                e.getAddress(),
+                e
+            );
         } catch (Exception e) {
             throw new ReportProcessingException(
                 ReportProcessingStageEnum.GEOCODING,
                 "address",
-                address,
+                "not_available",
                 e
             );
         }
@@ -366,52 +382,4 @@ public class ReportService {
         }
     }
 
-    /**
-     * 住所の各項目を Geocoding 用の一つの住所文字列へ結合する。
-     *
-     * @param prefecture 都道府県
-     * @param municipality 市区町村
-     * @param district 丁目
-     * @param addressDetails 番地以降の任意情報
-     * @return 結合した住所
-     */
-    private String buildAddress(String prefecture, String municipality, String district, String addressDetails) {
-
-        // GeocodeService.getLatLng()にて、マップピン留め用の座標情報を取得するために住所情報を結合する。
-        StringBuilder sb = new StringBuilder();
-        sb.append(prefecture);
-        sb.append(municipality);
-        sb.append(district);
-        
-        if (StringUtils.isNotBlank(addressDetails)) {
-            sb.append(addressDetails);
-        }
-        
-        return sb.toString();
-    }
-
-    /**
-     * 住所の空白や文字幅を統一し、Geocoding 用の形式へ正規化する。
-     *
-     * @param address 正規化対象の住所
-     * @return 正規化した住所。入力が null または空文字の場合は null
-     */
-    private String normalizeAddress(String address) {
-
-        if (StringUtils.isEmpty(address)) {
-            return null;
-        }
-
-        // 1) 前後の空白・改行除去
-        address = address.trim();
-
-        // 2) 全角英数字・記号を半角寄せ（３→3、－→- など）
-        address = Normalizer.normalize(address, Normalizer.Form.NFKC);
-
-        // 3) 空白の除去
-        address.replace(" ", "");
-        address.replace("　", "");
-
-        return address;
-    }
 }
