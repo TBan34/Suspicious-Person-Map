@@ -23,7 +23,7 @@ LINE から受信した不審者情報を住所解析・Geocoding して保存�
 - 外部連携: LINE Messaging API、Google Geocoding API
 - 主なデータフロー: LINE Webhook → メッセージ解析 → Geocoding → DB 保存 → REST API → 地図表示
 
-データベース環境は [`docs/development/database.md`](docs/development/database.md)、LINE 連携は [`docs/integrations/line-messaging-api.md`](docs/integrations/line-messaging-api.md)、Google Maps・Geocoding 連携は [`docs/integrations/google-maps.md`](docs/integrations/google-maps.md)、既知の問題の切り分けは [`docs/operations/troubleshooting.md`](docs/operations/troubleshooting.md) を参照する。文書を参照するときは、実際に存在することを確認する。
+データベース環境は [`docs/development/database.md`](docs/development/database.md)、LINE 連携は [`docs/integrations/line-messaging-api.md`](docs/integrations/line-messaging-api.md)、Google Maps・Geocoding 連携は [`docs/integrations/google-maps.md`](docs/integrations/google-maps.md)、セキュリティとプライバシーは [`docs/security/security-and-privacy.md`](docs/security/security-and-privacy.md)、既知の問題の切り分けは [`docs/operations/troubleshooting.md`](docs/operations/troubleshooting.md) を参照する。文書を参照するときは、実際に存在することを確認する。
 
 ## 作業の基本方針
 
@@ -88,6 +88,8 @@ JavaScript の `const` は「再代入しない変数」の宣言にも使用す
 より詳細な言語別規約が必要になった場合は `docs/development/coding-guidelines.md` を正本として作成し、この節には要点とリンクだけを残す。
 
 ## セキュリティとプライバシー
+
+詳細な情報区分と取り扱いは [`docs/security/security-and-privacy.md`](docs/security/security-and-privacy.md) を正本とする。
 
 このプロジェクトでは、LINE ユーザー ID と認証情報を非公開情報として扱う。一方、住所、座標、発生日時、タグ、概要は、地図上で公開する不審者情報であり、個人情報または秘密情報としては扱わない。
 

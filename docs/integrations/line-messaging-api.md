@@ -124,4 +124,5 @@ Geocoding
 - [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java`](../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java)
 - [`../../backend/pom.xml`](../../backend/pom.xml)
+- [`../security/security-and-privacy.md`](../security/security-and-privacy.md)
 - [`../operations/troubleshooting.md`](../operations/troubleshooting.md)

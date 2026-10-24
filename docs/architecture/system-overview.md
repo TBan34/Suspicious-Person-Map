@@ -214,6 +214,8 @@ H2 は日常的な動作確認と自動テストを容易にするために使�
 
 ## セキュリティとプライバシーの境界
 
+情報区分と取り扱いの正本は [`../security/security-and-privacy.md`](../security/security-and-privacy.md) を参照する。
+
 - LINE Webhook は、JSON 解析や保存より前に未加工の本文で署名を検証する。
 - API キー、チャネルシークレット、DB パスワードはソースコードや Git 管理対象ファイルへ保存しない。
 - CORS（ブラウザからバックエンド API を呼び出せる Web サイトの Origin を制限する仕組み）は、`/api/**` に対し、環境別に設定した Origin のみを許可する。
