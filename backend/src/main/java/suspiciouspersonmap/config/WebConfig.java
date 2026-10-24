@@ -18,8 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
      *
      * @param allowedOrigins CORS で許可する Origin の一覧
      */
-    public WebConfig(
-            @Value("${app.cors.allowed-origins}") String[] allowedOrigins) {
+    public WebConfig(@Value("${app.cors.allowed-origins}") String[] allowedOrigins) {
         this.allowedOrigins = allowedOrigins.clone();
     }
 

@@ -85,7 +85,7 @@ API キーは、`GOOGLE_GEOCODING_API_KEY` 環境変数を優先し、未設定�
 
 このスクリプトは、現在のバックエンドと同じ `address`、`language=ja`、`region=jp` を URL エンコードして送信し、API の JSON レスポンスを表示する。`jq` がインストールされている場合は自動的に整形する。確認時は `status` に加え、`formatted_address`、`types`、`partial_match`、`geometry.location`、`geometry.location_type` を見る。
 
-これは 1 件の住所に対する API 単体の確認であり、バックエンドによる住所正規化、候補の段階的な短縮、`partial_match` と `route` の除外は実行しない。出力には住所と座標が含まれ得るため、そのままログや共有資料へ転載しない。
+これは 1 件の住所に対する API 単体の確認であり、バックエンドによる住所正規化、候補の段階的な短縮、`partial_match` と `route` の除外は実行しない。出力される住所と座標は、このプロジェクトでは公開対象の不審者情報として扱う。
 
 ### Google Maps JavaScript API
 
@@ -200,7 +200,7 @@ for (JsonNode result : results) {
 - `GEOMETRIC_CENTER` は道路や領域などの幾何学的中心を示すもので、建物の入口や正確な地点を保証しない。
 - 現在は `formatted_address` と `geometry.location_type` を候補の採用条件に使用していない。
 - 入力時点の住所の細かさが一定ではないため、フォールバック回数や段階だけでは座標精度を表せない。現在はフォールバック段階をデータベースへ保存しない。
-- 実住所と座標は機微な位置情報であるため、取得精度を上げるだけでなく保存・公開する精度も検討する必要がある。
+- 住所と座標は公開対象の不審者情報である。表示する地点が入力内容と大きくずれないよう、取得精度を確認する必要がある。
 
 Google の定義では、`GEOMETRIC_CENTER` は道路のようなポリラインや地域のようなポリゴンの幾何学的中心を示す。用途に応じて許容する `location_type` を今後定義する。
 
