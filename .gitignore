@@ -7,3 +7,6 @@ node_modules/
 
 # ローカル用のドキュメント整備メモ
 /docs/documentation-plan.md
+
+# 案件固有のローカル作業計画
+/docs/tasks/
