@@ -1,6 +1,7 @@
 package suspiciouspersonmap.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashSet;
@@ -56,7 +57,7 @@ public class GeocodingAddressCandidateGenerator {
                 .matcher(normalizedAddressDetails)
                 .replaceAll("");
 
-            while (!shortenedAddressDetails.isEmpty()) {
+            while (!StringUtils.isEmpty(shortenedAddressDetails)) {
                 candidates.add(baseAddress + shortenedAddressDetails);
                 Matcher matcher = TRAILING_NUMERIC_SEGMENT_PATTERN.matcher(shortenedAddressDetails);
                 if (!matcher.matches()) {

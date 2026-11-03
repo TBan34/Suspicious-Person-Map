@@ -12,13 +12,21 @@ public class ReportProcessingException extends RuntimeException {
     private final String value;
 
     /**
+     * 入力値や原因例外を保持しない不審者情報処理例外を生成する。
+     * @param stage 例外が発生した処理段階
+     * @param item 例外の調査対象となる項目名
+     */
+    protected ReportProcessingException(ReportProcessingStageEnum stage, String item) {
+        this(stage, item, null, null);
+    }
+
+    /**
      * 原因例外とログ出力用の処理情報を保持する不審者情報処理例外を生成する。
-     * レスポンス: 処理段階・対象項目・値・原因例外を保持する ReportProcessingException インスタンス。
      *
      * @param stage 例外が発生した処理段階
      * @param item 例外の調査対象となる項目名
      * @param value ログ出力を許可する対象項目の値または状態
-     * @param cause 不審者情報の処理中に発生した原因例外
+     * @param cause 不審者情報の処理中に発生した原因例外。保持しない場合はnull
      */
     public ReportProcessingException(
             ReportProcessingStageEnum stage,

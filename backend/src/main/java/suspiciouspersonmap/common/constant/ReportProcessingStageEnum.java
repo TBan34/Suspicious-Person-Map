@@ -14,7 +14,6 @@ public enum ReportProcessingStageEnum {
 
     /**
      * 処理段階とログ出力用の値を対応付ける。
-     * レスポンス: 指定されたログ値を持つ ReportProcessingStageEnum インスタンス。
      *
      * @param logValue ログへ出力する処理段階の値
      */

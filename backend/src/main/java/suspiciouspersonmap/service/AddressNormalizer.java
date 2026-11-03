@@ -1,5 +1,6 @@
 package suspiciouspersonmap.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.Normalizer;
@@ -37,7 +38,7 @@ public class AddressNormalizer {
             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
             .toString();
 
-        if (withoutWhitespace.isEmpty()) {
+        if (StringUtils.isEmpty(withoutWhitespace)) {
             return null;
         }
 

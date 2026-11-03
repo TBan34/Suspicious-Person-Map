@@ -154,21 +154,13 @@ https://YOUR_PUBLIC_HOST/line/callback
 
 公開するのは React の `5173` 番ポートではなく、Webhook を受信する Spring Boot の `8080` 番ポートである。
 
-動作確認では、LINE から次の形式のメッセージを送信する。
+動作確認では、LINEから一次情報の自然文を送信できる。次はテスト用の例であり、実際の事案ではない。
 
 ```text
-タグ: 不審な声かけ、つきまとい
-日時: 2025年1月1日午後6時30分
-都道府県: 福岡県
-市区町村: 福岡市中央区
-丁目: 天神1丁目
-番地以降: 1-1
-概要: 通行人への不審な声かけ
+2025年1月1日午後6時30分ころ、福岡市中央区天神1丁目1番付近の路上で、通行人が見知らぬ男から「何年生？」と声をかけられる事案が発生しました。
 ```
 
-![LINE メッセージの入力例](../../images/Message.png)
-
-署名検証、Webhook の処理経路、LINE Developers 側の設定については [`../integrations/line-messaging-api.md`](../integrations/line-messaging-api.md) を参照する。
+日時・住所・概要は必須で、発生日時はWebhookイベント時刻以前とする。対応する文章の範囲と拒否条件、署名検証、Webhook の処理経路、LINE Developers 側の設定については [`../integrations/line-messaging-api.md`](../integrations/line-messaging-api.md) を参照する。
 
 ## 8. 変更を検証する
 

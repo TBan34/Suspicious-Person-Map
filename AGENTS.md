@@ -54,7 +54,10 @@ LINE から受信した不審者情報を住所解析・Geocoding して保存�
 
 - 定数は `UPPER_SNAKE_CASE` とする。
 - 変数、引数、関数・メソッドは `lowerCamelCase` とする。
+- フラグを表す変数・フィールド・引数は、名前の末尾に `Flg` を付ける（例: `validationRequiredFlg`）。
 - クラス、インターフェース、React コンポーネントは `UpperCamelCase` とする。
+- Java の列挙型（enum）は、型名の末尾に `Enum` を付ける（例: `ReportParseErrorEnum`）。
+- 定数をまとめるクラスは、クラス名の末尾に `Const` を付ける（例: `CommonConst`）。定数フィールドを持つだけの業務クラスやユーティリティクラスは対象にしない。
 - Java のパッケージ名は小文字とする。
 - CSS クラス名は既存実装に合わせて kebab-case とする。
 - 略語だけの名前や、意味の曖昧な短縮名を避け、役割が分かる名前を付ける。
@@ -69,6 +72,7 @@ JavaScript の `const` は「再代入しない変数」の宣言にも使用す
 
 ### Java / Spring Boot
 
+- 文字列の空判定は Apache Commons Lang の `StringUtils` を使用する。`null`・空文字・空白のみを空として扱う場合は `StringUtils.isBlank(value)`、空白のみを許容し `null`・空文字だけを空として扱う場合は `StringUtils.isEmpty(value)` とする。否定判定には `!` または対応する `isNotBlank` / `isNotEmpty` を使用する。空白の判定は `Character.isWhitespace` に従うため、特殊な空白文字の正規化は別途行う。コレクションの空判定や、`null` と空文字を区別する処理は対象外とし、既存の受け入れ条件を変えない。
 - Controller は HTTP 入出力、Service は業務処理、Repository は永続化に責務を分ける。
 - 外部 API 呼び出しとメッセージ解析は、単体テストで差し替え可能な境界を保つ。
 - 入力値を検証し、例外を握りつぶさない。クライアント向け応答に内部例外や API キーなどの認証情報を露出しない。

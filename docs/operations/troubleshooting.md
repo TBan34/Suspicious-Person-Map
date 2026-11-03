@@ -54,6 +54,12 @@ Spring Boot（local-h2）→ ngrok
 | Webhook がアプリケーションへ届かない              | ngrok が React の `5173` 番ポートへ転送している           | `ngrok http` の対象ポートを確認する                                                  | Webhook を受信する Spring Boot の `8080` 番ポートを公開する                |
 | Spring Boot が起動しない                          | Profile未指定、ローカル実値の不足、または選択したDBへ接続できない | `SPRING_PROFILES_ACTIVE`、`config/application-local-secrets.properties`、起動ログを確認する | 通常は `local-h2` を指定し、PostgreSQL確認時だけコンテナを起動して `local-postgres` を指定する |
 
+### 解析エラーの確認
+
+`stage=report_message_transformation`のERRORログには`error`（種別）、`item`（項目）、`reason`（安全な原因）が出る。`item=eventTimestamp`なら発生日時の文面ではなくWebhookイベントの時刻を確認する。拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。解析失敗時はGeocodingと保存を行わず、LINEへの返信も行わない。
+
+ログは標準出力へ出るが、現在`error.log`への保存設定はない。Webhook本文・署名・ユーザーIDを追加ログで出力して調査しない。
+
 ### 切り分けのポイント
 
 - `404` は転送先へ到達していても、URL のパスに対応する受信口がない場合に発生する。

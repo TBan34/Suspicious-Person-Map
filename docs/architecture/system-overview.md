@@ -8,7 +8,7 @@
 
 ## システムの役割と範囲
 
-本システムは、LINE の定型テキストから不審者情報を取り込み、住所を座標へ変換して保存し、Web 画面の一覧・地図・詳細欄へ表示する。
+本システムは、LINE へ送信された不審者情報の文章を取り込み、住所を座標へ変換して保存し、Web 画面の一覧・地図・詳細欄へ表示する。
 
 現在の実装が担当する範囲は次のとおりである。
 
@@ -34,7 +34,7 @@ flowchart LR
     geocoding[Google Geocoding API]
     maps[Google Maps JavaScript API]
 
-    reporter -->|定型メッセージを送信| line
+    reporter -->|不審者情報の文章を送信| line
     line -->|署名付き HTTPS Webhook| backend
     backend -->|住所候補を送信| geocoding
     geocoding -->|緯度・経度| backend
@@ -63,6 +63,7 @@ flowchart LR
     subgraph service[Service]
         signature[LineWebhookSignatureVerifier]
         reportService[ReportService]
+        parser[ReportMessageParser]
         normalizer[AddressNormalizer]
         candidates[GeocodingAddressCandidateGenerator]
         geocode[GeocodeService]
@@ -76,7 +77,8 @@ flowchart LR
 
     lineController --> signature
     lineController --> reportService
-    reportService --> normalizer
+    reportService --> parser
+    parser --> normalizer
     reportService --> geocode
     geocode --> candidates
     geocode -->|HTTPS| google[Google Geocoding API]
@@ -88,9 +90,10 @@ flowchart LR
 
 | コンポーネント | 主な責務 |
 | --- | --- |
-| `LineController` | `POST /line/callback` を受信し、署名検証後に Webhook JSON からユーザー ID とテキストを取り出す |
+| `LineController` | `POST /line/callback` を受信し、署名検証後に Webhook JSON からユーザー ID・テキスト・イベント時刻を取り出す |
 | `LineWebhookSignatureVerifier` | 未加工のリクエスト本文と `X-Line-Signature` をチャネルシークレットで検証する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
+| `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
 | `AddressNormalizer` | 住所項目の Unicode・空白・数字間の区切り表記を正規化する |
 | `GeocodingAddressCandidateGenerator` | 必須の住所部分を保ったまま、詳細なものから順に Geocoding 用候補を生成する |
 | `GeocodeService` | Google Geocoding API を呼び、部分一致や道路として解釈された候補を除外して座標を返す |
@@ -129,13 +132,13 @@ sequenceDiagram
     participant Google as Google Geocoding API
     participant DB as H2 または PostgreSQL
 
-    User->>LINE: 定型テキストを送信
+    User->>LINE: 不審者情報の文章を送信
     LINE->>Controller: POST /line/callback
     Controller->>Verifier: 未加工本文と署名を検証
     alt 署名が不正
         Controller-->>LINE: 400 Bad Request
     else 署名が有効
-        Controller->>Service: ユーザー ID とテキスト
+        Controller->>Service: ユーザー ID・テキスト・イベント時刻
         Service->>Service: 検証・項目抽出・日時変換・住所正規化
         Service->>Geocode: 正規化済みの住所項目
         Geocode->>Generator: 住所候補を生成
@@ -151,7 +154,7 @@ sequenceDiagram
     end
 ```
 
-登録処理は Webhook リクエスト内で同期的に実行される。Geocoding で有効な座標を得られない場合や保存に失敗した場合は `ReportProcessingException` として処理され、報告は保存されず、Webhook へ `500 Internal Server Error` を返す。
+登録処理は Webhook リクエスト内で同期的に実行される。解析エラーではGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。対応形式・拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。Geocoding で有効な座標を得られない場合や保存に失敗した場合は `ReportProcessingException` として処理され、報告は保存されず、Webhook へ `500 Internal Server Error` を返す。
 
 `ReportService.processReportMessage` には `@Transactional` が付いている。現在の処理順は Geocoding の完了後に 1 件を保存するため、外部 API の呼び出し結果とデータベース保存が別々の報告として残る構成ではない。ただし、外部の Geocoding API 自体はデータベーストランザクションの対象外である。
 
@@ -226,7 +229,7 @@ H2 は日常的な動作確認と自動テストを容易にするために使�
 
 ## 現在の主な制約
 
-- 報告登録は LINE の定型メッセージだけを入口とし、Web 画面からは登録できない。
+- 報告登録は LINE の不審者情報メッセージを入口とし、Web 画面からは登録できない。
 - Webhook 内で Geocoding と保存を同期実行するため、外部 API の応答時間や障害が Webhook の処理結果へ直接影響する。
 - 報告取得 API は全件取得のみで、ページング、期間・地域による絞り込み、並び順の明示指定はない。
 - 住所を短縮した候補で取得した座標は、入力された詳細住所そのものを示すとは限らない。採用した候補や座標精度は保存していない。

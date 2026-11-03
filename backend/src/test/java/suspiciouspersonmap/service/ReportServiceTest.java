@@ -25,15 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReportServiceTest {
 
-    private static final String VALID_REPORT_MESSAGE = """
-        タグ:声かけ
-        日時:2025年9月8日午後6時10分
-        都道府県:福岡県
-        市区町村:福岡市
-        丁目:中央1丁目
-        番地以降:1-1
-        概要:テスト用の詳細な概要
-        """;
+    private static final String VALID_REPORT_MESSAGE = "2025年9月8日午後6時10分、"
+        + "福岡市中央区天神1丁目1-1付近の路上で、女性が男から「何年生？」と声をかけられました。";
 
     /**
      * 入力値検証の失敗時に対象項目と値の状態だけが記録され、メッセージ本文が記録されないことを確認する。
@@ -43,12 +36,12 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             unusedReportRepository(),
             null,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage(null, VALID_REPORT_MESSAGE))
+            assertThatThrownBy(() -> reportService.processReportMessage(null, VALID_REPORT_MESSAGE, 1792897200000L))
                 .isInstanceOf(ReportProcessingException.class)
                 .hasCauseInstanceOf(IllegalArgumentException.class);
 
@@ -65,10 +58,10 @@ class ReportServiceTest {
     }
 
     /**
-     * 発生日時の変換失敗時に項目名と不正値が記録され、LINE ユーザー ID 等が記録されないことを確認する。
+     * 発生日時の変換失敗時に種別と項目が記録され、不正値やLINEユーザーIDが記録されないことを確認する。
      */
     @Test
-    void logsReportMessageTransformationItemAndInvalidValue() {
+    void logsReportMessageTransformationWithoutInvalidValue() {
         String invalidOccurDate = "invalid-occur-date";
         String invalidMessage = VALID_REPORT_MESSAGE.replace(
             "2025年9月8日午後6時10分",
@@ -77,12 +70,12 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             unusedReportRepository(),
             null,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", invalidMessage))
+            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", invalidMessage, 1792897200000L))
                 .isInstanceOf(ReportProcessingException.class);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -90,51 +83,53 @@ class ReportServiceTest {
             assertThat(errorEvents.get(0).getFormattedMessage())
                 .contains("stage=report_message_transformation")
                 .contains("item=occurDate")
-                .contains("value=" + invalidOccurDate)
+                .contains("error=INVALID_DATETIME")
+                .doesNotContain(invalidOccurDate)
                 .doesNotContain("line-user-id")
-                .doesNotContain("テスト用の詳細な概要");
+                .doesNotContain("何年生");
         } finally {
             detachListAppender(appender);
         }
     }
 
     /**
-     * 必須住所項目の不足時に、不足した項目と値の状態が検証箇所で記録されることを確認する。
+     * 住所欠落時に、住所項目と住所不正の種別が記録されることを確認する。
      */
     @Test
     void logsMissingAddressItemAtValidationPoint() {
-        String messageWithoutMunicipality = VALID_REPORT_MESSAGE.replace("市区町村:福岡市\n", "");
+        String messageWithoutAddress = VALID_REPORT_MESSAGE.replace("福岡市中央区天神1丁目1-1", "");
         ReportService reportService = new ReportService(
             unusedReportRepository(),
             null,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", messageWithoutMunicipality))
+            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", messageWithoutAddress, 1792897200000L))
                 .isInstanceOf(ReportProcessingException.class)
-                .hasCauseInstanceOf(IllegalArgumentException.class);
+                .hasNoCause();
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
             assertThat(errorEvents).hasSize(1);
             assertThat(errorEvents.get(0).getFormattedMessage())
                 .contains("stage=report_message_transformation")
-                .contains("item=municipality")
-                .contains("value=null")
+                .contains("item=address")
+                .contains("error=INVALID_ADDRESS")
                 .doesNotContain("line-user-id")
-                .doesNotContain("テスト用の詳細な概要");
+                .doesNotContain("何年生");
         } finally {
             detachListAppender(appender);
         }
     }
 
     /**
-     * 登録用 Entity の生成失敗時に処理段階と例外が記録され、機微な値が記録されないことを確認する。
+     * タグを判定できない文章をEntity生成前の解析段階で拒否し、入力値をログへ記録しないことを確認する。
      */
     @Test
-    void logsReportCreationStageWithoutSensitiveValues() {
-        String messageWithoutTags = VALID_REPORT_MESSAGE.replace("タグ:声かけ\n", "");
+    void rejectsUnclassifiableReportBeforeGeocoding() {
+        String unclassifiableMessage = VALID_REPORT_MESSAGE.replace(
+            "女性が男から「何年生？」と声をかけられました。", "男が歩いていました。");
         GeocodeService geocodeService = new GeocodeService(
                 new RestTemplate(),
                 new ObjectMapper(),
@@ -160,22 +155,23 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             unusedReportRepository(),
             geocodeService,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", messageWithoutTags))
+            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", unclassifiableMessage, 1792897200000L))
                 .isInstanceOf(ReportProcessingException.class)
-                .hasCauseInstanceOf(NullPointerException.class);
+                .hasNoCause();
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
             assertThat(errorEvents).hasSize(1);
             assertThat(errorEvents.get(0).getFormattedMessage())
-                .contains("stage=report_creation")
+                .contains("stage=report_message_transformation")
+                .contains("error=UNCLASSIFIABLE_TAG")
                 .doesNotContain("line-user-id")
-                .doesNotContain("テスト用の詳細な概要");
-            assertThat(errorEvents.get(0).getThrowableProxy()).isNotNull();
+                .doesNotContain("男が歩いていました");
+            assertThat(errorEvents.get(0).getThrowableProxy()).isNull();
         } finally {
             detachListAppender(appender);
         }
@@ -215,14 +211,14 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             unusedReportRepository(),
             geocodeService,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
             ReportProcessingException exception = assertThrows(
                 ReportProcessingException.class,
-                () -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE)
+                () -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L)
             );
 
             assertThat(exception.getStage()).isEqualTo(ReportProcessingStageEnum.GEOCODING);
@@ -275,12 +271,12 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             reportRepository,
             geocodeService,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE))
+            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L))
                 .isInstanceOf(ReportProcessingException.class)
                 .hasCause(databaseException);
 
@@ -290,9 +286,9 @@ class ReportServiceTest {
                 .contains("stage=database_save")
                 .contains("occurDate=2025-09-08T18:10")
                 .contains("prefecture=福岡県")
-                .contains("municipality=福岡市")
+                .contains("municipality=福岡市中央区")
                 .doesNotContain("line-user-id")
-                .doesNotContain("テスト用の詳細な概要");
+                .doesNotContain("何年生");
             assertThat(errorEvents.get(0).getThrowableProxy()).isNotNull();
         } finally {
             detachListAppender(appender);
@@ -300,14 +296,11 @@ class ReportServiceTest {
     }
 
     /**
-     * 番地以降が空欄の場合に、空文字ではなく null が Entity へ設定されて保存されることを確認する。
+     * 番地以降がない場合に、空文字ではなく null が Entity へ設定されて保存されることを確認する。
      */
     @Test
-    void savesNullWhenAddressDetailsIsEmpty() {
-        String messageWithEmptyAddressDetails = VALID_REPORT_MESSAGE.replace(
-            "番地以降:1-1",
-            "番地以降:"
-        );
+    void savesNullWhenAddressDetailsIsMissing() {
+        String messageWithoutAddressDetails = VALID_REPORT_MESSAGE.replace("天神1丁目1-1", "天神1丁目");
         AtomicReference<ReportEntity> savedReport = new AtomicReference<>();
         ReportRepository reportRepository = reportRepositoryCapturingSavedReport(savedReport);
         GeocodeService geocodeService = new GeocodeService(
@@ -335,10 +328,10 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             reportRepository,
             geocodeService,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
 
-        reportService.processReportMessage("line-user-id", messageWithEmptyAddressDetails);
+        reportService.processReportMessage("line-user-id", messageWithoutAddressDetails, 1792897200000L);
 
         assertThat(savedReport.get()).isNotNull();
         assertThat(savedReport.get().getAddressDetails()).isNull();
@@ -350,10 +343,7 @@ class ReportServiceTest {
     @Test
     void usesNormalizedAddressItemsForGeocodingAndSave() {
         String messageWithFullWidthDigits = VALID_REPORT_MESSAGE
-            .replace("都道府県:福岡県", "都道府県:福岡１県")
-            .replace("市区町村:福岡市", "市区町村:福岡２市")
-            .replace("丁目:中央1丁目", "丁目:中央３丁目")
-            .replace("番地以降:1-1", "番地以降:４番地５");
+            .replace("天神1丁目1-1", "天神１丁目４番地５");
         AtomicReference<List<String>> geocodedAddressItems = new AtomicReference<>();
         AtomicReference<ReportEntity> savedReport = new AtomicReference<>();
         ReportRepository reportRepository = reportRepositoryCapturingSavedReport(savedReport);
@@ -388,21 +378,21 @@ class ReportServiceTest {
         ReportService reportService = new ReportService(
             reportRepository,
             geocodeService,
-            new AddressNormalizer()
+            ReportParserTestSupport.createParser()
         );
 
-        reportService.processReportMessage("line-user-id", messageWithFullWidthDigits);
+        reportService.processReportMessage("line-user-id", messageWithFullWidthDigits, 1792897200000L);
 
         assertThat(geocodedAddressItems.get()).containsExactly(
-            "福岡1県",
-            "福岡2市",
-            "中央3丁目",
+            "福岡県",
+            "福岡市中央区",
+            "天神1丁目",
             "4-5"
         );
         assertThat(savedReport.get()).isNotNull();
-        assertThat(savedReport.get().getPrefecture()).isEqualTo("福岡1県");
-        assertThat(savedReport.get().getMunicipality()).isEqualTo("福岡2市");
-        assertThat(savedReport.get().getDistrict()).isEqualTo("中央3丁目");
+        assertThat(savedReport.get().getPrefecture()).isEqualTo("福岡県");
+        assertThat(savedReport.get().getMunicipality()).isEqualTo("福岡市中央区");
+        assertThat(savedReport.get().getDistrict()).isEqualTo("天神1丁目");
         assertThat(savedReport.get().getAddressDetails()).isEqualTo("4-5");
     }
 

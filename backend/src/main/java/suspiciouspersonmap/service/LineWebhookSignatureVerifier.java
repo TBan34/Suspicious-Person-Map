@@ -2,6 +2,7 @@ package suspiciouspersonmap.service;
 
 import com.linecorp.bot.parser.LineSignatureValidator;
 import com.linecorp.bot.parser.SignatureValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class LineWebhookSignatureVerifier {
      */
     public LineWebhookSignatureVerifier(
             @Value("${line.bot.channelSecret}") String channelSecret) {
-        if (channelSecret == null || channelSecret.isBlank()) {
+        if (StringUtils.isBlank(channelSecret)) {
             throw new IllegalArgumentException("LINEチャネルシークレットは必須です");
         }
 
@@ -39,7 +40,7 @@ public class LineWebhookSignatureVerifier {
      * @return 署名が存在して本文と一致する場合は true、それ以外は false
      */
     public boolean isValid(String body, String signature) {
-        if (body == null || signature == null || signature.isBlank()) {
+        if (body == null || StringUtils.isBlank(signature)) {
             return false;
         }
 
