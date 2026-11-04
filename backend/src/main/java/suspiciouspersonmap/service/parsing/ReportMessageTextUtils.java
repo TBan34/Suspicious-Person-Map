@@ -3,8 +3,8 @@ package suspiciouspersonmap.service.parsing;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import suspiciouspersonmap.common.constant.ReportParseErrorEnum;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
+import suspiciouspersonmap.exception.ReportException;
 
 /** 不審者情報メッセージの解析で共通して使用する文字列処理。 */
 final class ReportMessageTextUtils {
@@ -36,10 +36,10 @@ final class ReportMessageTextUtils {
      */
     static void validateNoHtmlCharacterReference(
             String text,
-            ReportParseErrorEnum errorType,
+            ReportErrorEnum errorType,
             String item) {
         if (text != null && HTML_CHARACTER_REFERENCE_PATTERN.matcher(text).find()) {
-            throw new ReportParseException(errorType, item, "HTML文字参照が含まれています");
+            throw new ReportException(errorType, item, "HTML文字参照が含まれています");
         }
     }
 
@@ -70,8 +70,8 @@ final class ReportMessageTextUtils {
      * 概要の切り出し位置を特定できない場合の例外を生成する。
      * @return 概要境界不正例外
      */
-    private static ReportParseException invalidSummaryBoundary() {
-        return new ReportParseException(ReportParseErrorEnum.INVALID_SUMMARY, "summary", "概要の境界が不明です");
+    private static ReportException invalidSummaryBoundary() {
+        return new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要の境界が不明です");
     }
 
     /**
@@ -80,10 +80,10 @@ final class ReportMessageTextUtils {
      * @return 検証・整形済みの概要
      */
     static String formatSummary(String summaryText) {
-        validateNoHtmlCharacterReference(summaryText, ReportParseErrorEnum.INVALID_SUMMARY, "summary");
+        validateNoHtmlCharacterReference(summaryText, ReportErrorEnum.INVALID_SUMMARY, "summary");
         String formattedSummary = PARAGRAPH_BREAK_PATTERN.matcher(summaryText.strip()).replaceAll(" ");
         if (StringUtils.isBlank(formattedSummary)) {
-            throw new ReportParseException(ReportParseErrorEnum.INVALID_SUMMARY, "summary", "概要が指定されていません");
+            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要が指定されていません");
         }
         return formattedSummary;
     }

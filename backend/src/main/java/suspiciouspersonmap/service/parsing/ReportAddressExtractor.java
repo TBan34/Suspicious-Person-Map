@@ -1,14 +1,14 @@
 package suspiciouspersonmap.service.parsing;
 
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_SUMMARY;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.AddressNormalizer;
 
 /** 日時より後ろの文章から、福岡市内の住所と概要の開始位置を抽出する。 */
@@ -173,7 +173,7 @@ public class ReportAddressExtractor {
             return summaryStartIndex + 1;
         }
         if (StringUtils.isBlank(summaryCandidate)) {
-            throw new ReportParseException(INVALID_SUMMARY, "summary", "概要が指定されていません");
+            throw new ReportException(INVALID_SUMMARY, "summary", "概要が指定されていません");
         }
 
         Matcher locationDetailMatcher = LOCATION_DETAIL_PATTERN.matcher(summaryCandidate);
@@ -181,7 +181,7 @@ public class ReportAddressExtractor {
             throw invalidAddress();
         }
         if (StringUtils.isBlank(summaryCandidate.substring(locationDetailMatcher.end()))) {
-            throw new ReportParseException(INVALID_SUMMARY, "summary", "事案内容が指定されていません");
+            throw new ReportException(INVALID_SUMMARY, "summary", "事案内容が指定されていません");
         }
         // 施設名等は概要に残すため、場所補足の開始位置をそのまま返す。
         return summaryStartIndex;
@@ -228,7 +228,7 @@ public class ReportAddressExtractor {
      * 入力値を含まない住所不正例外を生成する。
      * @return 住所不正例外
      */
-    private ReportParseException invalidAddress() {
-        return new ReportParseException(INVALID_ADDRESS, "address", "住所または概要との境界が不正です");
+    private ReportException invalidAddress() {
+        return new ReportException(INVALID_ADDRESS, "address", "住所または概要との境界が不正です");
     }
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.model.ParsedReportMessage;
 import suspiciouspersonmap.service.ReportParserTestSupport;
 
@@ -41,7 +41,7 @@ class ReportMessageParserCorpusTest {
                 dynamicTests.add(DynamicTest.dynamicTest(testCase.path("id").asText(), () -> {
                     ReportMessageParser parser = ReportParserTestSupport.createParser();
                     if (testCase.has("expectedError")) {
-                        ReportParseException error = assertThrows(ReportParseException.class,
+                        ReportException error = assertThrows(ReportException.class,
                             () -> parser.parse(testCase.path("input").asText(), eventTimestamp));
                         assertThat(error.getErrorType().name())
                             .isEqualTo(testCase.path("expectedError").asText());

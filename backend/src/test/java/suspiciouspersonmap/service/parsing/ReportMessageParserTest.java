@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import suspiciouspersonmap.common.constant.ReportParseErrorEnum;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.model.ParsedReportMessage;
 import suspiciouspersonmap.service.ReportParserTestSupport;
 
@@ -14,10 +14,10 @@ import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_DATETIME;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_SUMMARY;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.UNSUPPORTED_DATETIME;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_DATETIME;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNSUPPORTED_DATETIME;
 
 /** 実サンプルにない日時・住所・概要の境界条件を検証する。 */
 class ReportMessageParserTest {
@@ -106,12 +106,12 @@ class ReportMessageParserTest {
     void rejectsMissingOrInvalidEventTime() {
         String message = createReportMessage("1月4日午後9時");
         for (Long timestamp : new Long[]{null, -1L, Long.MAX_VALUE}) {
-            ReportParseException error = assertThrows(ReportParseException.class, () -> parser.parse(message, timestamp));
+            ReportException error = assertThrows(ReportException.class, () -> parser.parse(message, timestamp));
             assertThat(error.getErrorType()).isEqualTo(INVALID_DATETIME);
             assertThat(error.getItem()).isEqualTo("eventTimestamp");
-            assertThat(error.getReason()).startsWith("イベントタイムスタンプが");
+            assertThat(error.getDetail()).startsWith("イベントタイムスタンプが");
             assertThat(error.getCause()).isNull();
-            assertThat(error.getReason()).doesNotContain(message);
+            assertThat(error.getDetail()).doesNotContain(message);
         }
     }
 
@@ -201,9 +201,9 @@ class ReportMessageParserTest {
      * @param message 入力
      * @param expectedError 期待するエラー種別
      */
-    private void reject(String message, ReportParseErrorEnum expectedError) {
-        ReportParseException error = assertThrows(
-            ReportParseException.class, () -> parser.parse(message, EVENT_TIMESTAMP));
+    private void reject(String message, ReportErrorEnum expectedError) {
+        ReportException error = assertThrows(
+            ReportException.class, () -> parser.parse(message, EVENT_TIMESTAMP));
         assertThat(error.getErrorType()).isEqualTo(expectedError);
     }
 }

@@ -145,7 +145,7 @@ API キーは、`GOOGLE_GEOCODING_API_KEY` 環境変数を優先し、未設定�
 
 各住所候補で `status` が `OK` 以外の場合、または採用できる結果がない場合は、次の住所候補を呼び出す。採用できる結果が見つかった時点で `GeoPoint` を返す。許容するすべての候補で取得できない場合は、理由を示すメッセージと最初の住所候補を持つ `GeocodingException` を送出し、登録を中止する。
 
-Geocoding に使用する住所文字列は `GeocodingAddressCandidateGenerator` が生成する候補を正本とし、`ReportService` では住所項目を再結合しない。API 呼び出し中に失敗した場合はそのとき使用していた住所候補を、すべての候補が不採用だった場合は最初の住所候補を `GeocodingException` が保持し、`ReportService` がその値を `ReportProcessingException` へ引き継ぐ。これにより、API 用とは別に調査用住所を組み立てる処理をなくし、住所表記の食い違いを防ぐ。
+Geocoding に使用する住所文字列は `GeocodingAddressCandidateGenerator` が生成する候補を正本とし、`ReportService` では住所項目を再結合しない。API 呼び出し中に失敗した場合はそのとき使用していた住所候補を、すべての候補が不採用だった場合は最初の住所候補を `GeocodingException` が保持し、`ReportService` がその値を `ReportException` へ引き継ぐ。これにより、API 用とは別に調査用住所を組み立てる処理をなくし、住所表記の食い違いを防ぐ。
 
 ## 7. 実装例
 

@@ -7,15 +7,18 @@ import ch.qos.logback.core.read.ListAppender;
 import suspiciouspersonmap.common.constant.ReportProcessingStageEnum;
 import suspiciouspersonmap.entity.ReportEntity;
 import suspiciouspersonmap.exception.GeocodingException;
-import suspiciouspersonmap.exception.ReportProcessingException;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.model.GeoPoint;
 import suspiciouspersonmap.repository.ReportRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Proxy;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,7 +45,7 @@ class ReportServiceTest {
 
         try {
             assertThatThrownBy(() -> reportService.processReportMessage(null, VALID_REPORT_MESSAGE, 1792897200000L))
-                .isInstanceOf(ReportProcessingException.class)
+                .isInstanceOf(ReportException.class)
                 .hasCauseInstanceOf(IllegalArgumentException.class);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -76,7 +79,7 @@ class ReportServiceTest {
 
         try {
             assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", invalidMessage, 1792897200000L))
-                .isInstanceOf(ReportProcessingException.class);
+                .isInstanceOf(ReportException.class);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
             assertThat(errorEvents).hasSize(1);
@@ -107,7 +110,7 @@ class ReportServiceTest {
 
         try {
             assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", messageWithoutAddress, 1792897200000L))
-                .isInstanceOf(ReportProcessingException.class)
+                .isInstanceOf(ReportException.class)
                 .hasNoCause();
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -161,7 +164,7 @@ class ReportServiceTest {
 
         try {
             assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", unclassifiableMessage, 1792897200000L))
-                .isInstanceOf(ReportProcessingException.class)
+                .isInstanceOf(ReportException.class)
                 .hasNoCause();
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -216,14 +219,14 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            ReportProcessingException exception = assertThrows(
-                ReportProcessingException.class,
+            ReportException exception = assertThrows(
+                ReportException.class,
                 () -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L)
             );
 
             assertThat(exception.getStage()).isEqualTo(ReportProcessingStageEnum.GEOCODING);
             assertThat(exception.getItem()).isEqualTo("address");
-            assertThat(exception.getValue()).isEqualTo("福岡県福岡市中央1丁目1-1");
+            assertThat(exception.getDetail()).isEqualTo("福岡県福岡市中央1丁目1-1");
             assertThat(exception).hasCause(geocodingException);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -240,11 +243,20 @@ class ReportServiceTest {
     }
 
     /**
-     * DB 保存失敗時に処理段階・安全な登録項目・例外が一度だけ記録されることを確認する。
+     * DB保存失敗時に安全な構造化情報だけが一度記録され、登録値と原因チェーンが出ないことを確認する。
      */
     @Test
-    void logsDatabaseSaveStageAndSafeReportFieldsOnce() {
-        RuntimeException databaseException = new RuntimeException("DB登録失敗");
+    void logsSafeDatabaseErrorDetailsOnce() {
+        SQLException sqlException = new SQLException(
+            "失敗行にline-user-idが含まれるメッセージ", "23502");
+        ConstraintViolationException constraintViolationException = new ConstraintViolationException(
+            "SQLと登録値を含み得るメッセージ",
+            sqlException,
+            "insert into reports ...",
+            "reports_created_not_null"
+        );
+        DataIntegrityViolationException databaseException = new DataIntegrityViolationException(
+            "登録値を含み得るメッセージ", constraintViolationException);
         ReportRepository reportRepository = reportRepositoryThrowingOnSave(databaseException);
         GeocodeService geocodeService = new GeocodeService(
                 new RestTemplate(),
@@ -277,19 +289,27 @@ class ReportServiceTest {
 
         try {
             assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L))
-                .isInstanceOf(ReportProcessingException.class)
+                .isInstanceOf(ReportException.class)
                 .hasCause(databaseException);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
             assertThat(errorEvents).hasSize(1);
             assertThat(errorEvents.get(0).getFormattedMessage())
                 .contains("stage=database_save")
-                .contains("occurDate=2025-09-08T18:10")
-                .contains("prefecture=福岡県")
-                .contains("municipality=福岡市中央区")
+                .contains("item=database")
+                .contains("exceptionType=DataIntegrityViolationException")
+                .contains("rootCauseType=SQLException")
+                .contains("sqlState=23502")
+                .contains("constraint=reports_created_not_null")
+                .doesNotContain("失敗行に")
+                .doesNotContain("SQLと登録値を")
+                .doesNotContain("登録値を含み得る")
+                .doesNotContain("occurDate=")
+                .doesNotContain("prefecture=")
+                .doesNotContain("municipality=")
                 .doesNotContain("line-user-id")
                 .doesNotContain("何年生");
-            assertThat(errorEvents.get(0).getThrowableProxy()).isNotNull();
+            assertThat(errorEvents.get(0).getThrowableProxy()).isNull();
         } finally {
             detachListAppender(appender);
         }

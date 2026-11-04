@@ -202,7 +202,7 @@ class LineControllerTest {
      * ReportService で記録済みの例外を重複出力せず、内部情報を含まない固定レスポンスを返すことを確認する。
      */
     @Test
-    void doesNotLogReportProcessingExceptionTwice() {
+    void doesNotLogReportExceptionTwice() {
         GeocodeService geocodeService = mock(GeocodeService.class);
         when(geocodeService.getLatLng(anyString(), anyString(), anyString(), any()))
             .thenThrow(new RuntimeException("Geocoding失敗"));

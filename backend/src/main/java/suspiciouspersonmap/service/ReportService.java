@@ -1,20 +1,27 @@
 package suspiciouspersonmap.service;
 
-import suspiciouspersonmap.common.constant.CommonConst;
-import suspiciouspersonmap.common.constant.ReportProcessingStageEnum;
-import suspiciouspersonmap.model.ParsedReportMessage;
-import suspiciouspersonmap.exception.ReportParseException;
-import suspiciouspersonmap.service.parsing.ReportMessageParser;
-import suspiciouspersonmap.entity.ReportEntity;
-import suspiciouspersonmap.exception.GeocodingException;
-import suspiciouspersonmap.exception.ReportProcessingException;
-import suspiciouspersonmap.model.GeoPoint;
-import suspiciouspersonmap.repository.ReportRepository;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.DATABASE_SAVE_FAILED;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.GEOCODING_FAILED;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_INPUT;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.REPORT_CREATION_FAILED;
+
+import java.sql.SQLException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.PropertyValueException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import suspiciouspersonmap.common.constant.CommonConst;
+import suspiciouspersonmap.common.constant.ReportProcessingStageEnum;
+import suspiciouspersonmap.entity.ReportEntity;
+import suspiciouspersonmap.exception.GeocodingException;
+import suspiciouspersonmap.exception.ReportException;
+import suspiciouspersonmap.model.GeoPoint;
+import suspiciouspersonmap.model.ParsedReportMessage;
+import suspiciouspersonmap.repository.ReportRepository;
+import suspiciouspersonmap.service.parsing.ReportMessageParser;
 
 /**
  * 不審者情報周りのサービスロジック
@@ -23,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+    private static final String DATABASE_ITEM = "database";
+    private static final String NOT_AVAILABLE = "not_available";
+
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
     private final ReportMessageParser reportMessageParser;
@@ -43,14 +53,28 @@ public class ReportService {
             GeoPoint location = geocode(parsedMessage);
             ReportEntity report = createReport(userId, parsedMessage, location);
             saveReport(report);
-        } catch (ReportParseException e) {
-            log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
-                e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getReason());
+        } catch (ReportException e) {
+            logProcessingFailure(e);
             throw e;
-        } catch (ReportProcessingException e) {
-            log.error("不審者情報の処理に失敗しました。stage={}, item={}, value={}",
-                e.getStage().getLogValue(), e.getItem(), e.getValue(), e);
-            throw e;
+        }
+    }
+
+    /**
+     * 不審者情報の処理エラーを、例外の種類と処理段階に応じてログへ記録する。
+     * 解析例外とDB保存例外は、入力値の漏えいを避けるため専用のログ形式を使用する。
+     * レスポンス: なし。
+     *
+     * @param exception 不審者情報の処理中に発生した例外
+     */
+    private void logProcessingFailure(ReportException exception) {
+        switch (exception.getStage()) {
+            case REPORT_MESSAGE_TRANSFORMATION ->
+                log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
+                    exception.getStage().getLogValue(), exception.getErrorType(),
+                    exception.getItem(), exception.getDetail());
+            case DATABASE_SAVE -> logDatabaseSaveFailure(exception.getCause());
+            default -> log.error("不審者情報の処理に失敗しました。stage={}, item={}, value={}",
+                exception.getStage().getLogValue(), exception.getItem(), exception.getDetail(), exception);
         }
     }
 
@@ -64,8 +88,8 @@ public class ReportService {
     private void validateInput(String userId, String text) {
         if (StringUtils.isBlank(userId)) {
             IllegalArgumentException exception = new IllegalArgumentException("ユーザーIDは必須です");
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.INPUT_VALIDATION,
+            throw new ReportException(
+                INVALID_INPUT,
                 "userId",
                 describeMissingValueState(userId),
                 exception
@@ -74,8 +98,8 @@ public class ReportService {
 
         if (StringUtils.isBlank(text)) {
             IllegalArgumentException exception = new IllegalArgumentException("不審者情報は必須です");
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.INPUT_VALIDATION,
+            throw new ReportException(
+                INVALID_INPUT,
                 "reportMessage",
                 describeMissingValueState(text),
                 exception
@@ -98,15 +122,15 @@ public class ReportService {
                 parsedMessage.addressDetails()
             );
         } catch (GeocodingException e) {
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.GEOCODING,
+            throw new ReportException(
+                GEOCODING_FAILED,
                 "address",
                 e.getAddress(),
                 e
             );
         } catch (Exception e) {
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.GEOCODING,
+            throw new ReportException(
+                GEOCODING_FAILED,
                 "address",
                 "not_available",
                 e
@@ -157,8 +181,8 @@ public class ReportService {
 
             return report;
         } catch (Exception e) {
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.REPORT_CREATION,
+            throw new ReportException(
+                REPORT_CREATION_FAILED,
                 "report",
                 "not_created",
                 e
@@ -178,16 +202,105 @@ public class ReportService {
             ReportEntity saved = reportRepository.saveAndFlush(report);
             log.info("不審者情報の登録に成功しました。reportId={}", saved.getId());
         } catch (Exception e) {
-            String reportValue = "occurDate=" + report.getOccurDate()
-                + ", prefecture=" + report.getPrefecture()
-                + ", municipality=" + report.getMunicipality();
-            throw new ReportProcessingException(
-                ReportProcessingStageEnum.DATABASE_SAVE,
-                "report",
-                reportValue,
+            throw new ReportException(
+                DATABASE_SAVE_FAILED,
+                DATABASE_ITEM,
+                null,
                 e
             );
         }
+    }
+
+    /**
+     * DB保存例外から、登録値を含まない診断情報だけを取得してログへ記録する。
+     * 例外メッセージとスタックトレースは失敗したSQLや登録値を含み得るため出力しない。
+     * レスポンス: なし。
+     *
+     * @param cause DB保存時に発生した原因例外。取得できなかった場合はnull
+     */
+    private void logDatabaseSaveFailure(Throwable cause) {
+        String exceptionType = cause == null
+            ? NOT_AVAILABLE
+            : cause.getClass().getSimpleName();
+
+        log.error("不審者情報のDB保存に失敗しました。stage={}, item={}, exceptionType={}, "
+                + "rootCauseType={}, sqlState={}, constraint={}",
+            ReportProcessingStageEnum.DATABASE_SAVE.getLogValue(),
+            findDatabaseErrorItem(cause),
+            exceptionType,
+            findRootCauseType(cause),
+            findSqlState(cause),
+            findConstraintName(cause));
+    }
+
+    /**
+     * DB保存例外の原因チェーンから、Hibernateが特定したEntityのプロパティ名を探す。
+     *
+     * @param cause DB保存時に発生した原因例外
+     * @return プロパティ名。特定できない場合はdatabase
+     */
+    private String findDatabaseErrorItem(Throwable cause) {
+        for (Throwable currentCause = cause;
+                currentCause != null;
+                currentCause = currentCause.getCause()) {
+            if (currentCause instanceof PropertyValueException propertyValueException
+                    && StringUtils.isNotBlank(propertyValueException.getPropertyName())) {
+                return propertyValueException.getPropertyName();
+            }
+        }
+        return DATABASE_ITEM;
+    }
+
+    /**
+     * DB保存例外の原因チェーンから、JDBC例外のSQLStateを探す。
+     *
+     * @param cause DB保存時に発生した原因例外
+     * @return SQLState。取得できない場合はnot_available
+     */
+    private String findSqlState(Throwable cause) {
+        for (Throwable currentCause = cause;
+                currentCause != null;
+                currentCause = currentCause.getCause()) {
+            if (currentCause instanceof SQLException sqlException
+                    && StringUtils.isNotBlank(sqlException.getSQLState())) {
+                return sqlException.getSQLState();
+            }
+        }
+        return NOT_AVAILABLE;
+    }
+
+    /**
+     * DB保存例外の原因チェーンから、Hibernateが保持するDB制約名を探す。
+     *
+     * @param cause DB保存時に発生した原因例外
+     * @return DB制約名。取得できない場合はnot_available
+     */
+    private String findConstraintName(Throwable cause) {
+        for (Throwable currentCause = cause;
+                currentCause != null;
+                currentCause = currentCause.getCause()) {
+            if (currentCause instanceof ConstraintViolationException constraintViolationException
+                    && StringUtils.isNotBlank(constraintViolationException.getConstraintName())) {
+                return constraintViolationException.getConstraintName();
+            }
+        }
+        return NOT_AVAILABLE;
+    }
+
+    /**
+     * DB保存例外の原因チェーンを末端までたどり、最深部の例外種別を取得する。
+     *
+     * @param cause DB保存時に発生した原因例外
+     * @return 最深部の例外のクラス名。取得できない場合はnot_available
+     */
+    private String findRootCauseType(Throwable cause) {
+        String rootCauseType = NOT_AVAILABLE;
+        for (Throwable currentCause = cause;
+                currentCause != null;
+                currentCause = currentCause.getCause()) {
+            rootCauseType = currentCause.getClass().getSimpleName();
+        }
+        return rootCauseType;
     }
 
     /**

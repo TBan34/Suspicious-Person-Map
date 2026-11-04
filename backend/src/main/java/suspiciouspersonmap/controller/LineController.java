@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import suspiciouspersonmap.exception.ReportProcessingException;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
 import suspiciouspersonmap.service.ReportService;
 
@@ -73,7 +73,7 @@ public class LineController {
 
             return ResponseEntity.ok("None");
 
-        } catch (ReportProcessingException e) {
+        } catch (ReportException e) {
             // ReportServiceで処理段階と例外を記録済みのため、ここでは重複出力しない。
             return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (JsonProcessingException e) {

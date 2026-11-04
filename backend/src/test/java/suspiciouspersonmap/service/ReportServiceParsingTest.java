@@ -7,12 +7,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_DATETIME;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.INVALID_SUMMARY;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.TOO_MANY_TAGS;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.UNCLASSIFIABLE_TAG;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.UNSUPPORTED_DATETIME;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_DATETIME;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.TOO_MANY_TAGS;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNCLASSIFIABLE_TAG;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNSUPPORTED_DATETIME;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
-import suspiciouspersonmap.common.constant.ReportParseErrorEnum;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.entity.ReportEntity;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.model.GeoPoint;
 import suspiciouspersonmap.repository.ReportRepository;
 
@@ -44,7 +44,7 @@ class ReportServiceParsingTest {
         String testName,
         String message,
         Long eventTimestamp,
-        ReportParseErrorEnum expectedError
+        ReportErrorEnum expectedError
     ) {}
 
     /**
@@ -65,8 +65,8 @@ class ReportServiceParsingTest {
                 appender.start();
                 logger.addAppender(appender);
                 try {
-                    ReportParseException error = assertThrows(
-                        ReportParseException.class,
+                    ReportException error = assertThrows(
+                        ReportException.class,
                         () -> reportService.processReportMessage(
                             "private-line-user-id",
                             rejectionCase.message(),

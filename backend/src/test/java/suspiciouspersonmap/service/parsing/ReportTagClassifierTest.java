@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import suspiciouspersonmap.exception.ReportParseException;
+import suspiciouspersonmap.exception.ReportException;
 import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.TOO_MANY_TAGS;
-import static suspiciouspersonmap.common.constant.ReportParseErrorEnum.UNCLASSIFIABLE_TAG;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.TOO_MANY_TAGS;
+import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNCLASSIFIABLE_TAG;
 
 /** 正規タグの肯定例と、誤分類しやすい文脈の境界を検証する。 */
 class ReportTagClassifierTest {
@@ -81,7 +81,7 @@ class ReportTagClassifierTest {
         "男が「靴」と書かれたシャツを着用していました。"
     })
     void rejectsWhenNoAffirmativeOffenderActionExists(String text) {
-        ReportParseException error = assertThrows(ReportParseException.class, () -> classifier.classify(text));
+        ReportException error = assertThrows(ReportException.class, () -> classifier.classify(text));
         assertThat(error.getErrorType()).isEqualTo(UNCLASSIFIABLE_TAG);
     }
 
@@ -101,9 +101,9 @@ class ReportTagClassifierTest {
     void rejectsMoreThanThreeDistinctTagsAfterDeduplication() {
         assertThat(classifier.classify("男が女性につきまとい追いかけ、下半身を露出して、卑わいな言葉をかけた。"))
             .containsExactlyInAnyOrder("追いかけ", "露出", "わいせつな言動");
-        ReportParseException error = assertThrows(ReportParseException.class, () -> classifier.classify(
+        ReportException error = assertThrows(ReportException.class, () -> classifier.classify(
             "男が女性につきまとい追いかけ、下半身を露出して、卑わいな言葉をかけ、包丁を所持していた。"));
         assertThat(error.getErrorType()).isEqualTo(TOO_MANY_TAGS);
-        assertThat(error.getReason()).isEqualTo("タグ候補が上限の3件を超えています");
+        assertThat(error.getDetail()).isEqualTo("タグ候補が上限の3件を超えています");
     }
 }
