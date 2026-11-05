@@ -1,8 +1,5 @@
 package suspiciouspersonmap.service.parsing;
 
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_DATETIME;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNSUPPORTED_DATETIME;
-
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 
 /** 不審者情報メッセージの先頭にある単一の発生日時を厳密に解析する。 */
@@ -51,7 +49,11 @@ public class DateTimeParser {
      */
     public LocalDateTime toJapanLocalDateTime(Long eventTimestamp) {
         if (eventTimestamp == null) {
-            throw new ReportException(INVALID_DATETIME, "eventTimestamp", "イベントタイムスタンプが指定されていません");
+            throw new ReportException(
+                ReportErrorEnum.INVALID_DATETIME,
+                "eventTimestamp",
+                "イベントタイムスタンプが指定されていません"
+            );
         }
         try {
             LocalDateTime japanDateTime = LocalDateTime.ofInstant(
@@ -62,7 +64,11 @@ public class DateTimeParser {
             }
             return japanDateTime;
         } catch (DateTimeException e) {
-            throw new ReportException(INVALID_DATETIME, "eventTimestamp", "イベントタイムスタンプが不正です");
+            throw new ReportException(
+                ReportErrorEnum.INVALID_DATETIME,
+                "eventTimestamp",
+                "イベントタイムスタンプが不正です"
+            );
         }
     }
 
@@ -89,7 +95,7 @@ public class DateTimeParser {
             LocalTime occurTime = parseOccurTime(dateTimeMatcher);
             LocalDateTime occurDateTime = occurDate.atTime(occurTime);
             if (occurDateTime.isAfter(japanDateTime)) {
-                throw new ReportException(INVALID_DATETIME, "occurDate", "発生日時が未来です");
+                throw new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDate", "発生日時が未来です");
             }
             return new ParsedDateTime(occurDateTime, dateTimeMatcher.end());
         } catch (DateTimeException | NumberFormatException e) {
@@ -106,10 +112,10 @@ public class DateTimeParser {
         String messageWithoutLeadingWhitespace = messageAfterDateTime.stripLeading();
         if (messageWithoutLeadingWhitespace.startsWith("&")) {
             ReportMessageTextUtils.validateNoHtmlCharacterReference(
-                messageAfterDateTime, INVALID_DATETIME, "occurDate");
+                messageAfterDateTime, ReportErrorEnum.INVALID_DATETIME, "occurDate");
         }
         if (UNSUPPORTED_CONTINUATION_PATTERN.matcher(messageAfterDateTime).find()) {
-            throw new ReportException(UNSUPPORTED_DATETIME, "occurDate", "未対応の日時形式です");
+            throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDate", "未対応の日時形式です");
         }
         if (!StringUtils.isEmpty(messageWithoutLeadingWhitespace)
                 && (Character.isDigit(messageWithoutLeadingWhitespace.charAt(0))
@@ -191,6 +197,6 @@ public class DateTimeParser {
      * @return 日時不正例外
      */
     private ReportException invalidDateTime() {
-        return new ReportException(INVALID_DATETIME, "occurDate", "発生日時が不正です");
+        return new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDate", "発生日時が不正です");
     }
 }

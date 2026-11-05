@@ -1,14 +1,12 @@
 package suspiciouspersonmap.service.parsing;
 
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.TOO_MANY_TAGS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNCLASSIFIABLE_TAG;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 
 /** 概要に明記された不審者側の行為を正規タグへ分類し、重複と件数を検証する。 */
@@ -252,10 +250,10 @@ public class ReportTagClassifier {
     private List<String> validateTags(Set<String> classifiedTags) {
         if (classifiedTags.isEmpty()
                 || classifiedTags.stream().anyMatch(tag -> !CANONICAL_TAGS.contains(tag))) {
-            throw new ReportException(UNCLASSIFIABLE_TAG, "tags", "タグを判定できません");
+            throw new ReportException(ReportErrorEnum.UNCLASSIFIABLE_TAG, "tags", "タグを判定できません");
         }
         if (classifiedTags.size() > 3) {
-            throw new ReportException(TOO_MANY_TAGS, "tags", "タグ候補が上限の3件を超えています");
+            throw new ReportException(ReportErrorEnum.TOO_MANY_TAGS, "tags", "タグ候補が上限の3件を超えています");
         }
         return List.copyOf(classifiedTags);
     }

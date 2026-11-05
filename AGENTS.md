@@ -77,6 +77,7 @@ JavaScript の `const` は「再代入しない変数」の宣言にも使用す
 ### Java / Spring Boot
 
 - 文字列の空判定は Apache Commons Lang の `StringUtils` を使用する。`null`・空文字・空白のみを空として扱う場合は `StringUtils.isBlank(value)`、空白のみを許容し `null`・空文字だけを空として扱う場合は `StringUtils.isEmpty(value)` とする。否定判定には `!` または対応する `isNotBlank` / `isNotEmpty` を使用する。空白の判定は `Character.isWhitespace` に従うため、特殊な空白文字の正規化は別途行う。コレクションの空判定や、`null` と空文字を区別する処理は対象外とし、既存の受け入れ条件を変えない。
+- Enum の列挙値は static import せず、Enum クラスを通常 import したうえで、利用箇所に `ReportErrorEnum.INVALID_INPUT` のようにクラス名を明記する。
 - Controller は HTTP 入出力、Service は業務処理、Repository は永続化に責務を分ける。
 - 外部 API 呼び出しとメッセージ解析は、単体テストで差し替え可能な境界を保つ。
 - 入力値を検証し、例外を握りつぶさない。クライアント向け応答に内部例外や API キーなどの認証情報を露出しない。

@@ -1,13 +1,11 @@
 package suspiciouspersonmap.service.parsing;
 
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.AddressNormalizer;
 
@@ -97,7 +95,7 @@ public class ReportAddressExtractor {
 
         // HTML文字参照は、住所と概要のどちら側に存在するか確定してから該当項目の不正にする。
         ReportMessageTextUtils.validateNoHtmlCharacterReference(
-            normalizedMessage.substring(0, addressEndIndex), INVALID_ADDRESS, "address");
+            normalizedMessage.substring(0, addressEndIndex), ReportErrorEnum.INVALID_ADDRESS, "address");
         validateNoAdditionalAddress(normalizedMessage.substring(summaryStartIndex).stripLeading());
 
         String chome = addressMatcher.group("chome") == null
@@ -173,7 +171,7 @@ public class ReportAddressExtractor {
             return summaryStartIndex + 1;
         }
         if (StringUtils.isBlank(summaryCandidate)) {
-            throw new ReportException(INVALID_SUMMARY, "summary", "概要が指定されていません");
+            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要が指定されていません");
         }
 
         Matcher locationDetailMatcher = LOCATION_DETAIL_PATTERN.matcher(summaryCandidate);
@@ -181,7 +179,7 @@ public class ReportAddressExtractor {
             throw invalidAddress();
         }
         if (StringUtils.isBlank(summaryCandidate.substring(locationDetailMatcher.end()))) {
-            throw new ReportException(INVALID_SUMMARY, "summary", "事案内容が指定されていません");
+            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "事案内容が指定されていません");
         }
         // 施設名等は概要に残すため、場所補足の開始位置をそのまま返す。
         return summaryStartIndex;
@@ -229,6 +227,10 @@ public class ReportAddressExtractor {
      * @return 住所不正例外
      */
     private ReportException invalidAddress() {
-        return new ReportException(INVALID_ADDRESS, "address", "住所または概要との境界が不正です");
+        return new ReportException(
+            ReportErrorEnum.INVALID_ADDRESS,
+            "address",
+            "住所または概要との境界が不正です"
+        );
     }
 }

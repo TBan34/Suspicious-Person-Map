@@ -1,10 +1,5 @@
 package suspiciouspersonmap.service;
 
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.DATABASE_SAVE_FAILED;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.GEOCODING_FAILED;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_INPUT;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.REPORT_CREATION_FAILED;
-
 import java.sql.SQLException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +9,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import suspiciouspersonmap.common.constant.CommonConst;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.common.constant.ReportProcessingStageEnum;
 import suspiciouspersonmap.entity.ReportEntity;
 import suspiciouspersonmap.exception.GeocodingException;
@@ -92,7 +88,7 @@ public class ReportService {
         if (StringUtils.isBlank(userId)) {
             IllegalArgumentException exception = new IllegalArgumentException("ユーザーIDは必須です");
             throw new ReportException(
-                INVALID_INPUT,
+                ReportErrorEnum.INVALID_INPUT,
                 "userId",
                 describeMissingValueState(userId),
                 exception
@@ -102,7 +98,7 @@ public class ReportService {
         if (StringUtils.isBlank(text)) {
             IllegalArgumentException exception = new IllegalArgumentException("不審者情報は必須です");
             throw new ReportException(
-                INVALID_INPUT,
+                ReportErrorEnum.INVALID_INPUT,
                 "reportMessage",
                 describeMissingValueState(text),
                 exception
@@ -126,14 +122,14 @@ public class ReportService {
             );
         } catch (GeocodingException e) {
             throw new ReportException(
-                GEOCODING_FAILED,
+                ReportErrorEnum.GEOCODING_FAILED,
                 "address",
                 e.getAddress(),
                 e
             );
         } catch (Exception e) {
             throw new ReportException(
-                GEOCODING_FAILED,
+                ReportErrorEnum.GEOCODING_FAILED,
                 "address",
                 "not_available",
                 e
@@ -185,7 +181,7 @@ public class ReportService {
             return report;
         } catch (Exception e) {
             throw new ReportException(
-                REPORT_CREATION_FAILED,
+                ReportErrorEnum.REPORT_CREATION_FAILED,
                 "report",
                 "not_created",
                 e
@@ -206,7 +202,7 @@ public class ReportService {
             log.info("不審者情報の登録に成功しました。reportId={}", saved.getId());
         } catch (Exception e) {
             throw new ReportException(
-                DATABASE_SAVE_FAILED,
+                ReportErrorEnum.DATABASE_SAVE_FAILED,
                 DATABASE_ITEM,
                 null,
                 e
