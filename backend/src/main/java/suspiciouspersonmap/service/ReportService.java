@@ -31,7 +31,10 @@ import suspiciouspersonmap.service.parsing.ReportMessageParser;
 @RequiredArgsConstructor
 public class ReportService {
     private static final String DATABASE_ITEM = "database";
-    private static final String NOT_AVAILABLE = "not_available";
+    private static final String UNKNOWN_EXCEPTION_TYPE = "unknown";
+    private static final String UNKNOWN_ROOT_CAUSE_TYPE = "unknown";
+    private static final String UNKNOWN_SQL_STATE = "unknown";
+    private static final String UNKNOWN_CONSTRAINT_NAME = "unknown";
 
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
@@ -220,7 +223,7 @@ public class ReportService {
      */
     private void logDatabaseSaveFailure(Throwable cause) {
         String exceptionType = cause == null
-            ? NOT_AVAILABLE
+            ? UNKNOWN_EXCEPTION_TYPE
             : cause.getClass().getSimpleName();
 
         log.error("不審者情報のDB保存に失敗しました。stage={}, item={}, exceptionType={}, "
@@ -255,7 +258,7 @@ public class ReportService {
      * DB保存例外の原因チェーンから、JDBC例外のSQLStateを探す。
      *
      * @param cause DB保存時に発生した原因例外
-     * @return SQLState。取得できない場合はnot_available
+     * @return SQLState。取得できない場合はunknown
      */
     private String findSqlState(Throwable cause) {
         for (Throwable currentCause = cause;
@@ -266,14 +269,14 @@ public class ReportService {
                 return sqlException.getSQLState();
             }
         }
-        return NOT_AVAILABLE;
+        return UNKNOWN_SQL_STATE;
     }
 
     /**
      * DB保存例外の原因チェーンから、Hibernateが保持するDB制約名を探す。
      *
      * @param cause DB保存時に発生した原因例外
-     * @return DB制約名。取得できない場合はnot_available
+     * @return DB制約名。取得できない場合はunknown
      */
     private String findConstraintName(Throwable cause) {
         for (Throwable currentCause = cause;
@@ -284,17 +287,17 @@ public class ReportService {
                 return constraintViolationException.getConstraintName();
             }
         }
-        return NOT_AVAILABLE;
+        return UNKNOWN_CONSTRAINT_NAME;
     }
 
     /**
      * DB保存例外の原因チェーンを末端までたどり、最深部の例外種別を取得する。
      *
      * @param cause DB保存時に発生した原因例外
-     * @return 最深部の例外のクラス名。取得できない場合はnot_available
+     * @return 最深部の例外のクラス名。取得できない場合はunknown
      */
     private String findRootCauseType(Throwable cause) {
-        String rootCauseType = NOT_AVAILABLE;
+        String rootCauseType = UNKNOWN_ROOT_CAUSE_TYPE;
         for (Throwable currentCause = cause;
                 currentCause != null;
                 currentCause = currentCause.getCause()) {
