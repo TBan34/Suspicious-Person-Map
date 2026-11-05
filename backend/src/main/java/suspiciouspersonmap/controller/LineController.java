@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
 import suspiciouspersonmap.service.ReportService;
@@ -24,8 +25,6 @@ public class LineController {
 
     private static final String BAD_REQUEST_MESSAGE = "Bad Request";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
-    // JSON上の型不正を、Serviceのイベント時刻検証へ渡すための無効値。Unix時間に負数は許可しない。
-    private static final long INVALID_EVENT_TIMESTAMP = -1L;
 
     private final ReportService reportService;
     private final LineWebhookSignatureVerifier lineWebhookSignatureVerifier;
@@ -63,7 +62,15 @@ public class LineController {
                     String text   = event.path("message").path("text").asText(null);
     
                     if (StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(text)) {
-                        Long eventTimestamp = extractEventTimestamp(event);
+                        Long eventTimestamp;
+                        try {
+                            eventTimestamp = extractEventTimestamp(event);
+                        } catch (ReportException e) {
+                            // Serviceへ到達しない入力エラーのため、Controllerで一度だけ記録する。
+                            log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
+                                e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getDetail());
+                            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
+                        }
                         reportService.processReportMessage(userId, text, eventTimestamp);
                     }
     
@@ -87,18 +94,26 @@ public class LineController {
     }
 
     /**
-     * LINEイベントからミリ秒単位のUnix時間を取得する。
-     * 欠落時はnull、整数として扱えない値はServiceで不正と判定できる負数へ変換する。
+     * LINEイベントからミリ秒単位のUnix時間を検証して取得する。
      * @param event LINE WebhookのイベントJSON
-     * @return LINEイベント時刻。欠落時はnull、型・範囲不正時は負数
+     * @return LINEイベント時刻
+     * @throws ReportException イベント時刻が欠落、またはlongの範囲内の整数として取得できない場合
      */
     private Long extractEventTimestamp(JsonNode event) {
         JsonNode timestampNode = event.path("timestamp");
         if (timestampNode.isMissingNode() || timestampNode.isNull()) {
-            return null;
+            throw new ReportException(
+                ReportErrorEnum.INVALID_DATETIME,
+                "eventTimestamp",
+                "イベントタイムスタンプが指定されていません"
+            );
         }
         if (!timestampNode.isIntegralNumber() || !timestampNode.canConvertToLong()) {
-            return INVALID_EVENT_TIMESTAMP;
+            throw new ReportException(
+                ReportErrorEnum.INVALID_DATETIME,
+                "eventTimestamp",
+                "イベントタイムスタンプの型または範囲が不正です"
+            );
         }
         return timestampNode.longValue();
     }

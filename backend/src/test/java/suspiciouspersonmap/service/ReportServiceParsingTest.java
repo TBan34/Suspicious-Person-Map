@@ -7,12 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_DATETIME;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.TOO_MANY_TAGS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNCLASSIFIABLE_TAG;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNSUPPORTED_DATETIME;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -87,8 +81,7 @@ class ReportServiceParsingTest {
                         )
                         .doesNotContain("private-line-user-id", rejectionCase.message());
                     assertThat(errorEvents.get(0).getThrowableProxy()).isNull();
-                    if (rejectionCase.eventTimestamp() == null
-                            || rejectionCase.eventTimestamp() == -1L) {
+                    if (rejectionCase.eventTimestamp() == null) {
                         assertThat(errorEvents.get(0).getFormattedMessage())
                             .contains("item=eventTimestamp", "イベントタイムスタンプが");
                     }
@@ -118,49 +111,47 @@ class ReportServiceParsingTest {
                 "日時不正/" + dateTimeText,
                 VALID_REPORT_MESSAGE.replace("1月4日午後9時", dateTimeText),
                 EVENT_TIMESTAMP,
-                INVALID_DATETIME
+                ReportErrorEnum.INVALID_DATETIME
             ));
         }
         rejectionCases.add(new RejectionCase(
             "期間",
             VALID_REPORT_MESSAGE.replace("1月4日午後9時", "1月4日午後9時から午後10時まで"),
             EVENT_TIMESTAMP,
-            UNSUPPORTED_DATETIME
+            ReportErrorEnum.UNSUPPORTED_DATETIME
         ));
         rejectionCases.add(new RejectionCase(
-            "イベント時刻欠落", VALID_REPORT_MESSAGE, null, INVALID_DATETIME));
-        rejectionCases.add(new RejectionCase(
-            "イベント時刻不正", VALID_REPORT_MESSAGE, -1L, INVALID_DATETIME));
+            "イベント時刻欠落", VALID_REPORT_MESSAGE, null, ReportErrorEnum.INVALID_DATETIME));
         rejectionCases.add(new RejectionCase(
             "概要空",
             VALID_REPORT_MESSAGE.replace("女性が男につきまとわれました。", ""),
             EVENT_TIMESTAMP,
-            INVALID_SUMMARY
+            ReportErrorEnum.INVALID_SUMMARY
         ));
         rejectionCases.add(new RejectionCase(
             "住所不正",
             VALID_REPORT_MESSAGE.replace("福岡市南区", ""),
             EVENT_TIMESTAMP,
-            INVALID_ADDRESS
+            ReportErrorEnum.INVALID_ADDRESS
         ));
         for (String htmlCharacterReference : List.of("&amp;", "&#12354;", "&#x3042;")) {
             rejectionCases.add(new RejectionCase(
                 "日時文字参照",
                 VALID_REPORT_MESSAGE.replace("1月4日", "1月" + htmlCharacterReference + "4日"),
                 EVENT_TIMESTAMP,
-                INVALID_DATETIME
+                ReportErrorEnum.INVALID_DATETIME
             ));
             rejectionCases.add(new RejectionCase(
                 "住所文字参照",
                 VALID_REPORT_MESSAGE.replace("高宮", "高" + htmlCharacterReference + "宮"),
                 EVENT_TIMESTAMP,
-                INVALID_ADDRESS
+                ReportErrorEnum.INVALID_ADDRESS
             ));
             rejectionCases.add(new RejectionCase(
                 "概要文字参照",
                 VALID_REPORT_MESSAGE + htmlCharacterReference,
                 EVENT_TIMESTAMP,
-                INVALID_SUMMARY
+                ReportErrorEnum.INVALID_SUMMARY
             ));
         }
         rejectionCases.add(new RejectionCase(
@@ -170,13 +161,13 @@ class ReportServiceParsingTest {
                 "男が女性を追いかけ、下半身を露出し、卑わいな言葉をかけ、包丁を持っていました。"
             ),
             EVENT_TIMESTAMP,
-            TOO_MANY_TAGS
+            ReportErrorEnum.TOO_MANY_TAGS
         ));
         rejectionCases.add(new RejectionCase(
             "分類不能",
             VALID_REPORT_MESSAGE.replace("女性が男につきまとわれました。", "男が歩いていました。"),
             EVENT_TIMESTAMP,
-            UNCLASSIFIABLE_TAG
+            ReportErrorEnum.UNCLASSIFIABLE_TAG
         ));
         return rejectionCases;
     }

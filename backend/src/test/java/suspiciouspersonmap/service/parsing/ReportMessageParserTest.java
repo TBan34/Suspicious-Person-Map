@@ -14,10 +14,6 @@ import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_ADDRESS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_DATETIME;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.INVALID_SUMMARY;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNSUPPORTED_DATETIME;
 
 /** 実サンプルにない日時・住所・概要の境界条件を検証する。 */
 class ReportMessageParserTest {
@@ -65,8 +61,8 @@ class ReportMessageParserTest {
     void parsesWithoutACommaBetweenDateAndAddress() {
         String message = createReportMessage("1月4日午後9時").replace("9時、", "9時");
         assertThat(parser.parse(message, EVENT_TIMESTAMP).district()).isEqualTo("高宮1丁目");
-        reject(message.replace("高宮", "高&amp;宮"), INVALID_ADDRESS);
-        reject(createReportMessage("1月4日午後9時&amp;"), INVALID_DATETIME);
+        reject(message.replace("高宮", "高&amp;宮"), ReportErrorEnum.INVALID_ADDRESS);
+        reject(createReportMessage("1月4日午後9時&amp;"), ReportErrorEnum.INVALID_DATETIME);
     }
 
     /**
@@ -81,7 +77,7 @@ class ReportMessageParserTest {
         "令和0年1月4日午後9時", "2026年1月4日午後1時30分半", "2026年1月4日午後1時 30分"
     })
     void rejectsInvalidDateTimes(String dateTimeText) {
-        reject(createReportMessage(dateTimeText), INVALID_DATETIME);
+        reject(createReportMessage(dateTimeText), ReportErrorEnum.INVALID_DATETIME);
     }
 
     /**
@@ -96,23 +92,21 @@ class ReportMessageParserTest {
         "1月4日午後1時、1月5日午後2時"
     })
     void rejectsUnsupportedDateTimeRanges(String dateTimeText) {
-        reject(createReportMessage(dateTimeText), UNSUPPORTED_DATETIME);
+        reject(createReportMessage(dateTimeText), ReportErrorEnum.UNSUPPORTED_DATETIME);
     }
 
     /**
-     * 基準時刻の欠落・不正を拒否し、入力値が診断情報へ流出しないことを確認する。
+     * 基準時刻の欠落を拒否し、入力値が診断情報へ流出しないことを確認する。
      */
     @Test
-    void rejectsMissingOrInvalidEventTime() {
+    void rejectsMissingEventTime() {
         String message = createReportMessage("1月4日午後9時");
-        for (Long timestamp : new Long[]{null, -1L, Long.MAX_VALUE}) {
-            ReportException error = assertThrows(ReportException.class, () -> parser.parse(message, timestamp));
-            assertThat(error.getErrorType()).isEqualTo(INVALID_DATETIME);
-            assertThat(error.getItem()).isEqualTo("eventTimestamp");
-            assertThat(error.getDetail()).startsWith("イベントタイムスタンプが");
-            assertThat(error.getCause()).isNull();
-            assertThat(error.getDetail()).doesNotContain(message);
-        }
+        ReportException error = assertThrows(ReportException.class, () -> parser.parse(message, null));
+        assertThat(error.getErrorType()).isEqualTo(ReportErrorEnum.INVALID_DATETIME);
+        assertThat(error.getItem()).isEqualTo("eventTimestamp");
+        assertThat(error.getDetail()).isEqualTo("イベントタイムスタンプが指定されていません");
+        assertThat(error.getCause()).isNull();
+        assertThat(error.getDetail()).doesNotContain(message);
     }
 
     /**
@@ -163,7 +157,10 @@ class ReportMessageParserTest {
         "福岡市南区", "福岡市南区西鉄井尻駅", "男は福岡市南区高宮1丁目11番",
         "福岡市南区高宮1丁目、福岡市中央区春吉2丁目", "福岡市南区高宮1丁目、春吉2丁目"})
     void rejectsInvalidAddresses(String address) {
-        reject("1月4日午後9時、" + address + "付近の路上で、女性が男につきまとわれました。", INVALID_ADDRESS);
+        reject(
+            "1月4日午後9時、" + address + "付近の路上で、女性が男につきまとわれました。",
+            ReportErrorEnum.INVALID_ADDRESS
+        );
     }
 
     /**
@@ -171,8 +168,8 @@ class ReportMessageParserTest {
      */
     @Test
     void rejectsEmptySummary() {
-        reject("1月4日午後9時、福岡市南区高宮1丁目の路上で、", INVALID_SUMMARY);
-        reject("1月4日午後9時、福岡市南区高宮1丁目の公園で、", INVALID_SUMMARY);
+        reject("1月4日午後9時、福岡市南区高宮1丁目の路上で、", ReportErrorEnum.INVALID_SUMMARY);
+        reject("1月4日午後9時、福岡市南区高宮1丁目の公園で、", ReportErrorEnum.INVALID_SUMMARY);
     }
 
     /**
@@ -181,10 +178,16 @@ class ReportMessageParserTest {
     @ParameterizedTest
     @ValueSource(strings = {"&amp;", "&#12354;", "&#x3042;"})
     void rejectsHtmlReferencesByField(String entity) {
-        reject(createReportMessage("1月" + entity + "4日午後9時"), INVALID_DATETIME);
-        reject(createReportMessage("1月4日午後9時").replace("高宮", "高" + entity + "宮"), INVALID_ADDRESS);
-        reject(createReportMessage("1月4日午後9時") + entity, INVALID_SUMMARY);
-        reject(createReportMessage("1月4日午後9時").replace("付近の路上", "の" + entity + "公園"), INVALID_SUMMARY);
+        reject(createReportMessage("1月" + entity + "4日午後9時"), ReportErrorEnum.INVALID_DATETIME);
+        reject(
+            createReportMessage("1月4日午後9時").replace("高宮", "高" + entity + "宮"),
+            ReportErrorEnum.INVALID_ADDRESS
+        );
+        reject(createReportMessage("1月4日午後9時") + entity, ReportErrorEnum.INVALID_SUMMARY);
+        reject(
+            createReportMessage("1月4日午後9時").replace("付近の路上", "の" + entity + "公園"),
+            ReportErrorEnum.INVALID_SUMMARY
+        );
     }
 
     /**

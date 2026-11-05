@@ -46,6 +46,7 @@ public class DateTimeParser {
      * LINEイベントのUnix時間を日本標準時へ変換する。
      * @param eventTimestamp LINEイベントのUnix時間（ミリ秒）。欠落時はnull
      * @return イベント発生時刻を日本標準時へ変換した日時
+     * @throws ReportException イベント時刻が欠落、または日本標準時へ変換できない場合
      */
     public LocalDateTime toJapanLocalDateTime(Long eventTimestamp) {
         if (eventTimestamp == null) {
@@ -56,13 +57,8 @@ public class DateTimeParser {
             );
         }
         try {
-            LocalDateTime japanDateTime = LocalDateTime.ofInstant(
+            return LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(eventTimestamp), JAPAN_TIME_ZONE);
-            // LINEのイベント時刻として負数は許可せず、DBで扱えない5桁年以上の年も拒否する。
-            if (eventTimestamp < 0 || japanDateTime.getYear() > 9999) {
-                throw new DateTimeException("out of range");
-            }
-            return japanDateTime;
         } catch (DateTimeException e) {
             throw new ReportException(
                 ReportErrorEnum.INVALID_DATETIME,

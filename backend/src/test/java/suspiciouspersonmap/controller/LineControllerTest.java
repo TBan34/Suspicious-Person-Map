@@ -54,10 +54,10 @@ class LineControllerTest {
         """;
 
     /**
-     * 署名済みイベントの時刻欠落・型不正・範囲外を日時不正として一度だけ記録し、保存しないことを確認する。
+     * 署名済みイベントの時刻欠落・型不正・Long範囲外をControllerで一度だけ記録し、保存しないことを確認する。
      */
     @ParameterizedTest
-    @ValueSource(strings = {"missing", "null", "\"1792897200000\"", "1.5", "true", "{}", "-1", "9223372036854775808"})
+    @ValueSource(strings = {"missing", "null", "\"1792897200000\"", "1.5", "true", "{}", "9223372036854775808"})
     void rejectsInvalidSignedEventTimestamp(String timestampJson) {
         String body = timestampJson.equals("missing")
             ? VALID_WEBHOOK_BODY.replace("\"timestamp\": 1792897200000,", "")
@@ -71,15 +71,35 @@ class LineControllerTest {
             ResponseEntity<String> response = controller.callback(body, createSignature(body));
             assertThat(response.getStatusCode().value()).isEqualTo(500);
             assertThat(response.getBody()).isEqualTo("Internal Server Error");
-            assertThat(errorEvents(serviceAppender)).hasSize(1);
-            assertThat(errorEvents(serviceAppender).get(0).getFormattedMessage())
-                .contains("error=INVALID_DATETIME", "item=eventTimestamp", "イベントタイムスタンプが")
+            assertThat(errorEvents(serviceAppender)).isEmpty();
+            assertThat(errorEvents(controllerAppender)).hasSize(1);
+            assertThat(errorEvents(controllerAppender).get(0).getFormattedMessage())
+                .contains("error=INVALID_DATETIME", "item=eventTimestamp", "イベントタイムスタンプ")
                 .doesNotContain("line-user-id", body, createSignature(body));
-            assertThat(errorEvents(controllerAppender)).isEmpty();
+            assertThat(errorEvents(controllerAppender).get(0).getThrowableProxy()).isNull();
         } finally {
             detachListAppender(ReportService.class, serviceAppender);
             detachListAppender(LineController.class, controllerAppender);
         }
+    }
+
+    /**
+     * JSON上でLong型として取得できるイベント時刻は、値による日時範囲を制限せずServiceへ渡すことを確認する。
+     *
+     * @param eventTimestamp LINEイベント時刻としてServiceへ渡すLong値
+     */
+    @ParameterizedTest
+    @ValueSource(longs = {-1L, Long.MAX_VALUE})
+    void passesLongEventTimestampToService(long eventTimestamp) {
+        String body = VALID_WEBHOOK_BODY.replace("1792897200000", Long.toString(eventTimestamp));
+        RecordingReportService reportService = new RecordingReportService();
+        LineController controller = createController(reportService);
+
+        ResponseEntity<String> response = controller.callback(body, createSignature(body));
+
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(reportService.callCount).isEqualTo(1);
+        assertThat(reportService.receivedTimestamp).isEqualTo(eventTimestamp);
     }
 
     /**

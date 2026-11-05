@@ -90,7 +90,7 @@ flowchart LR
 
 | コンポーネント | 主な責務 |
 | --- | --- |
-| `LineController` | `POST /line/callback` を受信し、署名検証後に Webhook JSON からユーザー ID・テキスト・イベント時刻を取り出す |
+| `LineController` | `POST /line/callback` を受信し、署名検証後に Webhook JSON からユーザー ID・テキストを取り出し、イベント時刻を検証して取得する |
 | `LineWebhookSignatureVerifier` | 未加工のリクエスト本文と `X-Line-Signature` をチャネルシークレットで検証する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
 | `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
