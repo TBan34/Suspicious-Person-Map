@@ -87,7 +87,7 @@ class ReportParsingFixtureTest {
             Set<String> uniqueTags = new HashSet<>();
             for (JsonNode tag : tags) {
                 assertThat(tag.isTextual()).as(identifier).isTrue();
-                assertThat(ReportTagClassifier.CANONICAL_TAGS).as(identifier).contains(tag.asText());
+                assertThat(ReportTagClassifier.VALID_TAGS).as(identifier).contains(tag.asText());
                 assertThat(uniqueTags.add(tag.asText())).as("重複タグ: %s", identifier).isTrue();
             }
         }

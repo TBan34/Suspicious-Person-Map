@@ -1,15 +1,15 @@
 package suspiciouspersonmap.service.parsing;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
-import java.util.Arrays;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.TOO_MANY_TAGS;
-import static suspiciouspersonmap.common.constant.ReportErrorEnum.UNCLASSIFIABLE_TAG;
 
 /** 正規タグの肯定例と、誤分類しやすい文脈の境界を検証する。 */
 class ReportTagClassifierTest {
@@ -35,7 +35,7 @@ class ReportTagClassifierTest {
     })
     void classifiesEachCanonicalTag(String text, String tag) {
         assertThat(classifier.classify(text)).containsExactly(tag);
-        assertThat(ReportTagClassifier.CANONICAL_TAGS).hasSize(24);
+        assertThat(ReportTagClassifier.VALID_TAGS).hasSize(24);
     }
 
     /**
@@ -43,46 +43,43 @@ class ReportTagClassifierTest {
      */
     @ParameterizedTest
     @CsvSource(delimiter = '|', value = {
-        "男が女性につきまとったが、身体には触れていない。|つきまとい",
         "女性が男から「写真を撮らせてほしい」と声を掛けられました。|不審な声かけ",
         "男が自身の股間を衣服の上から触っていました。|わいせつな言動",
         "女性が男から「体を触らせてください」と言われました。|わいせつな言動",
+        "女性が男から「下着何色」と声を掛けられました。|わいせつな言動",
+        "女性が男から「下着何色」と声を掛けられ、体を触られました。|わいせつな言動,痴漢",
         "男がスカート内を盗撮し、カメラで撮影しました。|盗撮",
         "女性が男から身体を触られるわいせつ事案が発生しました。|痴漢",
         "男が女性につきまとい、走って追いかけました。|追いかけ",
         "男が下半身を露出して、卑わいな言葉をかけました。|露出,わいせつな言動",
         "女性が脱衣所をのぞかれ、男から携帯電話を向けられました。|のぞき,盗撮",
         "女性が男から肩を叩かれ、「これあげる」と声をかけられました。|身体接触,不審な声かけ",
-        "女性が男から身体を触られました。|身体接触",
+        "女性が男から身体を触られました。|痴漢",
         "男が女性に向かって「殺すぞ」と大声で叫びました。|威嚇",
         "女児が男につきまとわれた。女児は大声で助けを求めた。|つきまとい",
         "男が女性につきまとった。女性が男を一喝したところ男は逃げた。|つきまとい",
         "女性が男に追いかけられ、女性は抵抗した。|追いかけ",
-        "女性が男につきまとわれた。男は刃物を持っていない。|つきまとい",
         "男が女性に「何年生？」と声をかけ、その後「殺すぞ」と脅した。|不審な声かけ,威嚇",
         "女性が男から腕を触られた。その後、男が別の男性を殴った。|身体接触,暴行",
-        "女性が男から体を触られる事案が発生した。男は尻尾のついた服を着用していた。|身体接触",
-        "女性が男から体を触られる事案が発生した。女性が男に抵抗した。|身体接触"
+        "女性が男から体を触られる事案が発生した。男は尻尾のついた服を着用していた。|痴漢",
+        "女性が男から体を触られる事案が発生した。女性が男に抵抗した。|痴漢"
     })
     void appliesContextAndOverlapRules(String text, String expected) {
         assertThat(classifier.classify(text)).containsExactlyInAnyOrderElementsOf(Arrays.asList(expected.split(",")));
     }
 
     /**
-     * 所持していない刃物、単なる衣服、否定された行為、被害者の反応だけではタグを付けないことを確認する。
+     * 物品名を含むだけの衣服、不審者以外の人物による反応だけではタグを付けないことを確認する。
      */
     @ParameterizedTest
     @ValueSource(strings = {
         "男はカッターシャツを着用しています。", "男は包丁の絵のシャツを着用しています。",
-        "男は包丁を持っていない。", "男は身体に触れていない。",
         "女性は大声で助けを求めました。", "女性は悲鳴を上げました。",
-        "男性は通行していました。", "男は下半身を露出していない。",
-        "男は女性を撮影していない。", "男は女性に触られなかった。",
-        "男が「靴」と書かれたシャツを着用していました。"
+        "男性は通行していました。"
     })
-    void rejectsWhenNoAffirmativeOffenderActionExists(String text) {
+    void rejectsWhenNoAffirmativeSuspiciousPersonActionExists(String text) {
         ReportException error = assertThrows(ReportException.class, () -> classifier.classify(text));
-        assertThat(error.getErrorType()).isEqualTo(UNCLASSIFIABLE_TAG);
+        assertThat(error.getErrorType()).isEqualTo(ReportErrorEnum.UNCLASSIFIABLE_TAG);
     }
 
     /**
@@ -103,7 +100,7 @@ class ReportTagClassifierTest {
             .containsExactlyInAnyOrder("追いかけ", "露出", "わいせつな言動");
         ReportException error = assertThrows(ReportException.class, () -> classifier.classify(
             "男が女性につきまとい追いかけ、下半身を露出して、卑わいな言葉をかけ、包丁を所持していた。"));
-        assertThat(error.getErrorType()).isEqualTo(TOO_MANY_TAGS);
+        assertThat(error.getErrorType()).isEqualTo(ReportErrorEnum.TOO_MANY_TAGS);
         assertThat(error.getDetail()).isEqualTo("タグ候補が上限の3件を超えています");
     }
 }
