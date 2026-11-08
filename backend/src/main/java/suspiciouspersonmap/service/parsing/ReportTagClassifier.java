@@ -23,82 +23,97 @@ public class ReportTagClassifier {
     // 「」内を発言部分として特定する。
     // 行為タグの判定時は発言部分を除外し、要求しただけの行為を実行済みとして扱わない。
     private static final Pattern CONTENT_PATTERN = Pattern.compile("「([^」]*)」");
-    // 被害者・保護者・教員等、不審者以外の人物による反応を文単位で分類対象から除外する。
+    // 不審者以外の人物による反応を文単位で分類対象から除外する。
     private static final Pattern NON_SUSPICIOUS_PERSON_RESPONSE_PATTERN = Pattern.compile(
         "(?:女性|女児|男児|児童|被害者|保護者|教員|目撃した男性)(?:ら)?(?:が|は|から)"
         + "(?:(?:その)?男(?:に|を|に対して)|大声で|大きな声で|見知らぬ男に)*"
         + "(?:一喝|抵抗|助けを|悲鳴|叫ん|声をかけた|声を掛けた)[^。]*(?:。|$)"
     );
-    // 被害者の身体部位への成立した接触。要求、自分の身体への接触、「～されそう」は対象外。
+    // タグ：身体接触。被害者の身体部位への成立した接触を検出する。
+    // 要求、自分の身体への接触、「～されそう」は対象外。
     private static final Pattern PHYSICAL_CONTACT_PATTERN = Pattern.compile(
         "(?:身体|体|腕|手|手のひら|肩|足首|足|顔|お腹|胸|臀部|尻)[^。、「」]{0,15}"
         + "(?:触られ|触れられ|掴まれ|つかまれ|押しあてられ|叩かれ|手を掛けられ)(?!そう|な)"
         + "|抱き(?:つ|付|着)かれ(?!そう|な)|抱きついたりされ|くすぐられ"
     );
-    // 「触られそう」「抱きつかれそう」など、成立していない身体接触。
+    // タグ：身体接触未遂。「触られそう」「抱きつかれそう」などを検出する。
     private static final Pattern PHYSICAL_CONTACT_ATTEMPT_PATTERN = Pattern.compile(
         "(?:触られ|触れられ|掴まれ|つかまれ|抱き(?:つ|付|着)かれ)そう"
     );
-    // 殺害予告、暴言、怒鳴り声など、相手への威嚇が明記された表現。
+    // タグ：威嚇。殺害予告、暴言、怒鳴り声などを検出する。
     private static final Pattern THREAT_PATTERN = Pattern.compile(
         "殺すぞ|生意気|暴言|脅[しすさ]|怒鳴|「わっ」と大声"
     );
-    // 性的な発言または自身の下半身を触る行為。第三者への接触や露出とは別に扱う。
+    // タグ：わいせつな言動。性的な発言または自身の下半身を触る行為を検出する。
+    // 第三者への接触や露出とは別に扱う。
     private static final Pattern SEXUAL_BEHAVIOR_PATTERN = Pattern.compile(
         "卑猥|卑わい|キスしよう|下着何色|パパ活|服を脱げ|パンツ見せ|揉ませて"
         + "|触らせて|触っていい|自身の股間|下半身を触るところ|自分のズボンを下げよう"
     );
-    // 殴る・蹴る・液体をかける等の暴行。単純な身体接触より具体的な行為として優先する。
+    // タグ：暴行。殴る、蹴る、液体をかけるなどの行為を検出する。
+    // 単純な身体接触より具体的な行為として優先する。
     private static final Pattern ASSAULT_PATTERN = Pattern.compile(
         "暴行|殴られ|殴った|殴る|蹴られ|蹴った|蹴る|体当たり|唾をかけ|液体[^。]{0,12}かけ"
         + "|(?:脇腹|背中|日傘)を叩かれ|名札を引っ張られ"
     );
-    // 継続して後をつける行為。「追いかけ」が同時に成立する場合は追いかけを優先する。
+    // タグ：つきまとい。継続して後をつける行為を検出する。
+    // 「追いかけ」が同時に成立する場合は追いかけを優先する。
     private static final Pattern FOLLOW_PATTERN = Pattern.compile(
         "つきまと|付きまと|後をつけ|後を付け|後方から付けられ|付いてくる|ついてこられ|ついて来られ"
     );
-    // 走るか否かを問わず、対象を追うことが明記された行為。
+    // タグ：追いかけ。走るか否かを問わず、対象を追う行為を検出する。
     private static final Pattern CHASE_PATTERN = Pattern.compile("追いかけ|追い掛け|追い回");
-    // 全裸、性器・下半身を見せる等、露出が成立した表現。
+    // タグ：露出。全裸、性器・下半身を見せるなどの行為を検出する。
     private static final Pattern EXPOSURE_PATTERN = Pattern.compile(
         "露出|全裸|(?:下半身|性器)を(?:見せ|出し|出す)"
     );
-    // 実際の撮影、またはカメラ等を対象へ向けた行為。発言内の撮影依頼は事前に除外する。
+    // タグ：盗撮、撮影行為。実際の撮影、またはカメラ等を対象へ向けた行為を検出する。
+    // 発言内の撮影依頼は事前に除外する。
     private static final Pattern CAMERA_ACTION_PATTERN = Pattern.compile(
         "撮影(?:され|した|する)|写真を撮られ|盗撮|"
         + "(?:スマートフォン|スマホ|携帯電話|カメラ)[^。]{0,25}(?:向け|撮影)"
     );
-    // 覗く行為のひらがな・漢字表記。
+    // タグ：のぞき。覗く行為のひらがな・漢字表記を検出する。
     private static final Pattern PEEP_PATTERN = Pattern.compile("のぞ[かきくい]|覗[かきくい]");
-    // 合意済みの刃物名と、所持・提示・使用の文脈を同時に要求する。「カッターシャツ」は対象外。
+    // タグ：刃物所持。合意済みの刃物名と、所持・提示・使用の文脈を検出する。
+    // 「カッターシャツ」は対象外。
     private static final Pattern BLADE_POSSESSION_PATTERN = Pattern.compile(
         "(?:刃物|包丁|ナイフ|カッターナイフ|鎌|斧|日本刀)(?:を|[、 ])[^。]{0,12}"
         + "(?:持[つちっ]|所持|手に|取り出|突きつけ|振り回)"
     );
-    // 呼び止め、質問等の発声行為。威嚇・性的発言・訪問に該当する場合は後段で重複を抑制する。
+    // タグ：不審な声かけ。呼び止め、質問などの発声行為を検出する。
+    // 威嚇・性的発言・訪問に該当する場合は後段で重複を抑制する。
     private static final Pattern VOICE_PATTERN = Pattern.compile(
         "声を(?:かけ|掛け)|声かけ|声掛け|呼び止め|道を尋ね|と言われ|と言う"
     );
-    // 相手不明の大声・奇声。明確な威嚇が同時に成立する場合は威嚇を優先する。
+    // タグ：大声・奇声。相手不明の大声・奇声を検出する。
+    // 明確な威嚇が同時に成立する場合は威嚇を優先する。
     private static final Pattern LOUD_VOICE_PATTERN = Pattern.compile(
         "(?:大声|大きな声)[^。]{0,15}(?:叫|出)|奇声"
     );
-
-    // 以下は、それぞれ明記された単独行為を検出するパターン。
+    // タグ：不審な接近。対象への接近を検出する。
     private static final Pattern APPROACH_PATTERN = Pattern.compile("接近|近寄|近づ|近付");
+    // タグ：凝視。対象を見つめ続ける行為を検出する。
     private static final Pattern STARE_PATTERN = Pattern.compile("凝視|見つめ続け");
+    // タグ：通行妨害。対象の通行を妨げる行為を検出する。
     private static final Pattern PASSAGE_OBSTRUCTION_PATTERN = Pattern.compile(
         "通行を妨げ|制止させ|前に立ち"
     );
+    // タグ：住居侵入。住居へ侵入する行為を検出する。
     private static final Pattern HOME_INTRUSION_PATTERN = Pattern.compile(
         "住居侵入|玄関内に押し入|住宅に侵入|自宅に侵入"
     );
+    // タグ：不審な訪問。不審な訪問や業者を名乗る行為を検出する。
     private static final Pattern VISIT_PATTERN = Pattern.compile("訪問|来訪|業者を名乗");
+    // タグ：窃盗。物品を盗む行為を検出する。
     private static final Pattern THEFT_PATTERN = Pattern.compile("窃盗|盗まれ|置引き");
+    // タグ：殺人。殺人事件または殺害行為を検出する。
     private static final Pattern MURDER_PATTERN = Pattern.compile("殺人事件|殺害(?:された|した|する)");
+    // タグ：強盗。強盗が明記された表現を検出する。
     private static final Pattern ROBBERY_PATTERN = Pattern.compile("強盗");
+    // タグ：徘徊。徘徊が明記された表現を検出する。
     private static final Pattern WANDER_PATTERN = Pattern.compile("徘徊");
-    // 「体」「身体」等への接触、または痴漢・わいせつ事案と明記された表現。
+    // タグ：痴漢。体・身体等への接触、または痴漢・わいせつ事案と明記された表現を検出する。
     // 成立時は一般的な「身体接触」を重複付与しない。
     private static final Pattern SEXUAL_CONTACT_PATTERN = Pattern.compile(
         "痴漢|わいせつ事案|(?:身体|体|臀部|尻|胸)を(?:触|揉)"
