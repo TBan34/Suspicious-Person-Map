@@ -146,6 +146,7 @@ public class ReportTagClassifier {
         addContactTag(tags, suspiciousPersonContext, actionsOutsideQuotes);
 
         addTagWhenMatched(tags, "追いかけ", CHASE_PATTERN, actionsOutsideQuotes);
+        // 同じ追跡行為に「追いかけ」と「つきまとい」を重複付与しない。
         if (!tags.contains("追いかけ")) {
             addTagWhenMatched(tags, "つきまとい", FOLLOW_PATTERN, actionsOutsideQuotes);
         }
@@ -156,16 +157,20 @@ public class ReportTagClassifier {
         addCameraTag(tags, actionsOutsideQuotes);
         addTagWhenMatched(tags, "刃物所持", BLADE_POSSESSION_PATTERN, actionsOutsideQuotes);
         addTagWhenMatched(tags, "住居侵入", HOME_INTRUSION_PATTERN, actionsOutsideQuotes);
+        // 住居侵入を伴う訪問は、より具体的な「住居侵入」のみとする。
         if (!tags.contains("住居侵入")) {
             addTagWhenMatched(tags, "不審な訪問", VISIT_PATTERN, actionsOutsideQuotes);
         }
         addTagWhenMatched(tags, "通行妨害", PASSAGE_OBSTRUCTION_PATTERN, actionsOutsideQuotes);
         addTagWhenMatched(tags, "凝視", STARE_PATTERN, actionsOutsideQuotes);
         addTagWhenMatched(tags, "徘徊", WANDER_PATTERN, actionsOutsideQuotes);
+        // 同じ発声に「威嚇」と「大声・奇声」を重複付与しない。
         if (!tags.contains("威嚇")) {
             addTagWhenMatched(tags, "大声・奇声", LOUD_VOICE_PATTERN, actionsOutsideQuotes);
         }
         addVoiceTag(tags, suspiciousPersonContext, actionsOutsideQuotes);
+        // 「接近」「近寄る」等が明記され、他の具体的な行為がない場合だけ「不審な接近」を付与する。
+        // 接近表現にも一致しない場合は、後続の検証でタグ判定不能エラーとする。
         if (tags.isEmpty()) {
             addTagWhenMatched(tags, "不審な接近", APPROACH_PATTERN, actionsOutsideQuotes);
         }
