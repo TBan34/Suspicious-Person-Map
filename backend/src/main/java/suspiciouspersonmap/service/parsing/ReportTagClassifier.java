@@ -134,45 +134,46 @@ public class ReportTagClassifier {
         suspiciousPersonContext = NON_SUSPICIOUS_PERSON_RESPONSE_PATTERN
             .matcher(suspiciousPersonContext)
             .replaceAll("");
-        // 発言そのものを評価するタグ以外では、引用内の要求を実行済みの行為として扱わない。
-        String actionsOutsideQuotes = CONTENT_PATTERN.matcher(suspiciousPersonContext).replaceAll("");
+        // 不審者以外の人物による発言も行為として扱わないよう、発言者を問わず「」内を判定対象から除外する。
+        // これにより、発言内で要求・言及された行為を、不審者が実行した行為として誤判定しない。
+        String textWithoutSpokenContent = CONTENT_PATTERN.matcher(suspiciousPersonContext).replaceAll("");
 
         Set<String> tags = new LinkedHashSet<>();
-        addTagWhenMatched(tags, "殺人", MURDER_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "強盗", ROBBERY_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "窃盗", THEFT_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "暴行", ASSAULT_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "身体接触未遂", PHYSICAL_CONTACT_ATTEMPT_PATTERN, actionsOutsideQuotes);
-        addContactTag(tags, suspiciousPersonContext, actionsOutsideQuotes);
+        addTagWhenMatched(tags, "殺人", MURDER_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "強盗", ROBBERY_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "窃盗", THEFT_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "暴行", ASSAULT_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "身体接触未遂", PHYSICAL_CONTACT_ATTEMPT_PATTERN, textWithoutSpokenContent);
+        addContactTag(tags, suspiciousPersonContext, textWithoutSpokenContent);
 
-        addTagWhenMatched(tags, "追いかけ", CHASE_PATTERN, actionsOutsideQuotes);
+        addTagWhenMatched(tags, "追いかけ", CHASE_PATTERN, textWithoutSpokenContent);
         // 同じ追跡行為に「追いかけ」と「つきまとい」を重複付与しない。
         if (!tags.contains("追いかけ")) {
-            addTagWhenMatched(tags, "つきまとい", FOLLOW_PATTERN, actionsOutsideQuotes);
+            addTagWhenMatched(tags, "つきまとい", FOLLOW_PATTERN, textWithoutSpokenContent);
         }
         addTagWhenMatched(tags, "威嚇", THREAT_PATTERN, suspiciousPersonContext);
         addTagWhenMatched(tags, "わいせつな言動", SEXUAL_BEHAVIOR_PATTERN, suspiciousPersonContext);
-        addTagWhenMatched(tags, "露出", EXPOSURE_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "のぞき", PEEP_PATTERN, actionsOutsideQuotes);
-        addCameraTag(tags, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "刃物所持", BLADE_POSSESSION_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "住居侵入", HOME_INTRUSION_PATTERN, actionsOutsideQuotes);
+        addTagWhenMatched(tags, "露出", EXPOSURE_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "のぞき", PEEP_PATTERN, textWithoutSpokenContent);
+        addCameraTag(tags, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "刃物所持", BLADE_POSSESSION_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "住居侵入", HOME_INTRUSION_PATTERN, textWithoutSpokenContent);
         // 住居侵入を伴う訪問は、より具体的な「住居侵入」のみとする。
         if (!tags.contains("住居侵入")) {
-            addTagWhenMatched(tags, "不審な訪問", VISIT_PATTERN, actionsOutsideQuotes);
+            addTagWhenMatched(tags, "不審な訪問", VISIT_PATTERN, textWithoutSpokenContent);
         }
-        addTagWhenMatched(tags, "通行妨害", PASSAGE_OBSTRUCTION_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "凝視", STARE_PATTERN, actionsOutsideQuotes);
-        addTagWhenMatched(tags, "徘徊", WANDER_PATTERN, actionsOutsideQuotes);
+        addTagWhenMatched(tags, "通行妨害", PASSAGE_OBSTRUCTION_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "凝視", STARE_PATTERN, textWithoutSpokenContent);
+        addTagWhenMatched(tags, "徘徊", WANDER_PATTERN, textWithoutSpokenContent);
         // 同じ発声に「威嚇」と「大声・奇声」を重複付与しない。
         if (!tags.contains("威嚇")) {
-            addTagWhenMatched(tags, "大声・奇声", LOUD_VOICE_PATTERN, actionsOutsideQuotes);
+            addTagWhenMatched(tags, "大声・奇声", LOUD_VOICE_PATTERN, textWithoutSpokenContent);
         }
-        addVoiceTag(tags, suspiciousPersonContext, actionsOutsideQuotes);
+        addVoiceTag(tags, suspiciousPersonContext, textWithoutSpokenContent);
         // 「接近」「近寄る」等が明記され、他の具体的な行為がない場合だけ「不審な接近」を付与する。
         // 接近表現にも一致しない場合は、後続の検証でタグ判定不能エラーとする。
         if (tags.isEmpty()) {
-            addTagWhenMatched(tags, "不審な接近", APPROACH_PATTERN, actionsOutsideQuotes);
+            addTagWhenMatched(tags, "不審な接近", APPROACH_PATTERN, textWithoutSpokenContent);
         }
         return validateTags(tags);
     }
@@ -182,12 +183,12 @@ public class ReportTagClassifier {
      * レスポンス: なし。
      * @param tags 分類済みタグ
      * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
-     * @param actionsOutsideQuotes 引用内の発言を除いた行為記述
+     * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
     private void addContactTag(
             Set<String> tags,
             String suspiciousPersonContext,
-            String actionsOutsideQuotes) {
+            String textWithoutSpokenContent) {
         // 引用内の句点を文の区切りにしないよう、引用内から句点だけを除去する。
         String textForSentenceSplit = CONTENT_PATTERN.matcher(suspiciousPersonContext).replaceAll(matchResult ->
             Matcher.quoteReplacement(matchResult.group().replace("。", "")));
@@ -204,7 +205,7 @@ public class ReportTagClassifier {
                 tags.add("身体接触");
             }
         }
-        if (actionsOutsideQuotes.contains("痴漢")) {
+        if (textWithoutSpokenContent.contains("痴漢")) {
             tags.add("痴漢");
         }
     }
@@ -213,16 +214,16 @@ public class ReportTagClassifier {
      * 撮影行為を、場所・対象の文脈に応じて盗撮または撮影行為へ分類する。
      * レスポンス: なし。
      * @param tags 分類済みタグ
-     * @param actionsOutsideQuotes 引用内の発言を除いた行為記述
+     * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
-    private void addCameraTag(Set<String> tags, String actionsOutsideQuotes) {
-        if (!CAMERA_ACTION_PATTERN.matcher(actionsOutsideQuotes).find()) {
+    private void addCameraTag(Set<String> tags, String textWithoutSpokenContent) {
+        if (!CAMERA_ACTION_PATTERN.matcher(textWithoutSpokenContent).find()) {
             return;
         }
-        String cameraTag = actionsOutsideQuotes.contains("盗撮")
-                || actionsOutsideQuotes.contains("スカート内")
-                || actionsOutsideQuotes.contains("脱衣所")
-                || actionsOutsideQuotes.contains("浴室")
+        String cameraTag = textWithoutSpokenContent.contains("盗撮")
+                || textWithoutSpokenContent.contains("スカート内")
+                || textWithoutSpokenContent.contains("脱衣所")
+                || textWithoutSpokenContent.contains("浴室")
             ? "盗撮" : "撮影行為";
         tags.add(cameraTag);
     }
@@ -232,16 +233,16 @@ public class ReportTagClassifier {
      * レスポンス: なし。
      * @param tags 分類済みタグ
      * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
-     * @param actionsOutsideQuotes 引用内の発言を除いた行為記述
+     * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
     private void addVoiceTag(
             Set<String> tags,
             String suspiciousPersonContext,
-            String actionsOutsideQuotes) {
-        boolean ordinaryQuoteFlg = containsOrdinaryQuote(suspiciousPersonContext, actionsOutsideQuotes);
+            String textWithoutSpokenContent) {
+        boolean ordinaryQuoteFlg = containsOrdinaryQuote(suspiciousPersonContext, textWithoutSpokenContent);
         boolean ordinaryVoiceWithoutQuoteFlg = !tags.contains("威嚇")
             && !tags.contains("わいせつな言動")
-            && VOICE_PATTERN.matcher(actionsOutsideQuotes).find();
+            && VOICE_PATTERN.matcher(textWithoutSpokenContent).find();
         if (!tags.contains("不審な訪問") && (ordinaryQuoteFlg || ordinaryVoiceWithoutQuoteFlg)) {
             tags.add("不審な声かけ");
         }
@@ -250,12 +251,12 @@ public class ReportTagClassifier {
     /**
      * 威嚇・性的発言ではない引用付きの声かけが含まれるか判定する。
      * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
-     * @param actionsOutsideQuotes 引用内の発言を除いた行為記述
+     * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      * @return 通常の引用付き声かけが含まれる場合はtrue
      */
     private boolean containsOrdinaryQuote(
             String suspiciousPersonContext,
-            String actionsOutsideQuotes) {
+            String textWithoutSpokenContent) {
         Matcher quoteMatcher = CONTENT_PATTERN.matcher(suspiciousPersonContext);
         while (quoteMatcher.find()) {
             // 発言直後の同一文節も確認し、「大声で怒鳴った」等を通常の声かけから除外する。
@@ -264,7 +265,7 @@ public class ReportTagClassifier {
                     && !THREAT_PATTERN.matcher(quoteMatcher.group(1)).find()
                     && !THREAT_PATTERN.matcher(followingClause).find()
                     && !followingClause.contains("大声")
-                    && VOICE_PATTERN.matcher(actionsOutsideQuotes).find()) {
+                    && VOICE_PATTERN.matcher(textWithoutSpokenContent).find()) {
                 return true;
             }
         }
