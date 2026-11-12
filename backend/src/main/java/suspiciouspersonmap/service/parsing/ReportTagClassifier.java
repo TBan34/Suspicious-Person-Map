@@ -144,7 +144,7 @@ public class ReportTagClassifier {
         addTagWhenMatched(tags, "窃盗", THEFT_PATTERN, textWithoutSpokenContent);
         addTagWhenMatched(tags, "暴行", ASSAULT_PATTERN, textWithoutSpokenContent);
         addTagWhenMatched(tags, "身体接触未遂", PHYSICAL_CONTACT_ATTEMPT_PATTERN, textWithoutSpokenContent);
-        addContactTag(tags, suspiciousPersonContext, textWithoutSpokenContent);
+        addContactTag(tags, textWithoutSpokenContent);
 
         addTagWhenMatched(tags, "追いかけ", CHASE_PATTERN, textWithoutSpokenContent);
         // 同じ追跡行為に「追いかけ」と「つきまとい」を重複付与しない。
@@ -179,41 +179,42 @@ public class ReportTagClassifier {
     }
 
     /**
-     * 文ごとに成立した接触を調べ、性的接触・暴行との重複を抑制してタグを追加する。
+     * 各文の成立済み接触から「身体接触」または「痴漢」タグを判定して追加する。
+     * 「痴漢」を「身体接触」より優先し、「暴行」に該当する接触へ「身体接触」を重複付与しない。
      * レスポンス: なし。
-     * @param tags 分類済みタグ
-     * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
+     * @param tags 判定したタグの追加先
      * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
     private void addContactTag(
             Set<String> tags,
-            String suspiciousPersonContext,
             String textWithoutSpokenContent) {
-        // 引用内の句点を文の区切りにしないよう、引用内から句点だけを除去する。
-        String textForSentenceSplit = CONTENT_PATTERN.matcher(suspiciousPersonContext).replaceAll(matchResult ->
-            Matcher.quoteReplacement(matchResult.group().replace("。", "")));
-        for (String sentence : textForSentenceSplit.split("。")) {
-            String completedActions = PHYSICAL_CONTACT_ATTEMPT_PATTERN
-                .matcher(CONTENT_PATTERN.matcher(sentence).replaceAll(""))
+        for (String sentence : textWithoutSpokenContent.split("。")) {
+            // 「触られそう」等の未遂表現を除外し、成立済みの身体接触だけを判定する。
+            String sentenceWithoutContactAttempts = PHYSICAL_CONTACT_ATTEMPT_PATTERN
+                .matcher(sentence)
                 .replaceAll("");
-            if (!PHYSICAL_CONTACT_PATTERN.matcher(completedActions).find()) {
+            if (!PHYSICAL_CONTACT_PATTERN.matcher(sentenceWithoutContactAttempts).find()) {
                 continue;
             }
+
+            // 痴漢に該当する場合は、「身体接触」ではなく「痴漢」を付与する。
             if (SEXUAL_CONTACT_PATTERN.matcher(sentence).find()) {
                 tags.add("痴漢");
-            } else if (!ASSAULT_PATTERN.matcher(completedActions).find()) {
-                tags.add("身体接触");
+                continue;
             }
-        }
-        if (textWithoutSpokenContent.contains("痴漢")) {
-            tags.add("痴漢");
+            // 「暴行」はclassify()の前段で追加済みのため、「身体接触」は重複付与しない。
+            if (ASSAULT_PATTERN.matcher(sentenceWithoutContactAttempts).find()) {
+                continue;
+            }
+
+            tags.add("身体接触");
         }
     }
 
     /**
      * 撮影行為を、場所・対象の文脈に応じて盗撮または撮影行為へ分類する。
      * レスポンス: なし。
-     * @param tags 分類済みタグ
+     * @param tags 判定したタグの追加先
      * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
     private void addCameraTag(Set<String> tags, String textWithoutSpokenContent) {
@@ -231,7 +232,7 @@ public class ReportTagClassifier {
     /**
      * 通常の声かけを判定し、訪問・威嚇・性的発言との重複を抑制してタグを追加する。
      * レスポンス: なし。
-     * @param tags 分類済みタグ
+     * @param tags 判定したタグの追加先
      * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
      * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
@@ -290,7 +291,7 @@ public class ReportTagClassifier {
 
     /**
      * 行為パターンが一致した場合に正規タグを追加する。レスポンス: なし。
-     * @param tags 分類済みタグ
+     * @param tags 判定したタグの追加先
      * @param tag 追加する正規タグ
      * @param actionPattern 行為の判定パターン
      * @param targetText 判定対象文字列
