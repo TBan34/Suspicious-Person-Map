@@ -56,6 +56,7 @@ LINE から受信した不審者情報を住所解析・Geocoding して保存�
 ### 命名
 
 - 定数は `UPPER_SNAKE_CASE` とする。
+- 定数には、値が表す意味または使用目的を示すコメントを付ける。
 - 変数、引数、関数・メソッドは `lowerCamelCase` とする。
 - フラグを表す変数・フィールド・引数は、名前の末尾に `Flg` を付ける（例: `validationRequiredFlg`）。
 - クラス、インターフェース、React コンポーネントは `UpperCamelCase` とする。

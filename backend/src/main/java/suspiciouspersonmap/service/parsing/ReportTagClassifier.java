@@ -12,6 +12,11 @@ import suspiciouspersonmap.exception.ReportException;
 /** 概要に明記された不審者側の行為を正規タグへ分類し、重複と件数を検証する。 */
 @Component
 public class ReportTagClassifier {
+    // 「」内の発言内容を取得する正規表現のキャプチャグループ名。
+    private static final String SPOKEN_CONTENT_GROUP_NAME = "spokenContent";
+    // 1件の不審者情報に保存できるタグの最大件数。
+    private static final int MAX_TAG_COUNT = 3;
+
     /** DBへ保存できる有効なタグ。分類結果とテストデータの整合性検証で使用する。 */
     public static final Set<String> VALID_TAGS = Set.of(
         "殺人", "強盗", "窃盗", "暴行", "刃物所持",
@@ -22,7 +27,9 @@ public class ReportTagClassifier {
 
     // 「」内を発言部分として特定する。
     // 行為タグの判定時は発言部分を除外し、要求しただけの行為を実行済みとして扱わない。
-    private static final Pattern CONTENT_PATTERN = Pattern.compile("「([^」]*)」");
+    private static final Pattern SPOKEN_CONTENT_PATTERN = Pattern.compile(
+        "「(?<" + SPOKEN_CONTENT_GROUP_NAME + ">[^」]*)」"
+    );
     // 不審者以外の人物による反応を文単位で分類対象から除外する。
     private static final Pattern NON_SUSPICIOUS_PERSON_RESPONSE_PATTERN = Pattern.compile(
         "(?:女性|女児|男児|児童|被害者|保護者|教員|目撃した男性)(?:ら)?(?:が|は|から)"
@@ -136,7 +143,9 @@ public class ReportTagClassifier {
             .replaceAll("");
         // 不審者以外の人物による発言も行為として扱わないよう、発言者を問わず「」内を判定対象から除外する。
         // これにより、発言内で要求・言及された行為を、不審者が実行した行為として誤判定しない。
-        String textWithoutSpokenContent = CONTENT_PATTERN.matcher(suspiciousPersonContext).replaceAll("");
+        String textWithoutSpokenContent = SPOKEN_CONTENT_PATTERN
+            .matcher(suspiciousPersonContext)
+            .replaceAll("");
 
         Set<String> tags = new LinkedHashSet<>();
         addTagWhenMatched(tags, "殺人", MURDER_PATTERN, textWithoutSpokenContent);
@@ -175,7 +184,8 @@ public class ReportTagClassifier {
         if (tags.isEmpty()) {
             addTagWhenMatched(tags, "不審な接近", APPROACH_PATTERN, textWithoutSpokenContent);
         }
-        return validateTags(tags);
+        validateTags(tags);
+        return List.copyOf(tags);
     }
 
     /**
@@ -233,60 +243,64 @@ public class ReportTagClassifier {
      * 通常の声かけを判定し、訪問・威嚇・性的発言との重複を抑制してタグを追加する。
      * レスポンス: なし。
      * @param tags 判定したタグの追加先
-     * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
+     * @param suspiciousPersonContext 不審者の行為・発言を判定するための概要
      * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
      */
     private void addVoiceTag(
             Set<String> tags,
             String suspiciousPersonContext,
             String textWithoutSpokenContent) {
-        boolean ordinaryQuoteFlg = containsOrdinaryQuote(suspiciousPersonContext, textWithoutSpokenContent);
-        boolean ordinaryVoiceWithoutQuoteFlg = !tags.contains("威嚇")
-            && !tags.contains("わいせつな言動")
-            && VOICE_PATTERN.matcher(textWithoutSpokenContent).find();
-        if (!tags.contains("不審な訪問") && (ordinaryQuoteFlg || ordinaryVoiceWithoutQuoteFlg)) {
+        // 訪問時の会話は「不審な訪問」に含め、同じ行為へ「不審な声かけ」を重複付与しない。
+        if (!tags.contains("不審な訪問")
+                && containsOrdinaryVoice(suspiciousPersonContext, textWithoutSpokenContent)) {
             tags.add("不審な声かけ");
         }
     }
 
     /**
-     * 威嚇・性的発言ではない引用付きの声かけが含まれるか判定する。
-     * @param suspiciousPersonContext 不審者以外の人物による反応を除いた概要
+     * 威嚇・性的発言ではない通常の声かけが含まれるか判定する。
+     * @param suspiciousPersonContext 不審者の行為・発言を判定するための概要
      * @param textWithoutSpokenContent 発言部分を除いた行為タグ判定用テキスト
-     * @return 通常の引用付き声かけが含まれる場合はtrue
+     * @return 通常の声かけが含まれる場合はtrue
      */
-    private boolean containsOrdinaryQuote(
+    private boolean containsOrdinaryVoice(
             String suspiciousPersonContext,
             String textWithoutSpokenContent) {
-        Matcher quoteMatcher = CONTENT_PATTERN.matcher(suspiciousPersonContext);
-        while (quoteMatcher.find()) {
-            // 発言直後の同一文節も確認し、「大声で怒鳴った」等を通常の声かけから除外する。
-            String followingClause = suspiciousPersonContext.substring(quoteMatcher.end()).split("[。、]", 2)[0];
-            if (!SEXUAL_BEHAVIOR_PATTERN.matcher(quoteMatcher.group(1)).find()
-                    && !THREAT_PATTERN.matcher(quoteMatcher.group(1)).find()
-                    && !THREAT_PATTERN.matcher(followingClause).find()
-                    && !followingClause.contains("大声")
-                    && VOICE_PATTERN.matcher(textWithoutSpokenContent).find()) {
-                return true;
-            }
+        if (!VOICE_PATTERN.matcher(textWithoutSpokenContent).find()) {
+            return false;
         }
-        return false;
+
+        // 「」内の発言を順に確認し、威嚇・性的発言ではない通常の声かけを探す。
+        Matcher spokenContentMatcher = SPOKEN_CONTENT_PATTERN.matcher(suspiciousPersonContext);
+        while (spokenContentMatcher.find()) {
+            String spokenContent = spokenContentMatcher.group(SPOKEN_CONTENT_GROUP_NAME);
+            if (SEXUAL_BEHAVIOR_PATTERN.matcher(spokenContent).find()
+                    || THREAT_PATTERN.matcher(spokenContent).find()) {
+                continue;
+            }
+            return true;
+        }
+
+        // 「」内に通常発言がない場合は、地の文だけで記載された通常の声かけかを判定する。
+        // 例:「男から声を掛けられ、腕を掴まれる」は通常の声かけとして扱う。
+        return !THREAT_PATTERN.matcher(suspiciousPersonContext).find()
+            && !SEXUAL_BEHAVIOR_PATTERN.matcher(suspiciousPersonContext).find();
     }
 
     /**
-     * タグが正規タグだけで構成され、重複除去後に1～3件であることを検証する。
+     * 重複除去後のタグが1件以上、上限件数以内であることを検証する。レスポンス: なし。
      * @param classifiedTags 分類したタグ
-     * @return 重複を除いた検証済みタグ
      */
-    private List<String> validateTags(Set<String> classifiedTags) {
-        if (classifiedTags.isEmpty()
-                || classifiedTags.stream().anyMatch(tag -> !VALID_TAGS.contains(tag))) {
+    private void validateTags(Set<String> classifiedTags) {
+        if (classifiedTags.isEmpty()) {
             throw new ReportException(ReportErrorEnum.UNCLASSIFIABLE_TAG, "tags", "タグを判定できません");
+        } else if (classifiedTags.size() > MAX_TAG_COUNT) {
+            throw new ReportException(
+                ReportErrorEnum.TOO_MANY_TAGS,
+                "tags",
+                "タグ候補が上限の" + MAX_TAG_COUNT + "件を超えています"
+            );
         }
-        if (classifiedTags.size() > 3) {
-            throw new ReportException(ReportErrorEnum.TOO_MANY_TAGS, "tags", "タグ候補が上限の3件を超えています");
-        }
-        return List.copyOf(classifiedTags);
     }
 
     /**
