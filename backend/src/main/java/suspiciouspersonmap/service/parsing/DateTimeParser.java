@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.ZoneId;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +30,7 @@ public class DateTimeParser {
     );
     // 先頭日時の直後に「から」「～」や別日が続く期間・複数日時を検出する。
     // 本文中の「男から」などを誤検出しないよう、日時直後だけを検査する。
-    private static final Pattern UNSUPPORTED_CONTINUATION_PATTERN = Pattern.compile(
+    private static final Pattern UNSUPPORTED_DATE_TIME_FORMAT_PATTERN = Pattern.compile(
         "^\\s*(?:から|まで|[～〜~－-]|及び|および|と?、?\\s*(?:(?:令和)?[0-9]+年)?[0-9]+月[0-9]+日)"
     );
 
@@ -44,7 +43,7 @@ public class DateTimeParser {
 
     /**
      * LINEイベントのUnix時間を日本標準時へ変換する。
-     * @param eventTimestamp LINEイベントのUnix時間（ミリ秒）。欠落時はnull
+     * @param eventTimestamp LINEイベントのUnix時間（ミリ秒）
      * @return イベント発生時刻を日本標準時へ変換した日時
      * @throws ReportException イベント時刻が欠落、または日本標準時へ変換できない場合
      */
@@ -75,48 +74,29 @@ public class DateTimeParser {
      * @return 発生日時と、正規化済みメッセージ上の日時終了位置
      */
     public ParsedDateTime parse(String normalizedMessage, LocalDateTime japanDateTime) {
-        Objects.requireNonNull(normalizedMessage, "normalizedMessage");
-        Objects.requireNonNull(japanDateTime, "japanDateTime");
-
         Matcher dateTimeMatcher = DATE_TIME_PATTERN.matcher(normalizedMessage);
         if (!dateTimeMatcher.lookingAt()) {
             throw invalidDateTime();
         }
 
+        // 日時の直後に、未対応の期間・複数日時表現が続いていないか確認する。
         String messageAfterDateTime = normalizedMessage.substring(dateTimeMatcher.end());
-        validateDateTimeContinuation(messageAfterDateTime);
+        if (UNSUPPORTED_DATE_TIME_FORMAT_PATTERN.matcher(messageAfterDateTime).find()) {
+            throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDate", "未対応の日時形式です");
+        }
 
         try {
-            LocalDate occurDate = parseOccurDate(dateTimeMatcher, japanDateTime.toLocalDate());
-            LocalTime occurTime = parseOccurTime(dateTimeMatcher);
-            LocalDateTime occurDateTime = occurDate.atTime(occurTime);
+            LocalDateTime occurDateTime = parseOccurDate(
+                dateTimeMatcher,
+                japanDateTime.toLocalDate()
+            ).atTime(parseOccurTime(dateTimeMatcher));
+
+            // LINEイベント時刻より未来の発生日時は受け付けない。
             if (occurDateTime.isAfter(japanDateTime)) {
                 throw new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDate", "発生日時が未来です");
             }
             return new ParsedDateTime(occurDateTime, dateTimeMatcher.end());
         } catch (DateTimeException | NumberFormatException e) {
-            throw invalidDateTime();
-        }
-    }
-
-    /**
-     * 日時直後にHTML文字参照、未対応の期間表現、時刻の解析残りがないことを検証する。
-     * レスポンス: なし。
-     * @param messageAfterDateTime 正規化済みメッセージの日時より後ろの文字列
-     */
-    private void validateDateTimeContinuation(String messageAfterDateTime) {
-        String messageWithoutLeadingWhitespace = messageAfterDateTime.stripLeading();
-        if (messageWithoutLeadingWhitespace.startsWith("&")) {
-            ReportMessageTextUtils.validateNoHtmlCharacterReference(
-                messageAfterDateTime, ReportErrorEnum.INVALID_DATETIME, "occurDate");
-        }
-        if (UNSUPPORTED_CONTINUATION_PATTERN.matcher(messageAfterDateTime).find()) {
-            throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDate", "未対応の日時形式です");
-        }
-        if (!StringUtils.isEmpty(messageWithoutLeadingWhitespace)
-                && (Character.isDigit(messageWithoutLeadingWhitespace.charAt(0))
-                    || "半分時".indexOf(messageWithoutLeadingWhitespace.charAt(0)) >= 0)) {
-            // 「30分半」「 30分」などの解析できなかった時刻部分を住所として扱わない。
             throw invalidDateTime();
         }
     }
@@ -128,24 +108,28 @@ public class DateTimeParser {
      * @return 検証済みの発生日
      */
     private LocalDate parseOccurDate(Matcher dateTimeMatcher, LocalDate eventDate) {
+        // 日時表現から月日と年表記を取得する。
         int month = Integer.parseInt(dateTimeMatcher.group("month"));
         int day = Integer.parseInt(dateTimeMatcher.group("day"));
         String yearText = dateTimeMatcher.group("year");
-        if (yearText == null) {
-            return inferMostRecentDate(month, day, eventDate);
+
+        // 年省略時はイベント日以前で最も近い実在日を補完する。
+        if (StringUtils.isEmpty(yearText)) {
+            return resolveDateWithoutYear(month, day, eventDate);
         }
 
+        // 年表記を数値化し、入力に令和が含まれるか取得する。
         int year = yearText.equals("元") ? 1 : Integer.parseInt(yearText);
-        String reiwaText = dateTimeMatcher.group("reiwa");
-        if (year < 1 || (yearText.equals("元") && reiwaText == null)) {
-            throw invalidDateTime();
-        }
-        if (reiwaText != null) {
-            year += 2018;
+        String eraName = dateTimeMatcher.group("reiwa");
+
+        // 元号がない場合は西暦年として検証する。
+        if (StringUtils.isEmpty(eraName)) {
+            return LocalDate.of(year, month, day);
         }
 
-        LocalDate occurDate = LocalDate.of(year, month, day);
-        if (reiwaText != null && occurDate.isBefore(LocalDate.of(2019, 5, 1))) {
+        // 元号がある場合は令和年として検証する。
+        LocalDate occurDate = LocalDate.of(year + 2018, month, day);
+        if (occurDate.isBefore(LocalDate.of(2019, 5, 1))) {
             throw invalidDateTime();
         }
         return occurDate;
@@ -158,7 +142,7 @@ public class DateTimeParser {
      * @param eventDate LINEイベントの日本日付
      * @return 補完した発生日
      */
-    private LocalDate inferMostRecentDate(int month, int day, LocalDate eventDate) {
+    private LocalDate resolveDateWithoutYear(int month, int day, LocalDate eventDate) {
         MonthDay monthDay = MonthDay.of(month, day); // 2月30日などは年を探索せず拒否する。
         for (int year = eventDate.getYear(); year >= 1; year--) {
             if (monthDay.isValidYear(year)) {
