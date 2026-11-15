@@ -12,12 +12,12 @@ import java.util.regex.Pattern;
 @Component
 public class AddressNormalizer {
 
-    // 数字に挟まれたダッシュ類と長音だけを対象とする（例: 1ー2 → 1-2、センターは維持）。
-    private static final Pattern NUMERIC_SEPARATOR_PATTERN = Pattern.compile(
+    // 数字に挟まれたダッシュ類と長音記号を、ハイフンへの置換対象として検出する。単語内の長音記号は対象外。
+    private static final Pattern REPLACE_DASH_PATTERN = Pattern.compile(
         "(?<=\\d)[‐‑‒–—―−ー](?=\\d)"
     );
-    // 数字に挟まれた「番」「番地」だけを対象とする（例: 3番地4 → 3-4、一番町や3番館は維持）。
-    private static final Pattern ADDRESS_NUMBER_WORD_SEPARATOR_PATTERN = Pattern.compile(
+    // 数字に挟まれた「番」「番地」を、ハイフンへの置換対象として検出する。一番町や3番館は対象外。
+    private static final Pattern REPLACE_BANCHI_PATTERN = Pattern.compile(
         "(?<=\\d)番地?(?=\\d)"
     );
 
@@ -28,25 +28,32 @@ public class AddressNormalizer {
      * @return 正規化した住所構成要素。入力が null または空白だけの場合は null
      */
     public String normalize(String addressComponent) {
-        if (addressComponent == null) {
+        if (StringUtils.isEmpty(addressComponent)) {
             return null;
         }
 
+        // 文字種をNFKC形式へ統一し、住所内の空白文字を除去する。
         String normalized = Normalizer.normalize(addressComponent, Normalizer.Form.NFKC);
         String withoutWhitespace = normalized.codePoints()
             .filter(codePoint -> !Character.isWhitespace(codePoint) && !Character.isSpaceChar(codePoint))
             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
             .toString();
 
+        // 正規化後に文字が残らない場合は、住所なしとして扱う。
         if (StringUtils.isEmpty(withoutWhitespace)) {
             return null;
         }
 
-        String withNormalizedNumericSeparators = NUMERIC_SEPARATOR_PATTERN
+        // 数字に挟まれたダッシュ類と長音記号をハイフンへ統一する。
+        String addressWithNormalizedDash = REPLACE_DASH_PATTERN
             .matcher(withoutWhitespace)
             .replaceAll("-");
-        return ADDRESS_NUMBER_WORD_SEPARATOR_PATTERN
-            .matcher(withNormalizedNumericSeparators)
+
+        // 数字に挟まれた「番」「番地」をハイフンへ置換する。
+        String normalizedAddress = REPLACE_BANCHI_PATTERN
+            .matcher(addressWithNormalizedDash)
             .replaceAll("-");
+
+        return normalizedAddress;
     }
 }
