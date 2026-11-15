@@ -26,10 +26,14 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 | `backend/.local-data/` | ファイル型 H2 のDBファイル | 対象外 | ローカル検証で登録したデータを保持する |
 | `backend/src/main/resources/application-prod.properties` | 未使用の本番用設定 | 対象 | 実値は記載せず、デプロイ環境の環境変数を参照する |
 | `backend/src/test/resources/application-test.properties` | 自動テスト用 | 対象 | 明らかなテスト用ダミー値だけを記載する |
+| `backend/src/main/resources/logback-spring.xml` | Spring Boot起動時に読み込む、標準出力とレベル別ファイル出力の設定 | 対象 | 認証情報を含まない |
+| `backend/logs/` | 現行ログとgzip圧縮済み過去ログの既定の保存先 | 対象外 | 出力禁止情報はセキュリティ方針に従う |
 
-全環境共通の設定がないため、無印の `application.properties` は置かない。共通設定が発生した場合だけ追加し、認証情報の実値は記載しない。
+Profile間で共有するproperties設定がないため、無印の `application.properties` は置かない。共通のproperties設定が発生した場合だけ追加し、認証情報の実値は記載しない。
 
 `application-local-secrets.properties` と `.local-data/` の ignore 規則は、バックエンドが所有する `backend/.gitignore` に置く。新しい環境では既存のローカル実値ファイルをコピーして配置し、Git 管理する Profile 本体には実値を書かない。
+
+ログ出力は `logback-spring.xml` へ集約し、Profile別のpropertiesへ重複定義しない。`test` Profileを除いてファイル出力し、保存先は起動時の `logging.file.path`（環境変数 `LOGGING_FILE_PATH`）で変更できる。`backend/logs/` のignore規則は `backend/.gitignore` が所有する。保存先・保持期間・容量上限の詳細は [`../operations/logging.md`](../operations/logging.md) を正本とする。
 
 `local-h2` はファイル型 H2 を使用し、日常的な LINE Webhook から画面反映までの確認に用いる。`local-postgres` はローカル PostgreSQL を使用し、DB互換性を確認するときだけ用いる。両Profileは `application-local-secrets.properties` を任意インポートし、同じ設定項目の環境変数がある場合は環境変数を優先する。
 

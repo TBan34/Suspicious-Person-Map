@@ -125,6 +125,8 @@ SPRING_PROFILES_ACTIVE=local-postgres ./mvnw spring-boot:run
 
 `prod` Profile は未使用の本番用設定として存在する。本番の接続先と運用基盤は未決定であるため、ローカル開発では使用しない。
 
+この手順で起動すると、標準出力に加えて `backend/logs/` にレベル別のログファイルが作成される。保存先の変更、圧縮・保持設定、確認方法は [`../operations/logging.md`](../operations/logging.md) を参照する。
+
 ## 6. フロントエンドを起動する
 
 バックエンドを起動したまま、別のターミナルで実行する。

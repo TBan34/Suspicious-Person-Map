@@ -58,7 +58,7 @@ Spring Boot（local-h2）→ ngrok
 
 `stage=report_message_transformation`のERRORログには`error`（種別）、`item`（項目）、`reason`（安全な原因）が出る。`item=eventTimestamp`なら発生日時の文面ではなくWebhookイベントの時刻を確認する。拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。解析失敗時はGeocodingと保存を行わず、LINEへの返信も行わない。
 
-ログは標準出力へ出るが、現在`error.log`への保存設定はない。Webhook本文・署名・ユーザーIDを追加ログで出力して調査しない。
+ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。通常の起動手順では解析エラーを `backend/logs/error.log` で確認できる。保存先の変更、圧縮済み過去ログの確認、保持期間は [`logging.md`](logging.md) を参照する。Webhook本文・署名・ユーザーIDを追加ログで出力して調査しない。
 
 ### 切り分けのポイント
 
@@ -94,6 +94,7 @@ Geocoding の設計、実装済みの候補選択、精度上の制約は [`../i
 
 ## 関連文書
 
+- [`logging.md`](logging.md)
 - [`../integrations/line-messaging-api.md`](../integrations/line-messaging-api.md)
 - [`../integrations/google-maps.md`](../integrations/google-maps.md)
 - [`../../README.md`](../../README.md)

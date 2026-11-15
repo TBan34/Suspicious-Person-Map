@@ -10,6 +10,9 @@ config/application-local-secrets.properties
 # ファイル型 H2 のローカルデータ
 .local-data/
 
+# レベル別の実行ログと圧縮済みの過去ログ
+/logs/
+
 ### STS ###
 .apt_generated
 .classpath

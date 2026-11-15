@@ -72,3 +72,4 @@ flowchart LR
 - [`docs/integrations/google-maps.md`](docs/integrations/google-maps.md): Google Maps・Geocoding 連携の設計、実装、精度上の制約
 - [`docs/security/security-and-privacy.md`](docs/security/security-and-privacy.md): 認証情報、LINE ユーザー ID、公開する不審者情報の取り扱い
 - [`docs/operations/troubleshooting.md`](docs/operations/troubleshooting.md): 開発・連携時の問題の切り分け方法
+- [`docs/operations/logging.md`](docs/operations/logging.md): レベル別ログの保存先、ローテーション、圧縮、保持・容量制限
