@@ -117,7 +117,7 @@ public class ReportService {
             return geocodeService.getLatLng(
                 parsedMessage.prefecture(),
                 parsedMessage.municipality(),
-                parsedMessage.district(),
+                parsedMessage.townArea(),
                 parsedMessage.addressDetails()
             );
         } catch (GeocodingException e) {
@@ -171,7 +171,7 @@ public class ReportService {
             report.setOccurDatetime(parsedMessage.occurDatetime());
             report.setPrefecture(parsedMessage.prefecture());
             report.setMunicipality(parsedMessage.municipality());
-            report.setDistrict(parsedMessage.district());
+            report.setTownArea(parsedMessage.townArea());
             report.setAddressDetails(parsedMessage.addressDetails());
             report.setLatitude(location.getLatitude());
             report.setLongitude(location.getLongitude());

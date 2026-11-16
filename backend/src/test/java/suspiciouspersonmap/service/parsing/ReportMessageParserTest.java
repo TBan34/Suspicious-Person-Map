@@ -60,7 +60,7 @@ class ReportMessageParserTest {
     @Test
     void parsesWithoutACommaBetweenDateAndAddress() {
         String message = createReportMessage("1月4日午後9時").replace("9時、", "9時");
-        assertThat(parser.parse(message, EVENT_TIMESTAMP).district()).isEqualTo("高宮1丁目");
+        assertThat(parser.parse(message, EVENT_TIMESTAMP).townArea()).isEqualTo("高宮1丁目");
         reject(message.replace("高宮", "高&amp;宮"), ReportErrorEnum.INVALID_ADDRESS);
     }
 
@@ -114,10 +114,10 @@ class ReportMessageParserTest {
     @ParameterizedTest
     @CsvSource({"五十川二丁目十一番,五十川2丁目,11番", "一番町四丁目2番,一番町4丁目,2番",
         "向野一丁目1-1,向野1丁目,1-1", "井尻四丁目2番3号,井尻4丁目,2-3号"})
-    void convertsOnlyAddressNumbers(String address, String district, String details) {
+    void convertsOnlyAddressNumbers(String address, String townArea, String details) {
         ParsedReportMessage parsedReport = parser.parse(
             createReportMessage("1月4日午後9時").replace("高宮1丁目11番", address), EVENT_TIMESTAMP);
-        assertThat(parsedReport.district()).isEqualTo(district);
+        assertThat(parsedReport.townArea()).isEqualTo(townArea);
         assertThat(parsedReport.addressDetails()).isEqualTo(details);
     }
 
@@ -131,7 +131,7 @@ class ReportMessageParserTest {
         String body = "女児が男から「何年生？」と声を掛けられました。\n　男は３０歳代、Ｔシャツでした。";
         String message = "1月4日午後9時、福岡市南区高宮1丁目の" + place + body;
         ParsedReportMessage parsedReport = parser.parse(message, EVENT_TIMESTAMP);
-        assertThat(parsedReport.district()).isEqualTo("高宮1丁目");
+        assertThat(parsedReport.townArea()).isEqualTo("高宮1丁目");
         assertThat(parsedReport.summary())
             .isEqualTo(place + "女児が男から「何年生？」と声を掛けられました。 男は３０歳代、Ｔシャツでした。");
     }

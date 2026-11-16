@@ -9,9 +9,9 @@ import java.util.List;
  * @param occurDatetime 発生日時
  * @param prefecture 都道府県
  * @param municipality 市区町村
- * @param district 町域・丁目
+ * @param townArea 町域・丁目
  * @param addressDetails 番地以降。記載がなければnull
  * @param summary 日時と住所の一般的な導入部を除いた概要
  */
 public record ParsedReportMessage(List<String> tags, LocalDateTime occurDatetime, String prefecture,
-        String municipality, String district, String addressDetails, String summary) {}
+        String municipality, String townArea, String addressDetails, String summary) {}

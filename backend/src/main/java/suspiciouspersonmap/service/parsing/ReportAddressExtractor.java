@@ -60,13 +60,13 @@ public class ReportAddressExtractor {
     /**
      * 抽出した住所構成要素と、原文上で概要が始まる位置。
      * @param municipality 市区町村
-     * @param district 町域・丁目
+     * @param townArea 町域・丁目
      * @param addressDetails 番地以降。記載がなければnull
      * @param summaryStartIndex 日時除去後の原文上で概要が始まる位置
      */
     public record ParsedAddress(
         String municipality,
-        String district,
+        String townArea,
         String addressDetails,
         int summaryStartIndex
     ) {}

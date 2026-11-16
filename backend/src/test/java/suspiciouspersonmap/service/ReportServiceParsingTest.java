@@ -193,7 +193,7 @@ class ReportServiceParsingTest {
         ArgumentCaptor<ReportEntity> reportCaptor = ArgumentCaptor.forClass(ReportEntity.class);
         verify(reportRepository).saveAndFlush(reportCaptor.capture());
         ReportEntity savedReport = reportCaptor.getValue();
-        assertThat(savedReport.getDistrict()).isEqualTo("高宮1丁目");
+        assertThat(savedReport.getTownArea()).isEqualTo("高宮1丁目");
         assertThat(savedReport.getAddressDetails()).isEqualTo("11番");
         assertThat(savedReport.getOccurDatetime()).isEqualTo("2026-01-04T21:00:00");
         assertThat(savedReport.getSummary()).isEqualTo("女性が男につきまとわれました。");

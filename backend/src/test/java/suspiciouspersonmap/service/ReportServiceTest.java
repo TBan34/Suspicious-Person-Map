@@ -142,7 +142,7 @@ class ReportServiceTest {
              *
              * @param prefecture 都道府県
              * @param municipality 市区町村
-             * @param district 丁目
+             * @param townArea 町域・丁目
              * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
@@ -150,7 +150,7 @@ class ReportServiceTest {
             public GeoPoint getLatLng(
                     String prefecture,
                     String municipality,
-                    String district,
+                    String townArea,
                     String addressDetails) {
                 return new GeoPoint(33.5902, 130.4017);
             }
@@ -198,7 +198,7 @@ class ReportServiceTest {
              *
              * @param prefecture 都道府県
              * @param municipality 市区町村
-             * @param district 丁目
+             * @param townArea 町域・丁目
              * @param addressDetails 番地以降の任意情報
              * @return 正常終了しないため返却値なし
              */
@@ -206,7 +206,7 @@ class ReportServiceTest {
             public GeoPoint getLatLng(
                     String prefecture,
                     String municipality,
-                    String district,
+                    String townArea,
                     String addressDetails) {
                 throw geocodingException;
             }
@@ -267,7 +267,7 @@ class ReportServiceTest {
              *
              * @param prefecture 都道府県
              * @param municipality 市区町村
-             * @param district 丁目
+             * @param townArea 町域・丁目
              * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
@@ -275,7 +275,7 @@ class ReportServiceTest {
             public GeoPoint getLatLng(
                     String prefecture,
                     String municipality,
-                    String district,
+                    String townArea,
                     String addressDetails) {
                 return new GeoPoint(33.5902, 130.4017);
             }
@@ -332,7 +332,7 @@ class ReportServiceTest {
              *
              * @param prefecture 都道府県
              * @param municipality 市区町村
-             * @param district 丁目
+             * @param townArea 町域・丁目
              * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
@@ -340,7 +340,7 @@ class ReportServiceTest {
             public GeoPoint getLatLng(
                     String prefecture,
                     String municipality,
-                    String district,
+                    String townArea,
                     String addressDetails) {
                 return new GeoPoint(33.5902, 130.4017);
             }
@@ -376,7 +376,7 @@ class ReportServiceTest {
              *
              * @param prefecture 都道府県
              * @param municipality 市区町村
-             * @param district 丁目
+             * @param townArea 町域・丁目
              * @param addressDetails 番地以降の任意情報
              * @return テスト用の固定座標
              */
@@ -384,12 +384,12 @@ class ReportServiceTest {
             public GeoPoint getLatLng(
                     String prefecture,
                     String municipality,
-                    String district,
+                    String townArea,
                     String addressDetails) {
                 geocodedAddressItems.set(List.of(
                     prefecture,
                     municipality,
-                    district,
+                    townArea,
                     addressDetails
                 ));
                 return new GeoPoint(33.5902, 130.4017);
@@ -412,7 +412,7 @@ class ReportServiceTest {
         assertThat(savedReport.get()).isNotNull();
         assertThat(savedReport.get().getPrefecture()).isEqualTo("福岡県");
         assertThat(savedReport.get().getMunicipality()).isEqualTo("福岡市中央区");
-        assertThat(savedReport.get().getDistrict()).isEqualTo("天神1丁目");
+        assertThat(savedReport.get().getTownArea()).isEqualTo("天神1丁目");
         assertThat(savedReport.get().getAddressDetails()).isEqualTo("4-5");
     }
 

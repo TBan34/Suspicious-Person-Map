@@ -24,7 +24,7 @@ class GeocodeServiceTest {
     private static final String API_KEY = "test-secret-geocoding-api-key";
     private static final String PREFECTURE = "福岡県";
     private static final String MUNICIPALITY = "福岡市中央区";
-    private static final String DISTRICT = "天神1丁目";
+    private static final String TOWN_AREA = "天神1丁目";
     private static final String ADDRESS_DETAILS = "1-1";
 
     /**
@@ -70,7 +70,7 @@ class GeocodeServiceTest {
             GeoPoint point = geocodeService.getLatLng(
                 PREFECTURE,
                 MUNICIPALITY,
-                DISTRICT,
+                TOWN_AREA,
                 ADDRESS_DETAILS
             );
 
@@ -116,7 +116,7 @@ class GeocodeServiceTest {
             () -> geocodeService.getLatLng(
                 PREFECTURE,
                 MUNICIPALITY,
-                DISTRICT,
+                TOWN_AREA,
                 ADDRESS_DETAILS
             )
         );
@@ -155,7 +155,7 @@ class GeocodeServiceTest {
             () -> geocodeService.getLatLng(
                 PREFECTURE,
                 MUNICIPALITY,
-                DISTRICT,
+                TOWN_AREA,
                 ADDRESS_DETAILS
             )
         );

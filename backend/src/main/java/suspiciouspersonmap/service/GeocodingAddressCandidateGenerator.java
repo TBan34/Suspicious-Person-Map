@@ -29,27 +29,27 @@ public class GeocodingAddressCandidateGenerator {
      *
      * @param prefecture 都道府県
      * @param municipality 市区町村
-     * @param district 丁目
+     * @param townArea 町域・丁目
      * @param addressDetails 番地以降の任意情報
      * @return 詳細な住所から順に並べ、重複を除いた住所候補
      */
     public List<String> generate(
             String prefecture,
             String municipality,
-            String district,
+            String townArea,
             String addressDetails) {
         String normalizedPrefecture = addressNormalizer.normalize(prefecture);
         String normalizedMunicipality = addressNormalizer.normalize(municipality);
-        String normalizedDistrict = addressNormalizer.normalize(district);
+        String normalizedTownArea = addressNormalizer.normalize(townArea);
         String normalizedAddressDetails = addressNormalizer.normalize(addressDetails);
 
         if (normalizedPrefecture == null
                 || normalizedMunicipality == null
-                || normalizedDistrict == null) {
+                || normalizedTownArea == null) {
             throw new IllegalArgumentException("Geocodingに必要な住所項目が不足しています");
         }
 
-        String baseAddress = normalizedPrefecture + normalizedMunicipality + normalizedDistrict;
+        String baseAddress = normalizedPrefecture + normalizedMunicipality + normalizedTownArea;
         Set<String> candidates = new LinkedHashSet<>();
 
         if (normalizedAddressDetails != null) {

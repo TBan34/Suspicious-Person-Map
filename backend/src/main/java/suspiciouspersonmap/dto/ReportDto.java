@@ -34,8 +34,8 @@ public class ReportDto {
     // 市区町村
     private String municipality;
 
-    // 丁目
-    private String district;
+    // 町域・丁目
+    private String townArea;
 
     // 番地以降
     private String addressDetails;

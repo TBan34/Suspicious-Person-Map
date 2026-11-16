@@ -45,7 +45,7 @@ public class ReportMessageParser {
             parsedDateTime.occurDatetime(),
             DEFAULT_PREFECTURE,
             parsedAddress.municipality(),
-            parsedAddress.district(),
+            parsedAddress.townArea(),
             parsedAddress.addressDetails(),
             summary
         );

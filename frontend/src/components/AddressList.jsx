@@ -70,7 +70,7 @@ function AddressList({ reports, onSelect, selectedReport }) {
                     const address = [
                       report.prefecture,
                       report.municipality,
-                      report.district,
+                      report.townArea,
                       report.addressDetails,
                     ]
                       .filter(Boolean)

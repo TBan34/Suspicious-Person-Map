@@ -46,19 +46,19 @@ public class GeocodeService {
      *
      * @param prefecture 都道府県
      * @param municipality 市区町村
-     * @param district 丁目
+     * @param townArea 町域・丁目
      * @param addressDetails 番地以降の任意情報
      * @return 採用条件を満たした住所候補の座標情報
      */
     public GeoPoint getLatLng(
             String prefecture,
             String municipality,
-            String district,
+            String townArea,
             String addressDetails) {
         List<String> addressCandidates = addressCandidateGenerator.generate(
             prefecture,
             municipality,
-            district,
+            townArea,
             addressDetails
         );
 

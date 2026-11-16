@@ -50,9 +50,9 @@ public class ReportEntity {
     @Column(name = "municipality", length = 7)
     private String municipality;
 
-    // 丁目
+    // 町域・丁目
     @Column(name = "district", length = 100)
-    private String district;
+    private String townArea;
 
     // 番地以降
     @Column(name = "address_details", length = 255)

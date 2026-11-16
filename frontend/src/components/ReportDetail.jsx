@@ -37,7 +37,7 @@ function ReportDetail({ report }) {
     const parts = [
       report.prefecture,
       report.municipality,
-      report.district,
+      report.townArea,
       report.addressDetails,
     ].filter(Boolean);
 
@@ -67,9 +67,9 @@ function ReportDetail({ report }) {
               <span className="report-detail-location-item">
                 {report.municipality}
               </span>
-              {report.district && (
+              {report.townArea && (
                 <span className="report-detail-location-item">
-                  {report.district}
+                  {report.townArea}
                 </span>
               )}
             </div>

@@ -55,8 +55,8 @@ class ReportMessageParserCorpusTest {
                             .isEqualTo(expectedReport.path("prefecture").asText());
                         assertThat(actualReport.municipality())
                             .isEqualTo(expectedReport.path("municipality").asText());
-                        assertThat(actualReport.district())
-                            .isEqualTo(expectedReport.path("district").asText());
+                        assertThat(actualReport.townArea())
+                            .isEqualTo(expectedReport.path("townArea").asText());
                         assertThat(actualReport.addressDetails())
                             .isEqualTo(expectedReport.path("addressDetails").asText(null));
                         assertThat(actualReport.summary())

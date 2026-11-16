@@ -69,7 +69,7 @@ class ReportParsingFixtureTest {
             JsonNode expected = sample.path("expected");
             assertThat(expected.isObject()).as(identifier).isTrue();
             assertThat(expected.size()).as(identifier).isEqualTo(7);
-            for (String field : new String[]{"occurDatetime", "prefecture", "municipality", "district", "summary"}) {
+            for (String field : new String[]{"occurDatetime", "prefecture", "municipality", "townArea", "summary"}) {
                 assertThat(expected.path(field).isTextual()).as("%s: %s", identifier, field).isTrue();
                 assertThat(expected.path(field).asText()).as("%s: %s", identifier, field).isNotBlank();
             }
