@@ -69,12 +69,12 @@ class ReportParsingFixtureTest {
             JsonNode expected = sample.path("expected");
             assertThat(expected.isObject()).as(identifier).isTrue();
             assertThat(expected.size()).as(identifier).isEqualTo(7);
-            for (String field : new String[]{"occurDate", "prefecture", "municipality", "district", "summary"}) {
+            for (String field : new String[]{"occurDatetime", "prefecture", "municipality", "district", "summary"}) {
                 assertThat(expected.path(field).isTextual()).as("%s: %s", identifier, field).isTrue();
                 assertThat(expected.path(field).asText()).as("%s: %s", identifier, field).isNotBlank();
             }
-            LocalDateTime occurDate = LocalDateTime.parse(expected.path("occurDate").asText());
-            assertThat(occurDate).as(identifier).isBeforeOrEqualTo(japanDateTime.toLocalDateTime());
+            LocalDateTime occurDatetime = LocalDateTime.parse(expected.path("occurDatetime").asText());
+            assertThat(occurDatetime).as(identifier).isBeforeOrEqualTo(japanDateTime.toLocalDateTime());
             assertThat(expected.has("addressDetails")).as(identifier).isTrue();
             JsonNode addressDetails = expected.path("addressDetails");
             assertThat(addressDetails.isNull() || addressDetails.isTextual()).as(identifier).isTrue();

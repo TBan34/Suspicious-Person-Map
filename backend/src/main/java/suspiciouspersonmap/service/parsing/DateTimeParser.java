@@ -36,10 +36,10 @@ public class DateTimeParser {
 
     /**
      * 解析した発生日時と、正規化済みメッセージ上で日時が終了する位置。
-     * @param occurDate 発生日時
+     * @param occurDatetime 発生日時
      * @param dateTimeEndIndex 正規化済みメッセージ上の日時終了位置
      */
-    public record ParsedDateTime(LocalDateTime occurDate, int dateTimeEndIndex) {}
+    public record ParsedDateTime(LocalDateTime occurDatetime, int dateTimeEndIndex) {}
 
     /**
      * LINEイベントのUnix時間を日本標準時へ変換する。
@@ -82,20 +82,20 @@ public class DateTimeParser {
         // 日時の直後に、未対応の期間・複数日時表現が続いていないか確認する。
         String messageAfterDateTime = normalizedMessage.substring(dateTimeMatcher.end());
         if (UNSUPPORTED_DATE_TIME_FORMAT_PATTERN.matcher(messageAfterDateTime).find()) {
-            throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDate", "未対応の日時形式です");
+            throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDatetime", "未対応の日時形式です");
         }
 
         try {
-            LocalDateTime occurDateTime = parseOccurDate(
+            LocalDateTime occurDatetime = parseOccurDate(
                 dateTimeMatcher,
                 japanDateTime.toLocalDate()
             ).atTime(parseOccurTime(dateTimeMatcher));
 
             // LINEイベント時刻より未来の発生日時は受け付けない。
-            if (occurDateTime.isAfter(japanDateTime)) {
-                throw new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDate", "発生日時が未来です");
+            if (occurDatetime.isAfter(japanDateTime)) {
+                throw new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDatetime", "発生日時が未来です");
             }
-            return new ParsedDateTime(occurDateTime, dateTimeMatcher.end());
+            return new ParsedDateTime(occurDatetime, dateTimeMatcher.end());
         } catch (DateTimeException | NumberFormatException e) {
             throw invalidDateTime();
         }
@@ -177,6 +177,6 @@ public class DateTimeParser {
      * @return 日時不正例外
      */
     private ReportException invalidDateTime() {
-        return new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDate", "発生日時が不正です");
+        return new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDatetime", "発生日時が不正です");
     }
 }

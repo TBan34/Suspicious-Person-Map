@@ -65,10 +65,10 @@ class ReportServiceTest {
      */
     @Test
     void logsReportMessageTransformationWithoutInvalidValue() {
-        String invalidOccurDate = "invalid-occur-date";
+        String invalidOccurDatetime = "invalid-occur-datetime";
         String invalidMessage = VALID_REPORT_MESSAGE.replace(
             "2025年9月8日午後6時10分",
-            invalidOccurDate
+            invalidOccurDatetime
         );
         ReportService reportService = new ReportService(
             unusedReportRepository(),
@@ -85,9 +85,9 @@ class ReportServiceTest {
             assertThat(errorEvents).hasSize(1);
             assertThat(errorEvents.get(0).getFormattedMessage())
                 .contains("stage=report_message_transformation")
-                .contains("item=occurDate")
+                .contains("item=occurDatetime")
                 .contains("error=INVALID_DATETIME")
-                .doesNotContain(invalidOccurDate)
+                .doesNotContain(invalidOccurDatetime)
                 .doesNotContain("line-user-id")
                 .doesNotContain("何年生");
         } finally {
@@ -304,7 +304,7 @@ class ReportServiceTest {
                 .doesNotContain("失敗行に")
                 .doesNotContain("SQLと登録値を")
                 .doesNotContain("登録値を含み得る")
-                .doesNotContain("occurDate=")
+                .doesNotContain("occurDatetime=")
                 .doesNotContain("prefecture=")
                 .doesNotContain("municipality=")
                 .doesNotContain("line-user-id")

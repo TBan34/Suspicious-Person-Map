@@ -195,7 +195,7 @@ class ReportServiceParsingTest {
         ReportEntity savedReport = reportCaptor.getValue();
         assertThat(savedReport.getDistrict()).isEqualTo("高宮1丁目");
         assertThat(savedReport.getAddressDetails()).isEqualTo("11番");
-        assertThat(savedReport.getOccurDate()).isEqualTo("2026-01-04T21:00:00");
+        assertThat(savedReport.getOccurDatetime()).isEqualTo("2026-01-04T21:00:00");
         assertThat(savedReport.getSummary()).isEqualTo("女性が男につきまとわれました。");
         assertThat(savedReport.getTag1()).isEqualTo("つきまとい");
         assertThat(savedReport.getTag2()).isNull();

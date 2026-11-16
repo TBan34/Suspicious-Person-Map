@@ -50,10 +50,10 @@ function ReportDetail({ report }) {
 
       <div className="report-detail-content">
         <div className="report-detail-section">
-          {report.occurDate && (
+          {report.occurDatetime && (
             <div className="report-detail-section">
               <h3 className="report-detail-section-title">日時</h3>
-              <p className="report-detail-date">{formatDate(report.occurDate)}</p>
+              <p className="report-detail-date">{formatDate(report.occurDatetime)}</p>
             </div>
           )}
 

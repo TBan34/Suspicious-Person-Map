@@ -34,7 +34,7 @@ class ReportMessageParserTest {
         "1月4日午後9時30分,2026-01-04T21:30"
     })
     void parsesStrictDateTimes(String dateTimeText, String expectedDateTime) {
-        assertThat(parser.parse(createReportMessage(dateTimeText), EVENT_TIMESTAMP).occurDate())
+        assertThat(parser.parse(createReportMessage(dateTimeText), EVENT_TIMESTAMP).occurDatetime())
             .isEqualTo(LocalDateTime.parse(expectedDateTime));
     }
 
@@ -45,12 +45,12 @@ class ReportMessageParserTest {
     void infersClosestPastCalendarDate() {
         long march = OffsetDateTime.parse("2026-03-01T12:00:00+09:00").toInstant().toEpochMilli();
         long january = OffsetDateTime.parse("2027-01-05T12:00:00+09:00").toInstant().toEpochMilli();
-        assertThat(parser.parse(createReportMessage("2月29日午後9時"), march).occurDate())
+        assertThat(parser.parse(createReportMessage("2月29日午後9時"), march).occurDatetime())
             .isEqualTo("2024-02-29T21:00:00");
-        assertThat(parser.parse(createReportMessage("12月31日午後9時"), january).occurDate())
+        assertThat(parser.parse(createReportMessage("12月31日午後9時"), january).occurDatetime())
             .isEqualTo("2026-12-31T21:00:00");
         long utcPreviousDay = OffsetDateTime.parse("2026-10-24T16:00:00Z").toInstant().toEpochMilli();
-        assertThat(parser.parse(createReportMessage("10月25日午前0時"), utcPreviousDay).occurDate())
+        assertThat(parser.parse(createReportMessage("10月25日午前0時"), utcPreviousDay).occurDatetime())
             .isEqualTo("2026-10-25T00:00:00");
     }
 

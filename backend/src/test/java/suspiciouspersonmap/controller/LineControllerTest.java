@@ -126,7 +126,7 @@ class LineControllerTest {
         assertThat(controller.callback(body, createSignature(body)).getStatusCode().value()).isEqualTo(200);
         ArgumentCaptor<ReportEntity> reportCaptor = ArgumentCaptor.forClass(ReportEntity.class);
         verify(reportRepository).saveAndFlush(reportCaptor.capture());
-        assertThat(reportCaptor.getValue().getOccurDate()).isEqualTo("2024-02-29T21:00:00");
+        assertThat(reportCaptor.getValue().getOccurDatetime()).isEqualTo("2024-02-29T21:00:00");
         assertThat(reportCaptor.getValue().getTag1()).isEqualTo("つきまとい");
     }
 

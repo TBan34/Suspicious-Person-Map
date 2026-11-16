@@ -49,8 +49,8 @@ class ReportMessageParserCorpusTest {
                         JsonNode expectedReport = testCase.path("expected");
                         ParsedReportMessage actualReport = parser.parse(
                             testCase.path("input").asText(), eventTimestamp);
-                        assertThat(actualReport.occurDate()).isEqualTo(
-                            LocalDateTime.parse(expectedReport.path("occurDate").asText()));
+                        assertThat(actualReport.occurDatetime()).isEqualTo(
+                            LocalDateTime.parse(expectedReport.path("occurDatetime").asText()));
                         assertThat(actualReport.prefecture())
                             .isEqualTo(expectedReport.path("prefecture").asText());
                         assertThat(actualReport.municipality())

@@ -44,7 +44,7 @@ public class ReportController {
                 entity.getTag1(),
                 entity.getTag2(),
                 entity.getTag3(),
-                entity.getOccurDate(),
+                entity.getOccurDatetime(),
                 entity.getPrefecture(),
                 entity.getMunicipality(),
                 entity.getDistrict(),

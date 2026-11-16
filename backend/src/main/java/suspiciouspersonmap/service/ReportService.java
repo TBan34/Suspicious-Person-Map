@@ -168,7 +168,7 @@ public class ReportService {
             }
 
             // Entity設定
-            report.setOccurDate(parsedMessage.occurDate());
+            report.setOccurDatetime(parsedMessage.occurDatetime());
             report.setPrefecture(parsedMessage.prefecture());
             report.setMunicipality(parsedMessage.municipality());
             report.setDistrict(parsedMessage.district());

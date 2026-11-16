@@ -42,7 +42,7 @@ public class ReportMessageParser {
             messageAfterDateTime.substring(parsedAddress.summaryStartIndex()));
         return new ParsedReportMessage(
             tagClassifier.classify(summary),
-            parsedDateTime.occurDate(),
+            parsedDateTime.occurDatetime(),
             DEFAULT_PREFECTURE,
             parsedAddress.municipality(),
             parsedAddress.district(),
