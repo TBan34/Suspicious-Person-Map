@@ -21,7 +21,7 @@ class ReportControllerTest {
         ReportEntity report = new ReportEntity();
         report.setId(1L);
         report.setUserId("line-user-id");
-        report.setSummary("不審者情報");
+        report.setDescription("不審者情報");
         ReportRepository reportRepository = (ReportRepository) Proxy.newProxyInstance(
                 ReportRepository.class.getClassLoader(),
                 new Class<?>[]{ReportRepository.class},
@@ -39,6 +39,6 @@ class ReportControllerTest {
         JsonNode response = objectMapper.readTree(responseBody);
 
         assertThat(response.get(0).has("userId")).isFalse();
-        assertThat(response.get(0).get("summary").asText()).isEqualTo("不審者情報");
+        assertThat(response.get(0).get("description").asText()).isEqualTo("不審者情報");
     }
 }

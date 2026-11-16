@@ -84,11 +84,11 @@ function AddressList({ reports, onSelect, selectedReport }) {
                         onClick={() => onSelect(report)}
                       >
                         <div className="address-item-text">{address}</div>
-                        {report.summary && (
-                          <div className="address-item-summary">
-                            {report.summary.length > 30
-                              ? `${report.summary.substring(0, 30)}...`
-                              : report.summary}
+                        {report.description && (
+                          <div className="address-item-description">
+                            {report.description.length > 30
+                              ? `${report.description.substring(0, 30)}...`
+                              : report.description}
                           </div>
                         )}
                       </div>

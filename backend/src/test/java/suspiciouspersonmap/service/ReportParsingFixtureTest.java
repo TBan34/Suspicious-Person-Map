@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReportParsingFixtureTest {
 
     private static final Set<String> ERROR_TYPES = Set.of(
-        "INVALID_DATETIME", "UNSUPPORTED_DATETIME", "INVALID_ADDRESS", "INVALID_SUMMARY",
+        "INVALID_DATETIME", "UNSUPPORTED_DATETIME", "INVALID_ADDRESS", "INVALID_DESCRIPTION",
         "UNCLASSIFIABLE_TAG", "TOO_MANY_TAGS"
     );
 
@@ -69,7 +69,7 @@ class ReportParsingFixtureTest {
             JsonNode expected = sample.path("expected");
             assertThat(expected.isObject()).as(identifier).isTrue();
             assertThat(expected.size()).as(identifier).isEqualTo(7);
-            for (String field : new String[]{"occurDatetime", "prefecture", "municipality", "townArea", "summary"}) {
+            for (String field : new String[]{"occurDatetime", "prefecture", "municipality", "townArea", "description"}) {
                 assertThat(expected.path(field).isTextual()).as("%s: %s", identifier, field).isTrue();
                 assertThat(expected.path(field).asText()).as("%s: %s", identifier, field).isNotBlank();
             }

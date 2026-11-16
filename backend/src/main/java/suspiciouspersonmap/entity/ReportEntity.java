@@ -68,7 +68,7 @@ public class ReportEntity {
 
     // 概要
     @Column(name = "summary", columnDefinition = "TEXT")
-    private String summary;
+    private String description;
 
     // 作成日時
     @CreatedDate

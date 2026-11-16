@@ -47,7 +47,7 @@ public class ReportDto {
     private double longitude;
 
     // 概要
-    private String summary;
+    private String description;
 
     // 作成日時
     private LocalDateTime createDatetime;

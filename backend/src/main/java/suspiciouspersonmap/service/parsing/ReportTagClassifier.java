@@ -133,11 +133,11 @@ public class ReportTagClassifier {
 
     /**
      * 概要に明記された不審者側の行為を分類する。
-     * @param summary 原文表記を保持した概要
+     * @param description 原文表記を保持した概要
      * @return 重複を除いた1～3件の正規タグ
      */
-    public List<String> classify(String summary) {
-        String suspiciousPersonContext = ReportMessageTextUtils.normalizeForParsing(summary);
+    public List<String> classify(String description) {
+        String suspiciousPersonContext = ReportMessageTextUtils.normalizeForParsing(description);
         suspiciousPersonContext = NON_SUSPICIOUS_PERSON_RESPONSE_PATTERN
             .matcher(suspiciousPersonContext)
             .replaceAll("");

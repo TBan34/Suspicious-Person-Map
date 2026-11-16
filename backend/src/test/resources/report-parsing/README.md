@@ -27,7 +27,7 @@
 | `INVALID_DATETIME` | 日時不正 |
 | `UNSUPPORTED_DATETIME` | 未対応の日時形式 |
 | `INVALID_ADDRESS` | 住所不正 |
-| `INVALID_SUMMARY` | 概要不正 |
+| `INVALID_DESCRIPTION` | 概要不正 |
 | `UNCLASSIFIABLE_TAG` | タグ判定不能 |
 | `TOO_MANY_TAGS` | タグ件数超過 |
 

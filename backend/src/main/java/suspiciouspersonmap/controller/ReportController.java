@@ -51,7 +51,7 @@ public class ReportController {
                 entity.getAddressDetails(),
                 entity.getLatitude(),
                 entity.getLongitude(),
-                entity.getSummary(),
+                entity.getDescription(),
                 entity.getCreateDatetime()
         );
     }

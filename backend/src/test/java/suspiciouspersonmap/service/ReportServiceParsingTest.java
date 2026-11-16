@@ -126,7 +126,7 @@ class ReportServiceParsingTest {
             "概要空",
             VALID_REPORT_MESSAGE.replace("女性が男につきまとわれました。", ""),
             EVENT_TIMESTAMP,
-            ReportErrorEnum.INVALID_SUMMARY
+            ReportErrorEnum.INVALID_DESCRIPTION
         ));
         rejectionCases.add(new RejectionCase(
             "住所不正",
@@ -151,7 +151,7 @@ class ReportServiceParsingTest {
                 "概要文字参照",
                 VALID_REPORT_MESSAGE + htmlCharacterReference,
                 EVENT_TIMESTAMP,
-                ReportErrorEnum.INVALID_SUMMARY
+                ReportErrorEnum.INVALID_DESCRIPTION
             ));
         }
         rejectionCases.add(new RejectionCase(
@@ -196,7 +196,7 @@ class ReportServiceParsingTest {
         assertThat(savedReport.getTownArea()).isEqualTo("高宮1丁目");
         assertThat(savedReport.getAddressDetails()).isEqualTo("11番");
         assertThat(savedReport.getOccurDatetime()).isEqualTo("2026-01-04T21:00:00");
-        assertThat(savedReport.getSummary()).isEqualTo("女性が男につきまとわれました。");
+        assertThat(savedReport.getDescription()).isEqualTo("女性が男につきまとわれました。");
         assertThat(savedReport.getTag1()).isEqualTo("つきまとい");
         assertThat(savedReport.getTag2()).isNull();
         assertThat(savedReport.getTag3()).isNull();

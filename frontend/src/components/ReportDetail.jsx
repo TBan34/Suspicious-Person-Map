@@ -76,10 +76,10 @@ function ReportDetail({ report }) {
           )}
         </div>
 
-        {report.summary && (
+        {report.description && (
           <div className="report-detail-section">
             <h3 className="report-detail-section-title">概要</h3>
-            <p className="report-detail-summary">{report.summary}</p>
+            <p className="report-detail-description">{report.description}</p>
           </div>
         )}
 

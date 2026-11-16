@@ -175,7 +175,7 @@ public class ReportService {
             report.setAddressDetails(parsedMessage.addressDetails());
             report.setLatitude(location.getLatitude());
             report.setLongitude(location.getLongitude());
-            report.setSummary(parsedMessage.summary());
+            report.setDescription(parsedMessage.description());
             // createDatetimeは@CreatedDateにより自動設定される
 
             return report;

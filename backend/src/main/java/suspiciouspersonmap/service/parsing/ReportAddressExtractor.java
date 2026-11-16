@@ -42,7 +42,7 @@ public class ReportAddressExtractor {
     );
     // 固有性のない路上表現は概要から除外する。施設名や駅名は除外しない。
     private static final Pattern ROAD_PATTERN = Pattern.compile("^(?:路上|道路上|歩道上)(?:等)?");
-    // 場所表現と事案内容をつなぐ「で、」「において」など。
+    // 場所表現と概要をつなぐ「で、」「において」など。
     private static final Pattern CONNECTIVE_PATTERN = Pattern.compile("^(?:において|で|を)(?:、)?\\s*");
     // 住所後に残す施設・交通機関などの場所補足。後ろに接続表現がある場合だけ場所として扱う。
     // 例:「七隈小学校グラウンドで、」「走行中のバス車内で、」。
@@ -62,13 +62,13 @@ public class ReportAddressExtractor {
      * @param municipality 市区町村
      * @param townArea 町域・丁目
      * @param addressDetails 番地以降。記載がなければnull
-     * @param summaryStartIndex 日時除去後の原文上で概要が始まる位置
+     * @param descriptionStartIndex 日時除去後の原文上で概要が始まる位置
      */
     public record ParsedAddress(
         String municipality,
         String townArea,
         String addressDetails,
-        int summaryStartIndex
+        int descriptionStartIndex
     ) {}
 
     /**
@@ -91,12 +91,12 @@ public class ReportAddressExtractor {
         }
 
         int addressEndIndex = addressStartIndex + addressMatcher.end();
-        int summaryStartIndex = findSummaryStartIndex(normalizedMessage, addressEndIndex);
+        int descriptionStartIndex = findDescriptionStartIndex(normalizedMessage, addressEndIndex);
 
         // HTML文字参照は、住所と概要のどちら側に存在するか確定してから該当項目の不正にする。
         ReportMessageTextUtils.validateNoHtmlCharacterReference(
             normalizedMessage.substring(0, addressEndIndex), ReportErrorEnum.INVALID_ADDRESS, "address");
-        validateNoAdditionalAddress(normalizedMessage.substring(summaryStartIndex).stripLeading());
+        validateNoAdditionalAddress(normalizedMessage.substring(descriptionStartIndex).stripLeading());
 
         String chome = addressMatcher.group("chome") == null
             ? ""
@@ -106,7 +106,7 @@ public class ReportAddressExtractor {
             "福岡市" + municipalityMatcher.group("ward"),
             addressNormalizer.normalize(town + chome),
             addressNormalizer.normalize(addressDetails),
-            ReportMessageTextUtils.toOriginalIndex(messageAfterDateTime, summaryStartIndex)
+            ReportMessageTextUtils.toOriginalIndex(messageAfterDateTime, descriptionStartIndex)
         );
     }
 
@@ -148,50 +148,50 @@ public class ReportAddressExtractor {
      * @param addressEndIndex 住所が終了する位置
      * @return 正規化済みメッセージ上の概要開始位置
      */
-    private int findSummaryStartIndex(String normalizedMessage, int addressEndIndex) {
+    private int findDescriptionStartIndex(String normalizedMessage, int addressEndIndex) {
         String messageAfterAddress = normalizedMessage.substring(addressEndIndex);
         Matcher prefixMatcher = LOCATION_PREFIX_PATTERN.matcher(messageAfterAddress);
-        int summaryStartIndex = addressEndIndex;
+        int descriptionStartIndex = addressEndIndex;
         if (prefixMatcher.lookingAt()) {
-            summaryStartIndex += prefixMatcher.end();
+            descriptionStartIndex += prefixMatcher.end();
         }
 
-        String summaryCandidate = normalizedMessage.substring(summaryStartIndex);
-        Matcher roadMatcher = ROAD_PATTERN.matcher(summaryCandidate);
+        String descriptionCandidate = normalizedMessage.substring(descriptionStartIndex);
+        Matcher roadMatcher = ROAD_PATTERN.matcher(descriptionCandidate);
         if (roadMatcher.lookingAt()) {
-            summaryStartIndex += roadMatcher.end();
-            summaryCandidate = normalizedMessage.substring(summaryStartIndex);
+            descriptionStartIndex += roadMatcher.end();
+            descriptionCandidate = normalizedMessage.substring(descriptionStartIndex);
         }
 
-        Matcher connectiveMatcher = CONNECTIVE_PATTERN.matcher(summaryCandidate);
+        Matcher connectiveMatcher = CONNECTIVE_PATTERN.matcher(descriptionCandidate);
         if (connectiveMatcher.lookingAt()) {
-            return summaryStartIndex + connectiveMatcher.end();
+            return descriptionStartIndex + connectiveMatcher.end();
         }
-        if (summaryCandidate.startsWith("、")) {
-            return summaryStartIndex + 1;
+        if (descriptionCandidate.startsWith("、")) {
+            return descriptionStartIndex + 1;
         }
-        if (StringUtils.isBlank(summaryCandidate)) {
-            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要が指定されていません");
+        if (StringUtils.isBlank(descriptionCandidate)) {
+            throw new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要が指定されていません");
         }
 
-        Matcher locationDetailMatcher = LOCATION_DETAIL_PATTERN.matcher(summaryCandidate);
+        Matcher locationDetailMatcher = LOCATION_DETAIL_PATTERN.matcher(descriptionCandidate);
         if (!locationDetailMatcher.lookingAt()) {
             throw invalidAddress();
         }
-        if (StringUtils.isBlank(summaryCandidate.substring(locationDetailMatcher.end()))) {
-            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "事案内容が指定されていません");
+        if (StringUtils.isBlank(descriptionCandidate.substring(locationDetailMatcher.end()))) {
+            throw new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要が指定されていません");
         }
         // 施設名等は概要に残すため、場所補足の開始位置をそのまま返す。
-        return summaryStartIndex;
+        return descriptionStartIndex;
     }
 
     /**
      * 概要先頭に別住所が残っていないことを検証する。レスポンス: なし。
-     * @param normalizedSummary 正規化済みの概要候補
+     * @param normalizedDescription 正規化済みの概要候補
      */
-    private void validateNoAdditionalAddress(String normalizedSummary) {
-        if (MUNICIPALITY_PATTERN.matcher(normalizedSummary).lookingAt()
-                || ADDRESS_WITH_CHOME_PATTERN.matcher(normalizedSummary).lookingAt()) {
+    private void validateNoAdditionalAddress(String normalizedDescription) {
+        if (MUNICIPALITY_PATTERN.matcher(normalizedDescription).lookingAt()
+                || ADDRESS_WITH_CHOME_PATTERN.matcher(normalizedDescription).lookingAt()) {
             // 読点で列挙された2件目の住所を概要として登録しない。
             throw invalidAddress();
         }

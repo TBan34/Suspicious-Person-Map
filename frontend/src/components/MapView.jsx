@@ -118,8 +118,8 @@ function MapView({ reports, onMarkerClick, selectedReport }) {
                 icon={RED_MARKER_ICON}
                 onClick={() => handleMarkerClick(report)}
                 title={
-                  report.summary
-                    ? `${report.prefecture || ''}${report.municipality || ''} - ${report.summary}`
+                  report.description
+                    ? `${report.prefecture || ''}${report.municipality || ''} - ${report.description}`
                     : `${report.prefecture || ''}${report.municipality || ''}`
                 }
                 animation={isSelected ? window.google?.maps?.Animation?.BOUNCE : null}

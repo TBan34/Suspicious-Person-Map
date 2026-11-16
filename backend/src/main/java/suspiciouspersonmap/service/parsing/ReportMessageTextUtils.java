@@ -53,7 +53,7 @@ final class ReportMessageTextUtils {
     static int toOriginalIndex(String originalText, int normalizedIndex) {
         String normalizedText = normalizeForParsing(originalText);
         if (normalizedIndex < 0 || normalizedIndex > normalizedText.length()) {
-            throw invalidSummaryBoundary();
+            throw invalidDescriptionBoundary();
         }
         String expectedNormalizedPrefix = normalizedText.substring(0, normalizedIndex);
         for (int originalIndex = 0; originalIndex <= originalText.length(); originalIndex++) {
@@ -63,28 +63,28 @@ final class ReportMessageTextUtils {
                 return originalIndex;
             }
         }
-        throw invalidSummaryBoundary();
+        throw invalidDescriptionBoundary();
     }
 
     /**
      * 概要の切り出し位置を特定できない場合の例外を生成する。
      * @return 概要境界不正例外
      */
-    private static ReportException invalidSummaryBoundary() {
-        return new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要の境界が不明です");
+    private static ReportException invalidDescriptionBoundary() {
+        return new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要の境界が不明です");
     }
 
     /**
      * 概要の原文表記を維持したまま、前後の空白と段落区切りだけを整形する。
-     * @param summaryText 住所より後ろの概要原文
+     * @param descriptionText 住所より後ろの概要原文
      * @return 検証・整形済みの概要
      */
-    static String formatSummary(String summaryText) {
-        validateNoHtmlCharacterReference(summaryText, ReportErrorEnum.INVALID_SUMMARY, "summary");
-        String formattedSummary = PARAGRAPH_BREAK_PATTERN.matcher(summaryText.strip()).replaceAll(" ");
-        if (StringUtils.isBlank(formattedSummary)) {
-            throw new ReportException(ReportErrorEnum.INVALID_SUMMARY, "summary", "概要が指定されていません");
+    static String formatDescription(String descriptionText) {
+        validateNoHtmlCharacterReference(descriptionText, ReportErrorEnum.INVALID_DESCRIPTION, "description");
+        String formattedDescription = PARAGRAPH_BREAK_PATTERN.matcher(descriptionText.strip()).replaceAll(" ");
+        if (StringUtils.isBlank(formattedDescription)) {
+            throw new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要が指定されていません");
         }
-        return formattedSummary;
+        return formattedDescription;
     }
 }

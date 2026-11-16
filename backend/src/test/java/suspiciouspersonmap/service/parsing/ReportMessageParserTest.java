@@ -132,7 +132,7 @@ class ReportMessageParserTest {
         String message = "1月4日午後9時、福岡市南区高宮1丁目の" + place + body;
         ParsedReportMessage parsedReport = parser.parse(message, EVENT_TIMESTAMP);
         assertThat(parsedReport.townArea()).isEqualTo("高宮1丁目");
-        assertThat(parsedReport.summary())
+        assertThat(parsedReport.description())
             .isEqualTo(place + "女児が男から「何年生？」と声を掛けられました。 男は３０歳代、Ｔシャツでした。");
     }
 
@@ -163,12 +163,12 @@ class ReportMessageParserTest {
     }
 
     /**
-     * 概要または事案内容が空の入力を拒否することを確認する。
+     * 概要が空、または場所補足しかない入力を拒否することを確認する。
      */
     @Test
-    void rejectsEmptySummary() {
-        reject("1月4日午後9時、福岡市南区高宮1丁目の路上で、", ReportErrorEnum.INVALID_SUMMARY);
-        reject("1月4日午後9時、福岡市南区高宮1丁目の公園で、", ReportErrorEnum.INVALID_SUMMARY);
+    void rejectsEmptyDescription() {
+        reject("1月4日午後9時、福岡市南区高宮1丁目の路上で、", ReportErrorEnum.INVALID_DESCRIPTION);
+        reject("1月4日午後9時、福岡市南区高宮1丁目の公園で、", ReportErrorEnum.INVALID_DESCRIPTION);
     }
 
     /**
@@ -182,10 +182,10 @@ class ReportMessageParserTest {
             createReportMessage("1月4日午後9時").replace("高宮", "高" + entity + "宮"),
             ReportErrorEnum.INVALID_ADDRESS
         );
-        reject(createReportMessage("1月4日午後9時") + entity, ReportErrorEnum.INVALID_SUMMARY);
+        reject(createReportMessage("1月4日午後9時") + entity, ReportErrorEnum.INVALID_DESCRIPTION);
         reject(
             createReportMessage("1月4日午後9時").replace("付近の路上", "の" + entity + "公園"),
-            ReportErrorEnum.INVALID_SUMMARY
+            ReportErrorEnum.INVALID_DESCRIPTION
         );
     }
 

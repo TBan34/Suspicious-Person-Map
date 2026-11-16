@@ -13,7 +13,7 @@ public enum ReportErrorEnum {
     /** 住所が欠落、不正、または概要との境界を確定できない。 */
     INVALID_ADDRESS(ReportProcessingStageEnum.REPORT_MESSAGE_TRANSFORMATION),
     /** 概要が欠落または不正。 */
-    INVALID_SUMMARY(ReportProcessingStageEnum.REPORT_MESSAGE_TRANSFORMATION),
+    INVALID_DESCRIPTION(ReportProcessingStageEnum.REPORT_MESSAGE_TRANSFORMATION),
     /** 合意済みの正規タグを判定できない。 */
     UNCLASSIFIABLE_TAG(ReportProcessingStageEnum.REPORT_MESSAGE_TRANSFORMATION),
     /** 重複整理後のタグが保存上限を超えている。 */

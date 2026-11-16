@@ -38,16 +38,16 @@ public class ReportMessageParser {
 
         // 住所解析が返す原文上の境界から概要を切り出し、概要だけをタグ判定へ渡す。
         ReportAddressExtractor.ParsedAddress parsedAddress = addressExtractor.extract(messageAfterDateTime);
-        String summary = ReportMessageTextUtils.formatSummary(
-            messageAfterDateTime.substring(parsedAddress.summaryStartIndex()));
+        String description = ReportMessageTextUtils.formatDescription(
+            messageAfterDateTime.substring(parsedAddress.descriptionStartIndex()));
         return new ParsedReportMessage(
-            tagClassifier.classify(summary),
+            tagClassifier.classify(description),
             parsedDateTime.occurDatetime(),
             DEFAULT_PREFECTURE,
             parsedAddress.municipality(),
             parsedAddress.townArea(),
             parsedAddress.addressDetails(),
-            summary
+            description
         );
     }
 }
