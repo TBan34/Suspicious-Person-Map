@@ -70,8 +70,8 @@ public class ReportEntity {
     @Column(name = "summary", columnDefinition = "TEXT")
     private String summary;
 
-    // 作成日
+    // 作成日時
     @CreatedDate
     @Column(name = "created", nullable = false, updatable = false)
-    private LocalDateTime created;
+    private LocalDateTime createDatetime;
 }

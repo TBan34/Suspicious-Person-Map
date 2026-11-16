@@ -26,7 +26,7 @@ function ReportList({ reports }) {
               <td>{r.title}</td>
               <td>{r.address}</td>
               <td>{r.detail}</td>
-              <td>{new Date(r.createdAt).toLocaleString()}</td>
+              <td>{new Date(r.createDatetime).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>

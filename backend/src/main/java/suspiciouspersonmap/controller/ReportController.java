@@ -52,7 +52,7 @@ public class ReportController {
                 entity.getLatitude(),
                 entity.getLongitude(),
                 entity.getSummary(),
-                entity.getCreated()
+                entity.getCreateDatetime()
         );
     }
 }

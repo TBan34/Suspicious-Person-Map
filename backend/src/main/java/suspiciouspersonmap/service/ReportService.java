@@ -176,7 +176,7 @@ public class ReportService {
             report.setLatitude(location.getLatitude());
             report.setLongitude(location.getLongitude());
             report.setSummary(parsedMessage.summary());
-            // createdは@CreatedDateにより自動設定される
+            // createDatetimeは@CreatedDateにより自動設定される
 
             return report;
         } catch (Exception e) {

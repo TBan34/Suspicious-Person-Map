@@ -49,6 +49,6 @@ public class ReportDto {
     // 概要
     private String summary;
 
-    // 作成日
-    private LocalDateTime created;
+    // 作成日時
+    private LocalDateTime createDatetime;
 }
