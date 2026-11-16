@@ -13,7 +13,7 @@ class GeocodingAddressCandidateGeneratorTest {
         new GeocodingAddressCandidateGenerator(new AddressNormalizer());
 
     /**
-     * 番地以降を右側から短縮し、必須住所部分を下限とする候補が順番に生成されることを確認する。
+     * 番地・号を右側から短縮し、必須住所部分を下限とする候補が順番に生成されることを確認する。
      */
     @Test
     void generatesCandidatesWithoutRemovingRequiredAddressParts() {
@@ -33,10 +33,10 @@ class GeocodingAddressCandidateGeneratorTest {
     }
 
     /**
-     * 番地以降がない場合に、入力された必須住所部分だけが候補になることを確認する。
+     * 番地・号がない場合に、入力された必須住所部分だけが候補になることを確認する。
      */
     @Test
-    void usesBaseAddressOnlyWhenAddressDetailsAreMissing() {
+    void usesBaseAddressOnlyWhenBlockAndHouseNumberIsMissing() {
         List<String> candidates = candidateGenerator.generate(
             "東京都",
             "町田市",

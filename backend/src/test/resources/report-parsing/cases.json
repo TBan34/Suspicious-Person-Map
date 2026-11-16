@@ -9,7 +9,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高宮1丁目",
-        "addressDetails": "11番",
+        "blockAndHouseNumber": "11番",
         "description": "自転車で帰宅中の女性が見知らぬ４０代くらいの男から走って追いかけられるという事案が発生しました。女性は一旦公園に入ってやり過ごしましたが、公園を出たところで再び男と遭遇し、男から追いかけられています。女性は逃げて無事でした。",
         "tags": [
           "追いかけ"
@@ -24,7 +24,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "三宅3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生が見知らぬ男から声を掛けられ、腕を掴まれる事案が発生しました。 年齢５０代くらい、中肉の男性です。",
         "tags": [
           "不審な声かけ",
@@ -40,7 +40,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香住ヶ丘3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女子高校生数名が徒歩で通行中、下半身を露出した見知らぬ男を目撃するという事案が発生しました。男は、年齢３０歳位、身長１７０センチ位、痩せ型、黒色ダウンを着用しています。",
         "tags": [
           "露出"
@@ -55,7 +55,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "東比恵3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "中学生女児が、カタコトの日本語を喋る外国人風男性から声を掛けられた後、つきまとわれる事案が発生しました。男は、年齢２０～３０歳代、黒色上衣、黒色ズボン、黒色の自転車を使用しています。",
         "tags": [
           "不審な声かけ",
@@ -71,7 +71,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原4丁目",
-        "addressDetails": "12番",
+        "blockAndHouseNumber": "12番",
         "description": "徒歩帰宅中の男子生徒が、女から「志望校はどこ。」などと声をかけられ、肩を触られる事案が発生しました。女は、年齢４０代後半位、身長１５５センチ位、肩くらいまでの茶髪、黒色ダウンジャケット、色不明のズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -87,7 +87,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "荒戸3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生女児が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０歳くらい、黒髪、黒っぽい服を着用していました。",
         "tags": [
           "つきまとい"
@@ -102,7 +102,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "小笹2丁目",
-        "addressDetails": "5番",
+        "blockAndHouseNumber": "5番",
         "description": "女子中学生が見知らぬ男から暴言をはかれる事案が発生しました。男は、身長１７０センチくらい、やせ型、オレンジ色ライン入りの黒色上衣、黒色ズボンを着用していました。",
         "tags": [
           "威嚇"
@@ -117,7 +117,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "梅光園",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男から「家はどこ」等と声をかけられる事案が発生しました。男は、年齢６０歳くらい、身長１７５センチくらい、小太り、黒っぽい服装、黒色サングラスを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -132,7 +132,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "南片江6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、男が下半身を露出する事案が発生しています。男は、年齢３０～４０歳位、身長１７０センチメートル位、黒色ニット帽、オレンジ色スカジャン、緑色ズボンを着用しています。",
         "tags": [
           "露出"
@@ -147,7 +147,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "横浜3丁目",
-        "addressDetails": "27番",
+        "blockAndHouseNumber": "27番",
         "description": "通行中の女児が見知らぬ男からスマートフォンでスカート内を盗撮される事案が発生しました。犯人は、年齢２０歳代くらい、黒髪短髪、白色マスク着用、黒色っぽい上衣、カーキ色長ズボンを着用しています。",
         "tags": [
           "盗撮"
@@ -167,7 +167,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "愛宕浜4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からスマートフォンでスカート内を盗撮される事案が発生しました。犯人は、年齢２０歳から３０歳代くらい、身長１７０から１８０センチメートルくらい、黒色キャップ帽を着用しています。",
         "tags": [
           "盗撮"
@@ -182,7 +182,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "荒戸2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "マンションで、小学生男児が、見知らぬ男からエレベーター内で声を掛けられ腕を掴まれる事案が発生しました。男は、年齢２０～３０歳くらい、身長１６５～１７０センチくらい、黒髪、短髪、灰色上衣、黒色ズボンでした。",
         "tags": [
           "不審な声かけ",
@@ -198,7 +198,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "若宮2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "登校中の小学生男児が、見知らぬ男から「お菓子をあげるから付いておいで」と声をかけられる事案が発生しました。男は、年齢４０歳代、身長１７５センチ位、黒色帽子、黒色上衣、白色マスクを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -213,7 +213,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "谷1丁目",
-        "addressDetails": "8番",
+        "blockAndHouseNumber": "8番",
         "description": "小学生女児が、見知らぬ男から「一緒に行こう」と声をかけられる事案が発生しました。男は、黒色帽子、短髪、やせ型、茶色上衣、黒色ズボン、黒色靴を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -228,7 +228,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "竹下4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の女児らが、見知らぬ男からつきまとわれる事案が発生しました。男は、年齢５０～６０歳代、青色帽子、茶色上衣、紺色ズボンを着用しています。",
         "tags": [
           "つきまとい"
@@ -243,7 +243,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "美和台2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女子高校生が、黒色の車両に乗車した見知らぬ男から「お菓子をあげるから付き合って」と声をかけられ、後をつけられる事案が発生しました。男は年齢３０～４０歳代、黒色帽子、黒色サングラスを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -259,7 +259,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が見知らぬ小・中学生くらいの男から卑猥な言葉をかけられる事案が２件発生しました。 男の特徴は、小学校高学年から中学生くらいの年齢、黒っぽい服を着用していました。",
         "tags": [
           "わいせつな言動"
@@ -274,7 +274,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "和白丘3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢４５～５０歳くらい、身長１６５～１７０センチ位、灰色ジャージを着用しています。",
         "tags": [
           "つきまとい"
@@ -289,7 +289,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性が見知らぬ男と目が合い、男が女性に向かって舌を出す事案が発生しました。また、男は女性と同じ電車に乗り込み大橋駅で女性に対し「俺降りるからな」と声を掛けるなどしました。男は年齢３０代後半、中肉中背、短髪黒髪、黒色コート、黒色ズボン、ビジネスバッグを所持しています。",
         "tags": [
           "不審な声かけ"
@@ -304,7 +304,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、男が女性に対し「見て」などと声をかけて下半身を見せる事案が発生しました。犯人は、年齢不詳、黒色帽子、白色マスク、黒色パーカー、黒色長ズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -320,7 +320,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "有田1丁目",
-        "addressDetails": "18番",
+        "blockAndHouseNumber": "18番",
         "description": "男が通行中の小学生女児に、下半身を見せるという事案が発生しました。男は、年齢２０代位、身長１７５センチ位、やせ型、白色長袖上衣、黒色長ズボンという特徴でした。",
         "tags": [
           "露出"
@@ -335,7 +335,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "空港前3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、小学生児童らが、見知らぬ男からスマートフォンを向けられる事案が発生しました。男は、年齢４０歳位、黒色長髪、上下黒っぽい服装、黒色乗用車に乗車しています。",
         "tags": [
           "撮影行為"
@@ -350,7 +350,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "南片江2丁目",
-        "addressDetails": "26番",
+        "blockAndHouseNumber": "26番",
         "description": "登校中の男子中学生が、見知らぬ男から「寒くない？」「これあげるよ」と声をかけられ、袋に入ったお菓子を渡される事案が発生しました。男は、年齢５０～６０歳くらい、身長１６０センチメートルくらい、緑色ツバ付き帽子、緑色ジャンパー、灰色長ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -365,7 +365,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "伊崎",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が、見知らぬ男から「お菓子をあげる」「住所を教えろ」と声を掛けられる事案が発生しました。男は、年齢６０歳くらい、身長１６０センチメートルくらい、黒色ズボンを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -380,7 +380,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "赤坂3丁目",
-        "addressDetails": "10番",
+        "blockAndHouseNumber": "10番",
         "description": "下校中の小学生女児が、すれ違い様に見知らぬ男から下半身を見せられる事案が発生しました。男は年齢５０歳くらい、小太り、ニット帽を着用していました。",
         "tags": [
           "露出"
@@ -395,7 +395,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "大字飯氏",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ男から「お店を知ってる？車に乗って案内して。」などと声をかけられる事案が発生しました。男は年齢６０歳代くらい、白髪の短髪で、車に乗っていました。",
         "tags": [
           "不審な声かけ"
@@ -410,7 +410,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "荒戸2丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "通行中の小学生女児が、見知らぬ男から「どこ行ってるの」と声を掛けられる事案が発生しました。男は、年齢４０歳代から５０歳代くらい、茶色短髪という特徴でした。",
         "tags": [
           "不審な声かけ"
@@ -425,7 +425,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高木1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女子中学生が自転車で走行していたところ、自転車に乗車した見知らぬ男が対向から現れ、すれちがいざまに女子中学生の顔面に唾をかけ走り去るという事案が発生しました。 男は、年齢は中年位、黒色上衣、黒色ズボンを着用し、白色自転車に乗車していました。",
         "tags": [
           "暴行"
@@ -440,7 +440,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "薬院4丁目",
-        "addressDetails": "14番",
+        "blockAndHouseNumber": "14番",
         "description": "下校中の小学生女児が、見知らぬ男二人組から「遊ばない」と声を掛けられる事案が発生しました。男二人組は、年齢１０代後半くらい、学生服を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -455,7 +455,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "平和1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生男児が見知らぬ男に後方から手のひらをつかまれ、「君、ついてこない？」と声をかけられる事案が発生しました。犯人は、黒色キャップ型帽子、黒色長袖上衣、黒色長ズボン、黒色手袋を着用していました。",
         "tags": [
           "身体接触",
@@ -471,7 +471,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大橋1丁目",
-        "addressDetails": "22番",
+        "blockAndHouseNumber": "22番",
         "description": "男が通行中の女性に対して下半身を露出する事案が発生しました。男は、年齢３０歳代から４０歳代くらい、黒色スウェット上下を着用、黒髪で髪の後ろを結んでいるという特徴でした。",
         "tags": [
           "露出"
@@ -486,7 +486,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "那珂4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "自宅に不審な人物が来訪し、児童が応答した際、玄関内に押し入り、自宅外に退去させたものの、外から玄関戸をしつこく叩く等する事案が発生しました。 不審者の特徴は、身長１５０ｃｍくらい、若年、黒髪、マスクを着用しています。",
         "tags": [
           "住居侵入"
@@ -501,7 +501,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香住ヶ丘1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の女子中学生が、見知らぬ男から腕を掴まれ、「付いてきてよ」と声を掛けられる事案が発生しました。男は、年齢６０～７０歳代、長袖上衣、茶色ズボン、茶色のベレー帽を着用しています。",
         "tags": [
           "身体接触",
@@ -517,7 +517,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大橋1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "母親と５歳児がバス停でバスを待っていたところ、見知らぬ女性に「何か言いたいことがあるのか」「子供が謝れよ」等と怒鳴られるという事案が発生しました。 女性は、年齢５０歳位、身長１５５センチメートル位、やせ型、肩下の長さの白髪交じりの髪、ベージュ色のトレンチコートを着用していました。",
         "tags": [
           "威嚇"
@@ -542,7 +542,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "西中洲1丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "通行中の女子高校生が、見知らぬ男から「お姉さん、お姉さん。」と声を掛けられ、つきまとわれる事案が発生しました。男は、年齢６０代くらい、身長１７０センチメートルくらい、黒色短髪、ダウンジャケット、暗い系のズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -558,7 +558,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "青木1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が、見知らぬ男からつきまとわれる事案が発生しました。男は緑色のパーカーを着用しフードを被っています。",
         "tags": [
           "つきまとい"
@@ -573,7 +573,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "笹丘1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女児とその保護者が、見知らぬ男から直近に接近された後、付近から凝視される事案が発生しました。男は、年齢２０～３０歳くらい、身長１６５～１７０センチくらい、黒色短髪、ボサボサ頭、緑色コート、黒っぽい長ズボンを着用していました。",
         "tags": [
           "凝視"
@@ -588,7 +588,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "唐原3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、登校中の小学生男児が、見知らぬ男から、「その帽子いいね」と声をかけられる事案が発生しました。男は、年齢６０歳代、黒色キャップ帽、灰色のダウンジャケット、黒色の細身のズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -603,7 +603,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "別府1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "個人宅に、男女２名が訪問し、インターフォン越しに「福岡県警と保険会社が一緒に、防犯活動であいさつに伺いました。開けてもらえますか」等と言われる事案が発生しました。",
         "tags": [
           "不審な訪問"
@@ -618,7 +618,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園内において、男が下半身を露出している姿を女性が目撃する事案が発生しました。 男は、年齢不明、黒色上衣、黒色ズボン、黒色キャップ帽、黒色マスクを着用していました。",
         "tags": [
           "露出"
@@ -633,7 +633,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "春吉2丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "通行中の女性が、後方から接近してきた男から身体を触られる事案が発生しました。男は年齢３０代から４０代、身長１７０センチくらい、中肉、黒色ダウンジャケット、黒色系の長ズボンを着用していました。",
         "tags": [
           "痴漢"
@@ -648,7 +648,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "松山1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０歳から３０歳代、身長１７０センチ位、やせ型、茶色のロングコートを着用しています。",
         "tags": [
           "つきまとい"
@@ -663,7 +663,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原4丁目",
-        "addressDetails": "13番",
+        "blockAndHouseNumber": "13番",
         "description": "小学生男児が徒歩で下校中、前から近付いてきた車の助手席窓が開き、助手席に座っていた見知らぬ男が小学生男児を見つめ続け、男児に向かって突然歌い出すという事案が発生しました。車は白色のミニバンタイプで、助手席の男は、年齢３０歳代、無精ひげが生えていました。",
         "tags": [
           "凝視"
@@ -678,7 +678,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原4丁目",
-        "addressDetails": "34番",
+        "blockAndHouseNumber": "34番",
         "description": "小学生男児が自動車に乗車の見知らぬ男から「迷子？乗ってく？」などと声を掛けられる事案が発生しました。男は、黒色バンタイプの自動車に乗車、黒色パーカーを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -693,7 +693,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎照葉2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "ボール遊びをしていた小学生が、見知らぬ男から「殺すぞ」と声を掛けられる事案が発生しました。男は、紺色上衣、紺色ズボン、黒色帽子、白色マスク、眼鏡を着用しています。",
         "tags": [
           "威嚇"
@@ -708,7 +708,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎駅前3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が、下衣の上から自身の股間付近を触っていたという不審者事案が発生しました。男は、年齢２０代から４０代、身長１７０センチメートル位、中肉、黒色パーカー、紺色ジーパンを着用しています。",
         "tags": [
           "わいせつな言動"
@@ -723,7 +723,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で親子が遊んでいたところ、見知らぬ高齢の男性が近づいて「一緒に遊ぼうよ」等と言われる事案が発生しました。男性は、年齢７０歳代、白髪まじり、黒色長袖ジャンパー、黒色長ズボン、茶色のサンダルを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -738,7 +738,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "内野3丁目",
-        "addressDetails": "14番",
+        "blockAndHouseNumber": "14番",
         "description": "徒歩通行中の女子児童が、車両の運転席に乗車した男から「ヤッホー」などと声をかけられる事案が発生しました。男の特徴は、年齢３０歳代位、黒色の軽自動車に乗車していました。",
         "tags": [
           "不審な声かけ"
@@ -753,7 +753,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大平寺1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が徒歩で帰宅中、黒色自転車に乗車した中高校生風の見知らぬ男から呼び止められ、卑わいな言葉をかけられる事案が発生しました。男は身長１７０センチメートル位、小太り、黒色短髪、眼鏡あり、襟が丸い白色シャツ、紺色のズボンを着用していました。",
         "tags": [
           "わいせつな言動"
@@ -768,7 +768,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "吉塚3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生女児が、見知らぬ男から足を触られる事案が発生しました。男は、年齢３０歳代、身長１７０センチ位、全身黒色の服装、メガネを着用しています。",
         "tags": [
           "身体接触"
@@ -783,7 +783,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "若宮5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子高校生が見知らぬ男につきまとわれる事案が発生しました。犯人は２０～３０歳代くらい、身長１７０センチメートルくらい、黒色短髪、黒色リュック所持、オレンジ色ダウンジャケット、紺色ジーパンを着用しています。",
         "tags": [
           "つきまとい"
@@ -798,7 +798,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児５名が遊んでいたところ、不審な男から「何歳？」「何年生？」などと声を掛けられる事案が発生しました。男は、黒色のパーカー、色不明の長ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -813,7 +813,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "室見が丘3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男性から「今から雨が降る。君のお母さんに頼まれたから車に乗って。」と声を掛けられ、腕を掴まれる事案が発生しました。犯人は３０歳後半、やせ型、身長１７０センチ位、黒色長袖Tシャツ、青色長ズボン、黒色マスクを着用し、白色の軽自動車に乗車しています。",
         "tags": [
           "不審な声かけ",
@@ -829,7 +829,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "博多駅東2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生男児が見知らぬ男から「何年生？」と声をかけられる事案が発生しました。男は、年齢３０～４０歳位、身長１７５センチ位、細身、茶髪、上下黒色のジャージを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -844,7 +844,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生男児が、見知らぬ男から、「●●君、●●小学校にいたよね、コーヒー一緒に飲まない」と声をかけられる事案が発生しました。男は、年齢６０歳代、身長１７０センチメートル位、中肉、白髪で色不明の帽子を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -859,7 +859,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "小田部5丁目",
-        "addressDetails": "22番",
+        "blockAndHouseNumber": "22番",
         "description": "車両に乗車していた女性が男から声を掛けられ、体を触られる事案が発生しました。犯人は、年齢４０から５０代くらいの男で、身長１６０から１７０センチくらい、中肉、黒色短髪、黒色無地のナイロン製ジャンパーを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -875,7 +875,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大平寺2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩進行中の男児に対して、アジア系外国人の男２人から「家はどこ」と声をかけられる事案が発生しました。１人は、黒色パーカー、黒色ズボンを着用した男、もう１人は、金髪の男、２人とも自転車を押して歩いていました。",
         "tags": [
           "不審な声かけ"
@@ -890,7 +890,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生女児が、見知らぬ男から、「可愛いね」と声を掛けられ、抱き付かれそうになる事案が発生しました。男は、年齢５０歳代、身長１７５～１８０センチメートル位、坊主頭、缶ビール、黒色傘を着用しています。",
         "tags": [
           "不審な声かけ",
@@ -906,7 +906,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "塩浜1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生男児が、見知らぬ男から、背中を叩かれる暴行事案が発生しました。男は、年齢４０歳代、身長１７０センチメートル位、中肉、短髪、黒色上衣、茶色下衣、黒色バッグを着用しています。",
         "tags": [
           "暴行"
@@ -921,7 +921,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "東比恵2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生女児が、見知らぬ男から足首を触られる事案が発生しました。男は、年齢３０～４０歳代、中背、小太り、白色長袖シャツ、黒色長ズボンを着用しています。",
         "tags": [
           "身体接触"
@@ -936,7 +936,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生男児が、見知らぬ男から、「●●君って知ってる?」と声をかけられる事案が発生しました。男は、年齢４０歳代、身長１７０センチメートル位、黒髪の短髪で眼鏡をかけ、黒色の上着を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -951,7 +951,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈7丁目",
-        "addressDetails": "30番",
+        "blockAndHouseNumber": "30番",
         "description": "下校中の女子中学生が、対向から歩いてきた見知らぬ男性に、スマートフォンで容姿を撮影される事案が発生しました。男は年齢３０～４０歳くらい、身長１７０センチくらい、やせ型、パーマのかかった肩くらいの長さの黒髪、暗めの色のスウェット上衣、ズボン、青色バッグ、黒縁眼鏡を着用していました。",
         "tags": [
           "撮影行為"
@@ -966,7 +966,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "原田",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "マンションエントランス内において、帰宅中の男児が、見知らぬ男から「一緒にエレベーターに乗らない、家まで送るよ。」と声をかけられる事案が発生しました。男は年齢２０歳代くらい、身長１７０センチメートルくらい、中肉、一見して配達員風の容姿で黒っぽい上下服、黒色マスクを着用しております。",
         "tags": [
           "不審な声かけ"
@@ -981,7 +981,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪の浜4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子中学生が、見知らぬ男性から「キスしようよ」などと声を掛けられ、体を触られそうになる事案が発生しました。犯人は２０歳代、身長１７０センチ位、茶髪長髪、白色上衣、黒色ズボンを着用しています。",
         "tags": [
           "わいせつな言動",
@@ -997,7 +997,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "下山門団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性が、見知らぬ男から「ちょっと待って」などと声をかけられる事案が発生しました。犯人は年齢不詳、身長１６５センチ位、中肉、黒っぽい服を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -1012,7 +1012,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "弥永団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "駐車場にいた女性に見知らぬ男がニヤニヤしながら近づき「体を触らせてください」等と言う事案が発生しました。女性は逃げて無事でした。男は、年齢２０歳代、身長１７０センチメートルくらい、警備員風の紺色制服・キャップ帽、口ひげがあり、マスクを顎にずらして着用していました。",
         "tags": [
           "わいせつな言動"
@@ -1027,7 +1027,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "下山門4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "施設において、その場にいた女性に対し、下半身を露出した犯人が近寄ってくる事案が発生しました。犯人は年齢５０歳位の男、やせ型、身長１６０センチメートル位、黒髪で耳が隠れるくらいの長さ、ベージュ色の作業着上下を着用していました。",
         "tags": [
           "露出"
@@ -1042,7 +1042,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "老司5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子高校生が、見知らぬ男から「連絡先交換しない」等と声をかけられる事案が発生しました。 男の特徴は、年齢２０歳代位、上下黒っぽい服、黒色ウエストバッグを所持していました。",
         "tags": [
           "不審な声かけ"
@@ -1057,7 +1057,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "青葉3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の小学生女児が見知らぬ男につきまとわれる事案が発生しました。男は年齢不明、上下黒色の服を着用し、フードを被っています。",
         "tags": [
           "つきまとい"
@@ -1072,7 +1072,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "横浜3丁目",
-        "addressDetails": "8番",
+        "blockAndHouseNumber": "8番",
         "description": "帰宅中の小学生男児が、車に乗っている見知らぬ男性から「こっちにおいで」と声を掛けられる事案が発生しました。犯人は年齢５０歳から６０歳くらいで、クリーム色の車に乗っています。",
         "tags": [
           "不審な声かけ"
@@ -1087,7 +1087,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "鳥飼5丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "女子高校生が徒歩で通学中、自転車に乗車した見知らぬ男性から追いかけられる事案が発生しました。男は年齢４５～５０歳くらい、紺色レインコート着用、軽快自転車に乗車していました。",
         "tags": [
           "追いかけ"
@@ -1102,7 +1102,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "唐原7丁目",
-        "addressDetails": "10番",
+        "blockAndHouseNumber": "10番",
         "description": "帰宅中の小学生男児が、見知らぬ男から「家まで送ってやろうか」と声をかけられる事案が発生しました。男は、年齢３０歳代、やせ型、黒色短髪、黒色系ニット帽を着用し、黄色の軽自動車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -1117,7 +1117,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男から「あの。」と声をかけられる事案が発生しました。男は、身長１６０～１７０センチ位、年齢２０歳代位、赤色チェック柄の上衣に黒色パーカーを羽織っています。",
         "tags": [
           "不審な声かけ"
@@ -1132,7 +1132,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "伊崎",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男から胸ぐらを掴まれる等の暴行事案が発生しました。男は、年齢５０～６０歳くらい、ニット帽、メガネを着用していました。",
         "tags": [
           "暴行"
@@ -1147,7 +1147,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高宮1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "登校中の小学生女児が、見知らぬ男からスマートフォンを向けられる事案が発生しました。男は、年齢５０歳位、小太り、上下黒色の服、跨るタイプのバイクに乗っていました。",
         "tags": [
           "撮影行為"
@@ -1162,7 +1162,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "筥松",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "ドラッグストアにおいて、小学生女児が見知らぬ女から「暑いけん、中に入ろう」「ジュースを買ってあげる」等と声をかけられる事案が発生しました。女は、年齢４０代後半、やせ型、髪型は肩位までの長さで丸型の眼鏡、マスク、灰色か白色の上衣、紺色系のロングスカート、茶色の靴を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -1177,7 +1177,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "下原2丁目",
-        "addressDetails": "5番",
+        "blockAndHouseNumber": "5番",
         "description": "帰宅中の小学生女児が見知らぬ男から「家まで送ってあげる」「車に乗せてあげる」と声をかけられる事案が発生しました。男は年齢５０歳代から６０歳代、やせ型、白色短髪、黒色マスク、黒色ジャージを着用し、白色の自動車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -1192,7 +1192,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "横手南町",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生男児が徒歩で下校中、すれ違いざまに女からいきなり腕を掴まれる事案が発生しました。男児は逃げて無事でした。女は、年齢７０代、身長１５０センチメートル位です。",
         "tags": [
           "身体接触"
@@ -1207,7 +1207,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "筥松2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩で帰宅中の女性が、下半身を露出した見知らぬ男から「すいません」と声を掛けられるという事案が発生しました。男は、年齢２０歳位、身長１５０センチ位、中肉、黒髪、黒色トレーナー、紺色ズボン、黒色リュックを着用し、黒色傘を所持しています。",
         "tags": [
           "不審な声かけ",
@@ -1223,7 +1223,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "清水4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の小学生女児が、見知らぬ女から「どこ小学校？」としつこく声をかけられる事案が発生しました。 女は、高齢で、耳付近までパーマがかかった白髪頭という特徴でした。",
         "tags": [
           "不審な声かけ"
@@ -1238,7 +1238,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎駅東3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が女装した見知らぬ男から「お姉さん遊ぼう」と声を掛けられる事案が発生しました。男は年齢４０代くらい、身長１７５センチメートルくらい、中肉、金髪の長髪、黒色上衣、黒色ミニスカート、黒色ロングブーツ、黒色帽子を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -1253,7 +1253,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "今泉1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "車両に乗車した男が車内から、通行中の女性に、下半身を見せるという事案が発生しました。犯人は、年齢３０歳代、黒色短髪、黒っぽい長袖Tシャツを着用しています。",
         "tags": [
           "露出"
@@ -1268,7 +1268,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "祖原",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女性に下半身を見せるという事案が発生しました。男は、年齢２０～３０歳位、身長１７０センチ位、やせ型、黒色服上下、黒縁眼鏡という特徴でした。",
         "tags": [
           "露出"
@@ -1283,7 +1283,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向野1丁目",
-        "addressDetails": "5番",
+        "blockAndHouseNumber": "5番",
         "description": "登校中の小学生女児が見知らぬ男からスマートフォンを向けられる事案が発生しました。男は年齢５０歳代、身長１６５センチメートルくらい、黒色短髪、肥満ぎみ、眼鏡を着用していました。",
         "tags": [
           "撮影行為"
@@ -1298,7 +1298,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "田村6丁目",
-        "addressDetails": "13番",
+        "blockAndHouseNumber": "13番",
         "description": "徒歩帰宅中の男子児童らが、見知らぬ男から「何丁目か？」と声をかけられる事案が発生しました。男の特徴は、年齢７０歳位、白髪交じり、黄色の上衣を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1313,7 +1313,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "美和台5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男に後方から付けられる事案が発生しました。男は、年齢４０歳代、黒っぽい服装でサングラスを着用しています。",
         "tags": [
           "つきまとい"
@@ -1328,7 +1328,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "生の松原3丁目",
-        "addressDetails": "25番",
+        "blockAndHouseNumber": "25番",
         "description": "帰宅中の女性が見知らぬ男性からつきまとわれる事案が発生しました。男は、年齢不明、身長１８０センチ位、マスク、黒色系の帽子、黒色系の上衣、黒色系ズボンを着用しています。",
         "tags": [
           "つきまとい"
@@ -1343,7 +1343,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "平尾1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が、自転車に乗った男から体を触られる事案が発生しました。男は、年齢２０歳～３０歳位、中肉、フード付きの黒っぽい上着を着用していました。",
         "tags": [
           "痴漢"
@@ -1358,7 +1358,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "今宿西1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が下半身を露出した男性を目撃するという事案が発生しました。犯人は、年齢５０歳代、身長１７０センチ位、中肉、白髪短髪という特徴です。",
         "tags": [
           "露出"
@@ -1373,7 +1373,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "土井6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、小学生男児が男から「サッカーしよう」「チーム分けをするから服を脱げ」などと声をかけられる事案が発生しました。男は若い男性２名で上下黒っぽい服を着用していました。",
         "tags": [
           "不審な声かけ",
@@ -1389,7 +1389,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "飯倉8丁目",
-        "addressDetails": "13番",
+        "blockAndHouseNumber": "13番",
         "description": "男が通行中の女子中学生に下半身を見せ、卑猥な声掛けをした事案が発生しました。男は、年齢２５歳位、身長１７０センチ位、やせ型、黒色ジャンパー、黒色ズボンという特徴でした。",
         "tags": [
           "露出",
@@ -1410,7 +1410,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "伊崎",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が見知らぬ３人組の男らからつきまとわれる事案が発生しました。その中の一人は、年齢２０歳代くらい、金髪、オレンジ色長袖上衣を着用していました。",
         "tags": [
           "つきまとい"
@@ -1425,7 +1425,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "有田6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が自転車で通行中の女児に対して、上半身裸の状態で声をかける等する事案が発生しました。男は、年齢４０歳代、身長１７５センチ位、中肉、黒縁の丸眼鏡、膝丈までの長さの黒色ジャンパーを着用し、手首にブレスレット様の物を着けていました。",
         "tags": [
           "不審な声かけ"
@@ -1440,7 +1440,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "大字脇山",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が「一緒に猫を探してほしい」と通行人に声をかけ、男が自分のズボンを下げようとする不審者事案が発生しました。男の特徴は、年齢４０歳位、黒色パーマ頭、黒色長袖、灰色ズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -1456,7 +1456,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向野1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩で通行中の小学生女児らが、見知らぬ男から「足寒くないかな」「君たちきれいだね」等と声をかけられる事案が発生しました。男の特徴は３０～４０歳、黒色パーカー、黒色長ズボン、白色マスク、青色スニーカーを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1471,7 +1471,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "七隈小学校グラウンドで、遊んでいた女児に対し、２０歳代の女性が片言の日本語で「お名前はなに。何しているの。」等と声をかける事案が発生しました。その女性は、同年代の女性２名と年配の男性１名と行動しており、他にも男児に声をかけています。",
         "tags": [
           "不審な声かけ"
@@ -1486,7 +1486,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "和白丘4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、小学生が見知らぬ男から「写真を撮らせて欲しい」と声をかけられる事案が発生しました。男は、身長１７０センチくらい、年齢２０歳代くらい、やせ型、黒色上下の服装、黒色帽子、眼鏡あり、スマホを所持していました。",
         "tags": [
           "不審な声かけ"
@@ -1501,7 +1501,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "今宿青木",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "八丈橋付近の道路上で、通行中の中学生女児が、見知らぬ男から体を押しあてられる事案が発生しました。男は、３５歳位から４５歳位、身長１６０センチメートル位、黒髪の短髪で、黄色の半袖Ｔシャツを着用しています。",
         "tags": [
           "身体接触"
@@ -1516,7 +1516,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女子高校生が徒歩帰宅中、後方からきた自転車に乗車した男性に臀部を触られる事案が発生しました。犯人は、年齢不明の男性、中肉、黒色フード付き上衣を着用、色不明の軽快自転車に乗車しています。",
         "tags": [
           "痴漢"
@@ -1531,7 +1531,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "塩浜3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "車両に乗車した男が徒歩通行中の女性に「美容室への道を教えてくれ」等と声を掛け、下半身を見せるという事案が発生しました。犯人は２０歳代、短髪、白色軽自動車使用、白色マスクを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -1547,7 +1547,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "田島2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は年齢４０歳から５０歳代、中肉、黒色ウインドブレーカー様の服、黒色系ズボンを着用しています。",
         "tags": [
           "つきまとい"
@@ -1562,7 +1562,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "皿山1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男から「ビスコいる？」等と声をかけられる事案が発生しました。男の特徴は６０～７０歳、白色帽子を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1577,7 +1577,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高宮1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が下半身を露出して徘徊する姿を女性が目撃する事案が発生しました。男の特徴は、身長１７０センチメートルくらい、やせ型、金髪、灰色スウェット、ジーパンでした。",
         "tags": [
           "露出",
@@ -1593,7 +1593,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "曙2丁目",
-        "addressDetails": "4番",
+        "blockAndHouseNumber": "4番",
         "description": "男が雨の中傘もささずに大きな声で何かを叫ぶ不審者の目撃情報がありました。男の特徴は、年齢３０歳から４０歳位、がっちり型、白色上衣を着用していました。",
         "tags": [
           "大声・奇声"
@@ -1608,7 +1608,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "薬院3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児等が見知らぬ女からスマートフォンを向けられる事案が発生しました。女は、年齢３０～４０歳くらい、茶髪、黒色フード付きの上着、黒色ズボンを着用していました。",
         "tags": [
           "撮影行為"
@@ -1623,7 +1623,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "三苫1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女子中学生が見知らぬ男から「かわいいね」「ＬＩＮＥ交換しよう」と声をかけられる事案が発生しました。男は、年齢３０歳から４０歳くらい、身長１６０センチメートルくらい、やせ型、白髪混じりの黒髪短髪、白色マスク、灰色パーカー、黒色長ズボンを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1638,7 +1638,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香住ヶ丘3丁目",
-        "addressDetails": "16番",
+        "blockAndHouseNumber": "16番",
         "description": "小学生女児が帰宅中、男がビデオカメラで女児やその周辺を撮影していたという不審者事案が発生しました。男は、年齢不詳、黒色サングラス、黒色マスク、黒色トレーナー、黒色ベスト、黒色ズボンを着用しています。",
         "tags": [
           "撮影行為"
@@ -1653,7 +1653,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "天神3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が、男から体を触られる事案が発生しました。犯人は、年齢２０歳～３０歳位、肥満、黒色キャップ帽、黒色長袖、黒色長ズボンを着用していました。",
         "tags": [
           "痴漢"
@@ -1668,7 +1668,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "横手4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生男児が横断歩道を渡っていたところ、信号で停車していた車の助手席に乗っていた３０代女性からスマートフォンを向けられる事案が発生しました。車は県外ナンバーの白色軽自動車で、運転席には３０代男性が乗っていました。",
         "tags": [
           "撮影行為"
@@ -1683,7 +1683,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "三苫3丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "小学生男児が青色自動車に乗った男から「こいこい」と手招きをしながら声をかけられる事案が発生しました。車に乗った男は２名で、２名とも年齢２０歳くらい、１名は黒色上衣でフードを着用しており、もう１名は黒色長髪、黒色上衣を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1698,7 +1698,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "和白3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女児が、見知らぬ男から徒歩で後をつきまとわれ、「かわいいからインスタ交換しよう」と声を掛けられる事案が発生しました。男は年齢３０～４０代くらい、身長１６０センチメートルくらい、黒髪短髪、中肉、白色長袖上衣、黒色スーツズボンを着用しています。",
         "tags": [
           "つきまとい",
@@ -1714,7 +1714,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "西長住2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が徒歩で下校していたところ、赤色バイクに乗った見知らぬ男から「バイクに乗せてやろうか」「家まで送ってあげようか」等としつこく声をかけられる事案が発生しました。女児は逃げて無事でした。男の特徴は、年齢７０～８０歳です。",
         "tags": [
           "不審な声かけ"
@@ -1729,7 +1729,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原5丁目",
-        "addressDetails": "17番",
+        "blockAndHouseNumber": "17番",
         "description": "徒歩通行中の男児に対して、黄緑色のスポーツタイプの自転車に乗車して来た男から下半身を見せつけられる事案が発生しました。男の特徴は、年齢２０～３０歳、身長１７０センチ位、中肉、黒色短髪、灰色のコートを着用していました。",
         "tags": [
           "露出"
@@ -1744,7 +1744,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "西南杜の湖畔公園内において、小学校の遠足で訪れていた男子児童が見知らぬ男から、名札を引っ張られ「どこの小学校か。」等と声をかけられる事案が発生しました。その後、引率の教員が男に声をかけたところ、男は立ち去っています。男は、年齢６０代から７０代、坊主頭、青色ジャンパー、ベージュ色長ズボンを着用しています。",
         "tags": [
           "暴行",
@@ -1760,7 +1760,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎3丁目",
-        "addressDetails": "37番",
+        "blockAndHouseNumber": "37番",
         "description": "男が徒歩通行中の小学生女児に下半身を見せるという事案が発生しました。犯人は年齢５０歳代、黒髪短髪、上衣不明、デニム生地のズボンを着用しています。",
         "tags": [
           "露出"
@@ -1775,7 +1775,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "若宮5丁目",
-        "addressDetails": "18番",
+        "blockAndHouseNumber": "18番",
         "description": "男が徒歩通行中の女性に下半身を見せるという事案が発生しました。犯人は年齢不明、身長１６０センチくらい、中肉、上下暗い色のスウェットを着用しています。",
         "tags": [
           "露出"
@@ -1790,7 +1790,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩で通行中の女子高校生が、見知らぬ男から「下着何色」と声を掛けられ、体を触られる事案が発生しました。男の特徴は、年齢５５歳から６０歳くらい、身長１６０センチメートルくらい、グレーの長袖シャツ、グレーのズボン、ハンチング帽子を着用していました。",
         "tags": [
           "わいせつな言動",
@@ -1811,7 +1811,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "五十川1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女性に、下半身を見せるという事案が発生しました。犯人は年齢１０代から２０代前半位、小太り、ボサボサの黒髪、白色カッターシャツ、黒系長ズボンを着用していました。",
         "tags": [
           "露出"
@@ -1831,7 +1831,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "荒江1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子大学生が、見知らぬ男から「運動しているの」と声をかけられる事案が発生しました。男は、３０～４０代くらい、身長１７５センチくらい、大柄、黒色天然パーマ、ひげあり、白色半袖、黒色ハーフパンツを着用し、赤色軽快自転車を使用しています。",
         "tags": [
           "不審な声かけ"
@@ -1846,7 +1846,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "諸岡5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生男児が見知らぬ外国人風の男女４名から声をかけられたあと、外国人風の男女らと共に写真を撮られる事案が発生しました。",
         "tags": [
           "不審な声かけ",
@@ -1862,7 +1862,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎5丁目",
-        "addressDetails": "11番",
+        "blockAndHouseNumber": "11番",
         "description": "女性が自転車に乗った見知らぬ男から「一万円やるから付き合って。」と声をかけられる事案が発生しました。男は、年齢７０歳代、やせ型で上下黒っぽい服を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -1877,7 +1877,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ男から肩を叩かれ、「これあげる」と声をかけられた後、うさぎのぬいぐるみを渡される事案が発生しました。男の特徴は、身長１７０センチメートルくらい、白髪、黒っぽい服を着用していました。",
         "tags": [
           "身体接触",
@@ -1893,7 +1893,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪の浜4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０代くらい、身長１７０センチメートルくらい、色不明の長袖シャツ、マスク、帽子を着用しています。",
         "tags": [
           "つきまとい"
@@ -1908,7 +1908,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻4丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "中学生女児等が徒歩で帰宅中、見知らぬ男から「じゃんけんしよう、勝ったらお金あげる」と声をかけられる事案が発生しました。男は、年齢６０歳位、身長１６０センチメートル位、小太り、白色短髪、青色長袖、ベージュ色のズボン、色不明のスニーカーを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -1923,7 +1923,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "三苫3丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "登校中の中学男児が車両に乗車した見知らぬ男から「ドア開いているから入ってきていいよ」と声をかけられる事案が発生しました。男は年齢不明、青色普通車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -1938,7 +1938,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "五十川2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女性に、下半身を見せるという事案が発生しました。犯人は年齢４０代から６０代、１６５センチメートル位、やせ型、黒色短髪、特徴不明の眼鏡、黒系半袖上衣、黒色マスクを着用していました",
         "tags": [
           "露出"
@@ -1953,7 +1953,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "高取2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女子高校生が、見知らぬ男から脇腹を叩かれる事案が発生しました。犯人は、年齢５０～６０歳位の男性、薄毛の白髪混じり、体格は中肉という特徴でした。",
         "tags": [
           "暴行"
@@ -1968,7 +1968,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "築港本町",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "散歩中の女性が、見知らぬ男からつきまとわれる事案が発生しました。男は、年齢３０代くらい、黒色の服上下、赤いサンダルのような靴を履いており、自転車に乗車していました。",
         "tags": [
           "つきまとい"
@@ -1983,7 +1983,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎駅東1丁目",
-        "addressDetails": "26番",
+        "blockAndHouseNumber": "26番",
         "description": "通行中の中学女児が見知らぬ女から「明日の天気を教えてください」「スーパーの場所を教えてください」と声をかけられる事案が発生しました。女は、年齢５０歳代、身長１５０～１６０センチメートル位、黒色短髪、赤色ワンピースを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -1998,7 +1998,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩で帰宅中の女性が前から来た見知らぬ男とすれ違った後、その男がＵターンして女性に付いてくるという事案が発生しました。女性は逃げて無事でした。男は、年齢２０～３０歳、身長１７５センチメートルくらい、体格普通、上下黒色の服、キャップ帽、白色マスク、黒縁眼鏡を着用していました。",
         "tags": [
           "つきまとい"
@@ -2013,7 +2013,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高木3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩進行中の男児に対して、外国人風の男１人から「お菓子あげるからおいで」と声をかけられ、後方からつきまとわれる事案が発生しました。男は、黒色長袖、黒色半ズボンを着用した黒髪の男でした。",
         "tags": [
           "不審な声かけ",
@@ -2029,7 +2029,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪の浜4丁目",
-        "addressDetails": "8番",
+        "blockAndHouseNumber": "8番",
         "description": "女性が見知らぬ男から「仕事何しているの」「どこら辺住んでいるの」「パパ活みたいな短時間バイトしない」等と声を掛けられる事案が発生しました。男は、年齢５０歳から６０歳位、身長１６０センチ位、白色シャツ、灰色ズボン、帽子を着用、茶色のバックを所持しています。",
         "tags": [
           "不審な声かけ",
@@ -2045,7 +2045,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "長住5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩で帰宅中の小学生男児が、自販機で飲み物を購入していた見知らぬ男と目が合った後、その男が男児の後を自宅付近まで付いてくるという事案が発生しました。男は、年齢３０歳くらい、黒色の長袖上衣でフードを被り、黒色長ズボン、黒色の靴、黒色ショルダーバッグ、白色マスク、眼鏡を着用していました。",
         "tags": [
           "つきまとい"
@@ -2060,7 +2060,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "城西2丁目",
-        "addressDetails": "13番",
+        "blockAndHouseNumber": "13番",
         "description": "徒歩通行中の女性が、自転車に乗車して来た男から身体を触られるわいせつ事案が発生しました。男の特徴は、年齢不明、白色上衣、ベージュ色ズボン、黒系統の靴を着用していました。",
         "tags": [
           "痴漢"
@@ -2075,7 +2075,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "皿山1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が、見知らぬ男から「ビスコいる？」等と声をかけられる事案が発生しました。男の特徴は６０～７０歳くらいの細身で、紺色チェックシャツ、茶色の帽子を着用し、杖をついていました。",
         "tags": [
           "不審な声かけ"
@@ -2090,7 +2090,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "千早1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女児が、見知らぬ男から、「クッキー食べる」と声をかけられる事案が発生しました。男は年齢５０～６０歳くらい、身長１６５センチメートルくらい、白髪短髪、中肉で白色の自動車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -2105,7 +2105,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "東比恵2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が下半身を露出する事案が発生しました。男は、年齢６０～７０歳位、細身、白色短髪、紺色上衣、茶色ズボンを着用しています。",
         "tags": [
           "露出"
@@ -2120,7 +2120,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "別府6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０代位、茶色半袖Ｔシャツ、黒色長ズボン、もじゃもじゃの黒髪、黒色自転車に乗車しています。",
         "tags": [
           "つきまとい"
@@ -2135,7 +2135,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "星の原団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女性に対し、「何階に住んでいる方ですか？」などと声をかける事案が発生しました。男は、年齢３０歳代、身長１６０センチ位、小太り、黒髪の坊主頭という特徴でした。",
         "tags": [
           "不審な声かけ"
@@ -2150,7 +2150,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎7丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "通行中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢６０歳から７０歳代、身長１５０センチ位、灰色の長袖Tシャツ、茶色の長ズボン、灰色の帽子を着用しています。",
         "tags": [
           "つきまとい"
@@ -2165,7 +2165,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "四箇6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "広場で、保育園女児が、見知らぬ男から下着を覗かれる事案が発生しました。犯人は、年齢２０から３０代、白色キャップ帽、白色半袖シャツ、白色ズボン、黒色靴を着用しています。",
         "tags": [
           "のぞき"
@@ -2180,7 +2180,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "桧原2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅途中の男児に対して、男が男児の前に立ち、片手を上げて通行を妨げるという不審者事案が発生しました。男は、年齢５０～５５歳くらい、身長１７５～１８０センチメートルくらい、黒色半袖Ｔシャツ、黒っぽいズボンを着用した男でした。",
         "tags": [
           "通行妨害"
@@ -2195,7 +2195,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪の浜5丁目",
-        "addressDetails": "9番",
+        "blockAndHouseNumber": "9番",
         "description": "下校中の小学生女児が見知らぬ男に後方から「わっ！」と言われ「おどろいた？」と声を掛けられてランドセルを触られる事案が発生しました。男は、顔にしわが多く、頭髪が薄い高齢の男性で、傘か杖のような棒状の物を所持していました。",
         "tags": [
           "不審な声かけ"
@@ -2210,7 +2210,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "今泉2丁目",
-        "addressDetails": "4番",
+        "blockAndHouseNumber": "4番",
         "description": "下校中の小学生女児が、見知らぬ男から体当たりされる暴行事案が発生しました。男は、年齢４０代後半くらい、身長１７５センチくらい、やせ型、短髪、黒色長袖上衣、色不明の長ズボンとスニーカーを着用し、ベージュ色の傘を所持していました。",
         "tags": [
           "暴行"
@@ -2225,7 +2225,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "北原1丁目",
-        "addressDetails": "11番",
+        "blockAndHouseNumber": "11番",
         "description": "広場で、小学生男児等が、見知らぬ男女から声をかけられ、男女と一緒に遊んでいる際に、手を掴まれたり、抱きついたりされる事案が発生しました。男は年齢３０歳代くらい、身長１７５センチメートルくらい、髪型ストレート、黒色シャツ、黒色長ズボンを着用しています。女は年齢３０歳代くらい、身長１６０センチメートルくらい、ショートカット、白色チェックシャツ、黒色ズボンを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -2241,7 +2241,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "小笹3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児らが、見知らぬ男から「一緒に遊ぼう。泥だんごの作り方教えて。」等と声をかけられ、携帯電話で撮影される事案が発生しました。男は、年齢３５～４０歳くらい、中肉、身長１６０センチくらい、黒色Ｔシャツ、迷彩柄ズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -2257,7 +2257,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "水谷1丁目",
-        "addressDetails": "17番",
+        "blockAndHouseNumber": "17番",
         "description": "敷地内で、男が徒歩通行中の女性に下半身を見せるという事案が発生しました。犯人は年齢不明、色不明のキャップ帽を着用しています。",
         "tags": [
           "露出"
@@ -2272,7 +2272,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "小笹3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女子中学生らが、見知らぬ男から体を触れられそうになる事案が発生しました。男は、年齢４０歳くらい、中肉、身長１７０センチくらい、白とベージュ色のボーダー柄ポロシャツ、白色長ズボンを着用していました。",
         "tags": [
           "身体接触未遂"
@@ -2287,7 +2287,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎照葉6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、遊んでいた小学生男児が、見知らぬ男から「ママいる？」「何小学校？」「ママいないなら、一緒に帰ろうか。」と声をかけられる事案が発生しました。男は、年齢３０～５０歳代、やせ型、眼鏡あり、黄色帽子、黒色半袖Ｔシャツ、青色長ズボンを着用し、青色自転車で立ち去っています。",
         "tags": [
           "不審な声かけ"
@@ -2302,7 +2302,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "中尾2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が、見知らぬ男からスマートフォンのルーレットアプリが止まった身体の部位（足の裏と脇）をくすぐられる事案が発生しました。男の特徴は細身で、白色半袖Ｔシャツ、黒っぽいハーフパンツ、黒色スニーカー、黒色リュックサック、眼鏡、顎鬚を生やしていました。",
         "tags": [
           "身体接触"
@@ -2317,7 +2317,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "長住5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男から「ビスコいる？」等と声をかけられる事案が発生しました。男の特徴は７０歳くらいの白髪で、顎鬚を生やしていました。",
         "tags": [
           "不審な声かけ"
@@ -2332,7 +2332,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "那珂5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男がスマートフォンを操作しながら、下半身を露出する事案が発生しました。男は、年齢３０～４０歳代、身長約１６５センチメートル、中肉、黒色キャップ帽、黒色の半袖上衣、黒色ズボンを着用しています。",
         "tags": [
           "露出"
@@ -2347,7 +2347,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "荒江1丁目",
-        "addressDetails": "35番",
+        "blockAndHouseNumber": "35番",
         "description": "通行中の女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０から３０歳代、グレー色長袖シャツ、ベージュ色長ズボン、黒か茶色の短髪パーマ、白色マスクを着用しています。",
         "tags": [
           "つきまとい"
@@ -2367,7 +2367,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "三苫2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "住宅で、女性が見知らぬ人物から脱衣所をのぞかれ、携帯電話を差し向けられる事案が発生しました。犯人の年齢、服装などは不明です。",
         "tags": [
           "のぞき",
@@ -2383,7 +2383,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "住宅で、女性が入浴中に何者かに浴室内をのぞかれる事案が発生しました。",
         "tags": [
           "のぞき"
@@ -2398,7 +2398,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "西新6丁目",
-        "addressDetails": "10番",
+        "blockAndHouseNumber": "10番",
         "description": "徒歩通行中の女性が、黒色のワンボックスタイプの車に乗車した男から、「好みのタイプだよ。かわいいね。」などと声をかけられる事案が発生しました。男は、年齢５０歳位、中肉、白髪交じりでした。",
         "tags": [
           "不審な声かけ"
@@ -2413,7 +2413,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性が見知らぬ男から後をついてこられる事案が発生しました。男は、２０代くらい、身長１７０センチメートルくらい、やせ型、黒髪のマッシュルームカット、カーキ色の半袖Ｔシャツ、黒っぽいズボンを着用していました。",
         "tags": [
           "つきまとい"
@@ -2428,7 +2428,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "博多駅南2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が見知らぬ外国人風の男から翻訳アプリを使用して「博多駅まで連れて行って」、「お礼に食事をごちそうさせて下さい」と声を掛けられる事案が発生しました。男は年齢３０歳位、身長１７０センチ位、中肉、黒色短髪、紺色Tシャツ、色不明ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -2443,7 +2443,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "野方",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "個人宅に、屋根の修理業者を名乗る男が「屋根の瓦が浮いている。工事する必要がある。屋根の確認をさせてほしい。」などと言って、屋根の点検を行い、高額な工事代金の契約を求める事案が発生しました。また、その他にも西区内において、同様の不審な業者が目撃されています。",
         "tags": [
           "不審な訪問"
@@ -2458,7 +2458,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "平尾1丁目",
-        "addressDetails": "8番",
+        "blockAndHouseNumber": "8番",
         "description": "通行中の女子高校生が見知らぬ男からスマートフォンを向けられ脚付近を撮影される事案が発生しました。男は、年齢３０～４０歳くらい、身長１６５センチくらい、やせ型、黒髪、灰色半袖Ｔシャツ、灰色長ズボンを着用していました。",
         "tags": [
           "撮影行為"
@@ -2473,7 +2473,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "飯倉3丁目",
-        "addressDetails": "39番",
+        "blockAndHouseNumber": "39番",
         "description": "通行中の男子生徒が、黄緑色の自転車に乗車して来た男から、卑わいな言葉をかけられ、下半身を触るところを見せつけられる事案が発生しました。男の特徴は、年齢１５～２０歳、身長１７０センチ位、やせ型でした。",
         "tags": [
           "わいせつな言動"
@@ -2488,7 +2488,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が全裸で徘徊する姿を女性が目撃する事案が発生しました。男の特徴は、年齢２０歳代、身長１６０センチメートルくらい、中肉、黒色短髪でした。",
         "tags": [
           "露出",
@@ -2504,7 +2504,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "徳永",
-        "addressDetails": "280番地",
+        "blockAndHouseNumber": "280番地",
         "description": "通行中の女子中学生が、見知らぬ男性から「キミの友達を知っているんだけど。」と声をかけられる事案が発生しました。男は年齢３０～４０歳位、黒色のナイキの靴を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -2519,7 +2519,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "水谷1丁目",
-        "addressDetails": "19番",
+        "blockAndHouseNumber": "19番",
         "description": "男が下半身を出しているという事案が発生しました。犯人は年齢３０～４０代、黒色短髪、中肉、灰色Ｔシャツ、黒色短パン、色不明のスニーカーを着用しています。",
         "tags": [
           "露出"
@@ -2534,7 +2534,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "井尻2丁目",
-        "addressDetails": "3番",
+        "blockAndHouseNumber": "3番",
         "description": "中学生女児が徒歩で帰宅中、見知らぬ男から「お金を下さい。」と声をかけられる事案が発生しました。男は、年齢２０歳代位、身長１６０センチメートル位、中肉、黒色短髪のアジア系の外国人でした。",
         "tags": [
           "不審な声かけ"
@@ -2549,7 +2549,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "老司5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、男が下半身を露出して立っている姿を女性が目撃する事案が発生しました。男の特徴は、年齢４０歳代から５０歳代、身長１７０センチメートルくらい、中年太り、淡色の半袖Ｔシャツ、黒色帽子を着用していました。",
         "tags": [
           "露出"
@@ -2564,7 +2564,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "長浜2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "集合住宅で、１階の集合ポスト付近を徘徊する不審者の目撃情報がありました。不審者は、中年男性、中肉、短髪、グレー色の上下スーツを着用し、青色の車両を使用していました。",
         "tags": [
           "徘徊"
@@ -2579,7 +2579,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "藤崎1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の女性が、見知らぬ男に後方から体を触られる事案が発生しました。男は、黒色半袖、黒色長ズボン、黒色帽子をかぶり、白色靴を履いていました。",
         "tags": [
           "痴漢"
@@ -2594,7 +2594,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "千早6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男児が見知らぬ男から携帯電話を差し向けられる事案が発生しました。犯人は年齢３０～４０歳代、中肉、黒色短髪、服装などは不明です。",
         "tags": [
           "撮影行為"
@@ -2609,7 +2609,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "鳥飼5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女性に、下半身を露出するという事案が発生しました。男は、年齢４０歳くらい、身長１６５センチくらい、長髪、黒色長袖上衣、青色ジーンズを着用しています。",
         "tags": [
           "露出"
@@ -2624,7 +2624,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "渡辺通2丁目",
-        "addressDetails": "6番",
+        "blockAndHouseNumber": "6番",
         "description": "中学生男児が、自転車に乗車した男性から暴言を吐かれながら追いかけ回される事案が発生しました。男性は、高齢、やせ型、白髪短髪、黒色ハット帽子、青色と黒色のチェック柄襟付きシャツ、黒色長ズボンを着用し、白色自転車に乗車していました。",
         "tags": [
           "威嚇",
@@ -2640,7 +2640,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "福浜1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "自転車に乗車した男が通行中の女性に、下半身を見せるという事案が発生しました。犯人は、年齢２０歳代、身長１７０センチ位、紺色半袖Ｔシャツ、黒色長ズボン、黒色リュックサックを着用し、マウンテンバイクに乗車しています。",
         "tags": [
           "露出"
@@ -2655,7 +2655,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "横手南町",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が、見知らぬ男から「お金を渡すので歩いている姿を撮影させてほしい」と声をかけられる事案が発生しました。女性が断ると、男は反対方向に立ち去りました。男は、３０～４０歳くらい、身長１７５センチメートルくらい、中肉、黒髪、紺色半袖上衣、黒色長ズボンを着用し、黒色ショルダーバッグを所持していました。",
         "tags": [
           "不審な声かけ"
@@ -2670,7 +2670,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "渡辺通3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女性が見知らぬ男から「ちょっといいですか。一人暮らしですか。」等と声をかけられる事案が発生しました。男は、年齢３０～４０歳くらい、中肉、身長１６０センチくらい、黒色短髪でした。",
         "tags": [
           "不審な声かけ"
@@ -2685,7 +2685,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "奈多2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "車両に乗車中の男が、徒歩通行中の女性に「神社への道を教えてくれ」等と声を掛け、下半身を見せるという事案が発生しました。犯人は２０歳代、黒髪、白色軽自動車使用、白色マスクを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -2701,7 +2701,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "天神5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "住宅で、女性が入浴中に何者かから、浴室内をのぞかれる事案が発生しました。",
         "tags": [
           "のぞき"
@@ -2716,7 +2716,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "元浜1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "駐車場で、下校中の小学生女児が、見知らぬ男から「家どこ？」「車に乗せてあげる」と声をかけられる事案が発生しました。男は、高齢、白髪交じり短髪、茶色のズボンを着用しています",
         "tags": [
           "不審な声かけ"
@@ -2731,7 +2731,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "舞鶴2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "登校中の小学生男児が、見知らぬ男から「ハグしよう」等と声をかけられる事案が発生しました。男は、年齢３０代後半くらい、黒髪、色不明のスーツを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -2746,7 +2746,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "吉塚4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男児らが、見知らぬ男からつきまとわれる事案が発生しました。男は、年齢４０歳代、身長１７０センチ位、白色マスク、フード付き黒色長袖、色不明の半ズボンを着用しています。",
         "tags": [
           "つきまとい"
@@ -2761,7 +2761,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "小戸4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が下半身を露出した男性を目撃するという事案が発生しました。犯人は年齢３０歳代、身長１７０センチ位、中肉、黒髪短髪、黒縁眼鏡着用という特徴です。",
         "tags": [
           "露出"
@@ -2776,7 +2776,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が自転車に乗車した見知らぬ男から、追い越し様に液体様のものをかけられる事案が発生しました。男は、雨具様の黒色長袖、短丈ズボン、黒色膝下丈のハイソックス、黒色ニット帽を着用し、かご付きの自転車に乗車していました。",
         "tags": [
           "暴行"
@@ -2791,7 +2791,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "福浜2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の中学生が、見知らぬ男から「家に来たら昔の音楽が聴けるよ」「家はどっち」等と声をかけられる事案が発生しました。男は、年齢７０歳代、青色ジャケット、緑色Tシャツ、チェック柄ズボン、眼鏡を着用し、自転車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -2806,7 +2806,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "桧原",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、女性に対して男が下半身を露出する事案が発生しました。男は、年齢２０歳代くらい、身長１７０センチメートルくらい、中肉、黒髪、ベージュ長袖、緑色ズボンを着用していました。",
         "tags": [
           "露出"
@@ -2821,7 +2821,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "福重4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生男児が見知らぬ男からつきまとわれる事案が発生しました。男は年齢５０歳くらい、黒色上下服、めがね、赤色マウスピースを着用しています。",
         "tags": [
           "つきまとい"
@@ -2836,7 +2836,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "那珂4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生男児が見知らぬ男から「ねぇ何年生？」と声を掛けられた後、約３０メートルつきまとわれる事案が発生しました。男は年齢３０歳位、中肉、黒髪、赤色Ｔシャツ、灰色肩掛けバッグを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -2852,7 +2852,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "馬出1丁目",
-        "addressDetails": "12番",
+        "blockAndHouseNumber": "12番",
         "description": "通行中の小学生女児が、見知らぬ男からカメラを向けられる事案が発生しました。男は、年齢３０歳位、灰色ズボンに黒色帽子、白色マスク、サングラスを着用しています。",
         "tags": [
           "撮影行為"
@@ -2867,7 +2867,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生男児が見知らぬ男５人から、「マイフレンド」と声をかけられ、小銭を渡される事案が発生しました。男らは、外国人風で、身長１６５センチメートルくらいでした。",
         "tags": [
           "不審な声かけ"
@@ -2882,7 +2882,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "筥松2丁目",
-        "addressDetails": "6番",
+        "blockAndHouseNumber": "6番",
         "description": "男が徒歩通行中の女性に下半身を見せるという事案が発生しました。犯人は年齢３０～３５歳くらい、やせ型、黒髪短髪、緑色半袖Tシャツ、黒色長ズボン、スニーカーを着用しています。",
         "tags": [
           "露出"
@@ -2897,7 +2897,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子中学生が見知らぬ男につきまとわれる事案が発生しました。男は、年齢３０歳くらい、身長１６５～１７０センチメートルくらい、青色カーディガン、白色Tシャツ、紺色長ズボンを着用し、黒色折りたたみ傘、茶色ショルダーバッグを所持しています。",
         "tags": [
           "つきまとい"
@@ -2912,7 +2912,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原5丁目",
-        "addressDetails": "17番",
+        "blockAndHouseNumber": "17番",
         "description": "男が通行中の女性に 下半身を見せつける事案が発生しました。犯人は、年齢４０代位、身長１７０センチ位、中肉、肩までの黒髪、色不明の半袖Tシャツ、青色ジーンズ、煙草を吸っていたという特徴でした。",
         "tags": [
           "露出"
@@ -2927,7 +2927,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女性が歩いていたところ、自転車に乗車した見知らぬ高校生風の男に、卑猥な言葉をかけられ、しばらくの間、つきまとわれる事案が発生しました。男は年齢１０代半ばくらい、身長１６０センチメートル～１７０センチメートルくらい、茶髪で短髪、白色カッターシャツ、黒色ズボンを着用していました。",
         "tags": [
           "わいせつな言動",
@@ -2943,7 +2943,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大平寺1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅途中の女性が見知らぬ男から声をかけられ、つきまとわれる事案が発生しました。男は、年齢５０～６０歳くらい、身長１６０～１６５センチメートルくらい、短髪、黒色の大きなリュックサックを所持した男でした。",
         "tags": [
           "不審な声かけ",
@@ -2959,7 +2959,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "三宅3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が原付バイクに乗車した見知らぬ男から、「私の犬を知らないか」としつこく声をかけられる事案が発生しました。男は２０歳代、灰色パーカーを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -2974,7 +2974,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "平和2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女児が見知らぬ男から「髪の色が変わったね」と声をかけられる事案が発生しました。女児が走って逃げると、男はその場からいずれかへ立ち去りました。男は、６０～７０歳くらい、白色キャップ帽、灰色半袖Ｔシャツ、黒色長ズボン、黒色スニーカーを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -2989,7 +2989,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "田村3丁目",
-        "addressDetails": "18番",
+        "blockAndHouseNumber": "18番",
         "description": "帰宅途中の男子児童が見知らぬ男から、「お金やるから付いて来て」と声をかけられる事案が発生しました。男は、年齢４０歳代、黒色短髪、黄色Tシャツ、青色デニム、黒色サングラスをかけ、白色マスクを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -3004,7 +3004,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "唐人町1丁目",
-        "addressDetails": "12番",
+        "blockAndHouseNumber": "12番",
         "description": "通行中の小学生女児が、見知らぬ男から「お菓子あげるよ」等と声をかけられる事案が発生しました。男は、年齢５０歳代から６０歳代、やせ型、黒色のバッグを所持し、緑色の自転車に乗車していました。",
         "tags": [
           "不審な声かけ"
@@ -3019,7 +3019,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "東浜1丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "商業施設内で女性が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢３０歳くらい、身長１６５センチくらい、紺色サッカーユニフォーム、ジーンズ生地の長ズボンを着用しています。",
         "tags": [
           "つきまとい"
@@ -3034,7 +3034,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "板付4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "見知らぬ女から「子供のくせに生意気だ」と声を掛けられ、走って追いかけられる事案が発生しました。女は、年齢５０歳位、金髪、紫色半袖Tシャツ、ベージュ色ズボンを着用しています。",
         "tags": [
           "威嚇",
@@ -3050,7 +3050,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "美野島1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "歩いて通行中の女性が、見知らぬ男から抱き着かれる事案が発生しました。男の特徴は、年齢３０歳代から５０歳代、黒色短髪、青色系の半袖シャツを着用し、自転車に乗車していました。",
         "tags": [
           "身体接触"
@@ -3065,7 +3065,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "松崎3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が通行中の女子中学生に下半身を見せるという事案が発生しました。男は年齢２０～３０歳くらい、身長１６５センチくらい、やせ型、黒色短髪、茶色革製ショルダーバッグ所持、青色長ズボンを着用しています。",
         "tags": [
           "露出"
@@ -3080,7 +3080,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪浜駅南2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性が、見知らぬ男から「足の写真を撮らせてほしい」と声をかけられる事案が発生しました。男は、年齢２０歳代、身長１６０センチ位、黒色短髪、白色Ｙシャツ、黒色スラックスを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3095,7 +3095,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "箱崎6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "飲酒状態の男が、自転車で通行中の男性に対し、手を広げて制止させようとした事案が発生しました。男は、白髪交じりの短髪、灰色半袖上衣、色不明のズボンを着用しています。",
         "tags": [
           "通行妨害"
@@ -3110,7 +3110,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "桜坂1丁目",
-        "addressDetails": "3番",
+        "blockAndHouseNumber": "3番",
         "description": "男が下半身を露出しているという事案が発生しました。男は年齢４０歳代、身長１６０センチくらい、中肉、黒髪、半袖ワイシャツ、黒っぽい長ズボン、眼鏡を着用しています。",
         "tags": [
           "露出"
@@ -3125,7 +3125,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "唐人町1丁目",
-        "addressDetails": "12番",
+        "blockAndHouseNumber": "12番",
         "description": "通行中の小学生女児が、見知らぬ男から日傘を叩かれる事案が発生しました。男は年齢７０歳代から８０歳代、身長１６５センチくらい、中肉、黒っぽい上衣を着用していました。",
         "tags": [
           "暴行"
@@ -3140,7 +3140,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大楠1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の男性が全身全裸の男を目撃するという事案が発生しました。目撃した男性が声を掛けたところ、犯人は走って逃げています。犯人は、黒色目出し帽をしており、逃げる際、黒色のTシャツを着用していました。",
         "tags": [
           "露出"
@@ -3155,7 +3155,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大楠2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、女性２人がベンチで談笑していたところ、公園の木の陰から男性が現れ、女性に対し、下半身を見せるという事案が発生しました。犯人は黒色Tシャツ、青色ジーンズを着用していました。",
         "tags": [
           "露出"
@@ -3170,7 +3170,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "大手門1丁目",
-        "addressDetails": "9番",
+        "blockAndHouseNumber": "9番",
         "description": "通行中の小学生男児が見知らぬ男からつきまとわれる事案が発生しました。男の特徴は３０歳代から４０歳代、身長１７０センチから１７５センチ位、やせ型、黒色短髪で、緑色半袖Ｔシャツ、黒っぽい短パンを着用し、肩掛けバッグを所持していました。",
         "tags": [
           "つきまとい"
@@ -3185,7 +3185,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向野1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩進行中の高校生らに対し、男が「かわいいね」などと声をかけながらつきまとう事案が発生しました。男は、年齢５０歳から６０歳代、身長１６０センチメートルくらい、黒っぽい上衣、黒色サンダル、スキンヘッドの男でした。",
         "tags": [
           "不審な声かけ",
@@ -3201,7 +3201,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向野2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が見知らぬ男からつきまとわれるという事案が発生しました。男は、年齢３０歳くらい、身長１７０センチメートルくらい、金髪、黒色半袖上衣、茶色ズボンを着用していました。",
         "tags": [
           "つきまとい"
@@ -3216,7 +3216,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "平尾浄水町",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からつきまとわれ、スマートフォンを向けられる事案が発生しました。男の特徴は、年齢３０歳代くらい、身長１７０センチから１７５センチくらい、中肉、黒色短髪で、上下黒色の服を着用していました。",
         "tags": [
           "つきまとい",
@@ -3232,7 +3232,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "天神2丁目",
-        "addressDetails": "2番",
+        "blockAndHouseNumber": "2番",
         "description": "エスカレーターで、通行中の女性が見知らぬ男から足首を触られる事案が発生しました。男の特徴は、年齢４０歳代から５０歳代、中肉、黒色短髪、黄色の半袖上衣、黒色の半ズボンを着用し、黒色のショルダーバッグを所持していました。",
         "tags": [
           "身体接触"
@@ -3247,7 +3247,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎駅前2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "男が下半身を露出する事案が発生しました。男は年齢５０～６０歳くらい、やせ型、白髪交じりの短髪、色不明の半袖Tシャツ、色不明の半ズボンを着用しています。",
         "tags": [
           "露出"
@@ -3262,7 +3262,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "和白東5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が、見知らぬ男から、「危ないので逃げてください」と声をかけられ、走って追いかけられる事案が発生しました。男は年齢不明、身長１７５センチくらい、茶色短髪、やせ型、白色半袖上衣、色不明半ズボンを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -3278,7 +3278,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原2丁目",
-        "addressDetails": "3番",
+        "blockAndHouseNumber": "3番",
         "description": "徒歩通行中の男子小学生が、見知らぬ男から「愛してると言って」などと声をかけられ、お腹を触られる事案が発生しました。男は、年齢５０歳代、身長１６０センチ位、黒色と水色の帽子、水色と白色の半袖Ｔシャツ、ズボンを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -3294,7 +3294,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "千早5丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が、見知らぬ男から、「パチンコ景品で当たったお菓子いらない？」「お金だったらいる？」と声をかけられる事案が発生しました。男は、年齢不詳、小柄、白色短髪、白色長袖シャツ、黒色長ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3309,7 +3309,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "今泉1丁目",
-        "addressDetails": "22番",
+        "blockAndHouseNumber": "22番",
         "description": "女性が、男から体を触られる事案が発生しました。犯人は、年齢３０歳代、身長１７５センチ位、白色半袖Ｔシャツ、黒色長ズボン、メガネを着用し、黒色の自転車を使用しています。",
         "tags": [
           "痴漢"
@@ -3324,7 +3324,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "雁の巣2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が自転車に乗車した見知らぬ男から「オレンジジュースをあげる」と声をかけられる事案が発生しました。男は、年齢７０歳くらい、身長１７０センチくらい、中肉、白色半袖、ベージュ色の短パン、銀色の自転車に乗車しています。",
         "tags": [
           "不審な声かけ"
@@ -3339,7 +3339,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女子高校生が見知らぬ男から、「下の方を触っていい？」などと声をかけられる事案が発生しました。男は、５０歳代、小太り、眼鏡、半袖グレーのＴシャツ、短パンを着用していました。",
         "tags": [
           "わいせつな言動"
@@ -3354,7 +3354,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "三宅3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ男から、「ねえねえ」と声をかけられる事案が発生しました。男は、２５歳くらい、茶色と黒が混ざった短髪、青色長袖上衣、長ズボン、白色マスクを着用していました。",
         "tags": [
           "不審な声かけ"
@@ -3369,7 +3369,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "下山門団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男から「パンツ見せてくれませんか」などと声をかけられる事案が発生しました。男は年齢５０歳代位、身長１７０センチ位、白髪交じりの黒髪短髪で、上下灰色っぽい服装をしています。",
         "tags": [
           "わいせつな言動"
@@ -3384,7 +3384,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "港1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女子中学生が、見知らぬ男から「調子に乗んな、殺すぞ。」と暴言を吐かれ、つきまとわれる事案が発生しました。男は、年齢４０歳代位、身長１７５センチ位、スキンヘッド、白色半袖Ｔシャツ、灰色半ズボン、サンダルを着用していました。",
         "tags": [
           "威嚇",
@@ -3400,7 +3400,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "南大橋2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "住宅で、女性が入浴中に犯人からのぞかれる事案が発生しました。",
         "tags": [
           "のぞき"
@@ -3415,7 +3415,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "野方6丁目",
-        "addressDetails": "10番",
+        "blockAndHouseNumber": "10番",
         "description": "通学中の小学生男児が、見知らぬ男から肩に手を掛けられ、「一緒に学校に行こう」と声をかけられる事案が発生しました。男は、年齢３０歳くらい、白色Ｔシャツ、黒色半ズボンを着用しています。",
         "tags": [
           "身体接触",
@@ -3431,7 +3431,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "泉1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男性からつきまとわれる事案が発生しました。男は年齢２０歳くらい、身長１８０センチくらい、やせ型、外国人風、黒色短髪、水色Ｔシャツを着用、黒色マウンテンバイクを使用しています。",
         "tags": [
           "つきまとい"
@@ -3446,7 +3446,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "野間4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "マンション敷地内で、女性が見知らぬ男から肩をトントンと叩かれ「タイプなので付き合ってください」と言われる事案が発生しました。女性が断ると、男は何れかへ立ち去りました。男は、年齢３０～４０歳代、上下黒っぽいランニング風の服装、水色ランニングシューズ、紺色キャップ帽、首にタオルを掛けていました。",
         "tags": [
           "身体接触",
@@ -3462,7 +3462,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "田隈3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男から、道を尋ねられた後、しばらくの間、無言でつきまとわれる事案が発生しました。男は、年齢５０～６０歳、身長１７０センチ位、小太り、黒色短髪、青地に白色のロゴ入りキャップ帽、灰色半袖、色不明の長ズボン、白色スニーカーを履いていました。",
         "tags": [
           "不審な声かけ",
@@ -3478,7 +3478,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "三宅3丁目",
-        "addressDetails": "28番",
+        "blockAndHouseNumber": "28番",
         "description": "自転車で通行中の女子高校生が、自転車に乗った見知らぬ男から追い抜きざまに「わっ」と大声を出される事案が発生しました。 男は、年齢１０歳代、黒色半袖、黒色ズボンを着用し、マウンテンバイクタイプの自転車に乗車していました。",
         "tags": [
           "威嚇"
@@ -3493,7 +3493,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生が、見知らぬ男から腕を掴まれる事案が発生しました。犯人は、年齢３０歳位、黒色短髪、身長１７０センチくらい、小太りでした。",
         "tags": [
           "身体接触"
@@ -3508,7 +3508,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "六本松1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が、見知らぬ男から「ねえ、君何年生。スポーツしてる。」などと声をかけられ、つきまとわれる事案が発生しました。男は年齢４０歳代から５０歳代くらい、身長１７５センチから１８０センチくらいで、灰色っぽい半袖シャツを着用していました。",
         "tags": [
           "不審な声かけ",
@@ -3524,7 +3524,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向野1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ女から、すれ違い様に顔を触られそうになる事案が発生しました。女は、７０歳代、身長１６０センチメートルくらい、肩くらいの長さの黒髪、白地に花柄の上衣、色不明のズボンを着用していました。",
         "tags": [
           "身体接触未遂"
@@ -3539,7 +3539,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "六本松",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "走行中のバス車内で、小学生女児が見知らぬ男から接近される事案が発生しました。男の特徴は年齢３０歳くらい、短髪、紺色Tシャツ、黒色ズボン、エナメルバッグを所持していました。",
         "tags": [
           "不審な接近"
@@ -3554,7 +3554,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "鳥飼7丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "女性が徒歩通行中、自転車に乗車した男性から、追い越しざまに体を触られる事件が発生しました。犯人は、中肉で、ダボっとしたＴシャツを着用しています。",
         "tags": [
           "痴漢"
@@ -3569,7 +3569,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大橋2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の２０代女性が見知らぬ男からつきまとわれ、「お姉さん、お姉さん」と声を掛けられる事案が発生しました。男は、年齢３０歳代、身長１７０センチメートルから１８０センチメートルくらい、黒髪パーマ、紺色上衣、白色ズボン、黒系バッグを所持していました。",
         "tags": [
           "つきまとい",
@@ -3585,7 +3585,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "六本松4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が、見知らぬ男からつきまとわれる事案が発生しました。男は、年齢３０代くらい、体格中肉、黒髪短髪、黒色半袖Tシャツ、黒色長ズボンを着用していました。",
         "tags": [
           "つきまとい"
@@ -3600,7 +3600,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "四箇6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生男児が、見知らぬ男から腕をつかまれそうになる事案が発生しました。男は、年齢２，３０歳、身長１７０センチ位、中肉、黒色キャップ帽、黒色上衣、灰色ズボンを着用しています。",
         "tags": [
           "身体接触未遂"
@@ -3615,7 +3615,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "七隈4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女児が見知らぬ男からつきまとわれる事案が発生しました。男は、年齢２０歳位、身長１７０センチ位、中肉、短髪、白系半袖、黒色長ズボン、黒色リュック所持、スポーツタイプの自転車に乗車しています。",
         "tags": [
           "つきまとい"
@@ -3630,7 +3630,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "清水3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "複数の小学生が通行中、見知らぬ外国人風の男から「家どこ」「小学校どこ」と声を掛けられる事案が発生しました。",
         "tags": [
           "不審な声かけ"
@@ -3645,7 +3645,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "若宮3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通行中の小学生女児が、見知らぬ男から、両肩を掴まれ、「お菓子食べに行かない。」と声を掛けられる暴行事案が発生しました。男は、年齢４０歳代、身長１７５センチから１８０センチくらい、中肉、黒色短髪、黒色上衣、白色シャツ、黒色ズボン、黒靴、黒色バッグを着用しています。",
         "tags": [
           "暴行",
@@ -3661,7 +3661,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大楠3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男からスマートフォンを向けられる事案が発生しました。男は、身長１７０センチメートルくらい、中肉、茶色Ｔシャツ、黒色ジーパン、黒色帽子、黒色リュックサック、白色マスクを着用していました。",
         "tags": [
           "撮影行為"
@@ -3676,7 +3676,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "香椎浜2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女児が、見知らぬ男から、「うちに来ない？」と声を掛けられた事案が発生しました。男は年齢６０歳くらい、身長１６０センチメートルくらい、身長１６０センチメートルくらい、白色交じりの短髪、色不明長袖シャツ、灰色ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3691,7 +3691,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "原田4丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生女児が見知らぬ男から「何歳？何年生？暑くない？」と声をかけられる事案が発生しました。男は、年齢３０歳代くらい、身長１７０センチメートルくらい、やせ型、紫色のバラ柄のジャンバー、白色上衣、黒色長ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3706,7 +3706,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "神松寺2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、遊んでいた女児等に対し、見知らぬ男が「髪長いね。家どこなの。」等と声をかける事案が発生しました。男は、年齢８０歳代くらい、短髪白髪、銀縁眼鏡、青緑色のＴシャツで、赤色自転車を使用しています。",
         "tags": [
           "不審な声かけ"
@@ -3721,7 +3721,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市博多区",
         "townArea": "神屋町",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の２０代女性が、見知らぬ男に声をかけられ、つきまとわれる事案が発生しました。男の特徴は、年齢３０代くらい、身長約１７０センチ、黒系の服を着用しています。",
         "tags": [
           "不審な声かけ",
@@ -3737,7 +3737,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "下山門3丁目",
-        "addressDetails": "13番",
+        "blockAndHouseNumber": "13番",
         "description": "中学生女児が見知らぬ男から「下山門駅の場所を教えてください」と聞かれ説明したところ、さらに「５分だけ話しませんか」と声をかけられつきまとわれる事案が発生しました。男は、年齢２０代くらい、身長１６５センチくらい、黒髪、黒色半袖Ｔシャツ、黒色長ズボンを着用しています。",
         "tags": [
           "不審な声かけ",
@@ -3753,7 +3753,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "市崎1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が見知らぬ男から無言でつきまとわれる事案が発生しました。男は、年齢５０～６０代くらい、紺色シャツ、ベージュ色ズボン、丸縁眼鏡を着用していました。",
         "tags": [
           "つきまとい"
@@ -3768,7 +3768,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "天神2丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "通行中の女性が、見知らぬ男からすれ違いざまに身体を触られる事案が発生しました。男は、年齢４０歳代くらい、身長１７５センチくらい、小太り、黒色短髪、白色長袖ワイシャツ、黒色長ズボンを着用し、黒色リュックを所持していました。",
         "tags": [
           "痴漢"
@@ -3783,7 +3783,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "多賀",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、遊戯中の児童らが、見知らぬ男からスマートフォンを向けられる事案が発生しました。男は、身長１７０センチメートルくらい、小太り、青色系の半袖カッターシャツ、黒っぽい長ズボン、眼鏡を着用しており、シルバー色の車に乗って立ち去りました。",
         "tags": [
           "撮影行為"
@@ -3798,7 +3798,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "姪の浜2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女子中学生達が、見知らぬ男性から声をかけられる事案が発生しました。男は、年齢６０歳代、身長１５５センチ位、小太り、白髪交じりの短髪、眼鏡、灰色の半袖Tシャツを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3813,7 +3813,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "大宮2丁目",
-        "addressDetails": "6番",
+        "blockAndHouseNumber": "6番",
         "description": "通行中の小学生女児らが、見知らぬ男から「どこの小学校ですか」などと声をかけられる事案が発生しました。男は、年齢５０歳代くらい、身長１７０センチから１７５センチくらい、中肉、黒色短髪、黒色リュックサックと肩掛けカバンを所持していました。",
         "tags": [
           "不審な声かけ"
@@ -3828,7 +3828,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "市崎2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の小学生男児が見知らぬ男からつきまとわれ、「何年生？」「きついね」「疲れたね」等と声を掛けられる事案が発生しました。男は、６０～７０歳くらい、身長１６０～１７０センチメートルくらい、中肉、坊主が少し伸びた髪型、白髪、灰色半袖シャツ、紺色長ズボン、サングラスを着用していました。",
         "tags": [
           "つきまとい",
@@ -3844,7 +3844,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "原田4丁目",
-        "addressDetails": "34番",
+        "blockAndHouseNumber": "34番",
         "description": "男が徒歩通行中の女性に下半身を見せるという事案が発生しました。犯人は年齢３５～４０歳くらい、帽子、黒色リュック、黒色ジャンパー、黒色長ズボンを着用しています。",
         "tags": [
           "露出"
@@ -3859,7 +3859,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "平尾1丁目",
-        "addressDetails": "7番",
+        "blockAndHouseNumber": "7番",
         "description": "女性が見知らぬ男からスマートフォンを向けられる事案が発生しました。男は、年齢４０歳代から５０歳代、小太り、薄めの頭髪で、白色半袖ポロシャツを着用していました。",
         "tags": [
           "撮影行為"
@@ -3874,7 +3874,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "高宮2丁目",
-        "addressDetails": "1番",
+        "blockAndHouseNumber": "1番",
         "description": "中学生女児が徒歩で帰宅中、見知らぬ男から「楽しそうに話していたね、高校生？どこの中学？」「おじさんは５０年ここに住んでいる」「またね」などと声をかけられる事案が発生しました。男は年齢６０歳くらい、薄毛、グレー色Tシャツ、黒色長ズボン、眼鏡を着用していました。",
         "tags": [
           "不審な声かけ"
@@ -3889,7 +3889,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "若宮2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "小学生女児が徒歩で通行中、下半身を露出した見知らぬ男を目撃するという事案が発生しました。男は年齢３０歳から４０歳くらい、半そで上衣、七分丈のズボン、スニーカーを着用しています。",
         "tags": [
           "露出"
@@ -3904,7 +3904,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "友丘3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "徒歩通学中の男子中学生らが、男とすれ違った後、後ろからついて来られる事案が発生しました。男は、年齢３０歳代くらい、身長１７０センチくらい、黒色キャップ帽、黒色長袖シャツ、黒色短パン、白マスクを着用しています。",
         "tags": [
           "つきまとい"
@@ -3919,7 +3919,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "塩原",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園において、遊戯中の児童らが、見知らぬ男３人から近寄られた後、自転車で追いかけられるという事案が発生しました。男３人は６０～７０代くらいで帽子を着用していました。その内の１人は水色の長袖シャツ、黒色長ズボンを着用していました。",
         "tags": [
           "追いかけ"
@@ -3934,7 +3934,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "南片江1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の男子児童に対し、見知らぬ男が「うちに来ない。」等と声をかける事案が発生しました。男は、年齢７０歳代くらい、茶色の上衣、デニムの長ズボンを着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3949,7 +3949,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市東区",
         "townArea": "城浜団地",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "下校中の小学生女児が、前方から歩いてきた見知らぬ男から顔を触られそうになる事案が発生しました。男は、年齢４０歳から５０歳くらい、やせ型で、服装等は不明です。",
         "tags": [
           "身体接触未遂"
@@ -3964,7 +3964,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大橋3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が、自転車に乗った不審な男から身体を触られる事案が発生しました。男は２０代から３０代、１７０センチメートルくらい、中肉、黒髪、色不明の長ズボン、四角い形のリュックサック、スポーツタイプの自転車使用でした。",
         "tags": [
           "痴漢"
@@ -3979,7 +3979,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市西区",
         "townArea": "下山門3丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の小学生女児が、自転車に乗車した見知らぬ男から、「かわいいから遊ぼう」と声をかけられる事案が発生しました。男は、年齢１０代くらい、学生服を着用しています。",
         "tags": [
           "不審な声かけ"
@@ -3994,7 +3994,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市早良区",
         "townArea": "原5丁目",
-        "addressDetails": "17番",
+        "blockAndHouseNumber": "17番",
         "description": "男が通行中の女性に下半身を見せつける事案が発生しました。犯人は、年齢４０～５０代位、身長１７０センチ位、中肉、紺色作業着風のつなぎ着用という特徴でした。",
         "tags": [
           "露出"
@@ -4009,7 +4009,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市城南区",
         "townArea": "別府6丁目",
-        "addressDetails": "9番",
+        "blockAndHouseNumber": "9番",
         "description": "下校途中の児童が、女からつきまとわれる事案が発生しました。女は、中年、黒色の帽子、黒色アームカバー、マスクを着用しています。",
         "tags": [
           "つきまとい"
@@ -4024,7 +4024,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "柏原6丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "公園で、男が下半身を露出している姿を児童が目撃する事案が発生しました。男は、年齢不詳、灰色Tシャツ、黒色ズボン、灰色帽子、マスク、サングラスを着用していました。",
         "tags": [
           "露出"
@@ -4039,7 +4039,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "大橋1丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "帰宅中の女性に、自転車に乗車した見知らぬ男が「ちょっとお尻揉ませてくれん」と声をかけられる事案が発生しました。男は、年齢２０から３０代位、黒系のフード付きパーカー着用、色形状不明の自転車に乗車していました。",
         "tags": [
           "わいせつな言動"
@@ -4054,7 +4054,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "平尾3丁目",
-        "addressDetails": "6番",
+        "blockAndHouseNumber": "6番",
         "description": "通行中の小学生男児らが、見知らぬ自転車乗車の男女から「５年生」「中学生にお姉ちゃんいる」などと声をかけられる事案が発生しました。男は、年齢４０歳代、黒色ニット帽、黒色上衣、黒色長ズボン着用、黒色自転車に乗車、女は、年齢４０歳代、肩くらいまでの髪型、ピンク色の自転車に乗車していました。",
         "tags": [
           "不審な声かけ"
@@ -4069,7 +4069,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市中央区",
         "townArea": "草香江",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "走行中のバス車内において、乗車中の女性が、男から体を触られる事案が発生しました。犯人は、年齢５０歳代、身長１７５センチ位、白っぽい服装、銀色メガネを着用しています。",
         "tags": [
           "痴漢"
@@ -4084,7 +4084,7 @@
         "prefecture": "福岡県",
         "municipality": "福岡市南区",
         "townArea": "向新町2丁目",
-        "addressDetails": null,
+        "blockAndHouseNumber": null,
         "description": "通行中の女性が見知らぬ男から手招きされ、「何か買ってあげるよ」と声を掛けられる事案が発生しました。男は、７０代くらい、白髪混じりの短髪、緑系の長袖ジャンパーを着用していました。",
         "tags": [
           "不審な声かけ"

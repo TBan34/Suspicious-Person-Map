@@ -38,7 +38,7 @@ function ReportDetail({ report }) {
       report.prefecture,
       report.municipality,
       report.townArea,
-      report.addressDetails,
+      report.blockAndHouseNumber,
     ].filter(Boolean);
 
     return parts.length > 0 ? parts.join(' ') : '住所未設定';

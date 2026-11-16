@@ -57,8 +57,8 @@ class ReportMessageParserCorpusTest {
                             .isEqualTo(expectedReport.path("municipality").asText());
                         assertThat(actualReport.townArea())
                             .isEqualTo(expectedReport.path("townArea").asText());
-                        assertThat(actualReport.addressDetails())
-                            .isEqualTo(expectedReport.path("addressDetails").asText(null));
+                        assertThat(actualReport.blockAndHouseNumber())
+                            .isEqualTo(expectedReport.path("blockAndHouseNumber").asText(null));
                         assertThat(actualReport.description())
                             .isEqualTo(expectedReport.path("description").asText());
                         List<String> expectedTags = new ArrayList<>();

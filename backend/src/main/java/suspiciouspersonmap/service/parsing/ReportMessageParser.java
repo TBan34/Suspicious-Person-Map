@@ -46,7 +46,7 @@ public class ReportMessageParser {
             DEFAULT_PREFECTURE,
             parsedAddress.municipality(),
             parsedAddress.townArea(),
-            parsedAddress.addressDetails(),
+            parsedAddress.blockAndHouseNumber(),
             description
         );
     }

@@ -143,7 +143,7 @@ class ReportServiceTest {
              * @param prefecture 都道府県
              * @param municipality 市区町村
              * @param townArea 町域・丁目
-             * @param addressDetails 番地以降の任意情報
+             * @param blockAndHouseNumber 番地・号の任意情報
              * @return テスト用の固定座標
              */
             @Override
@@ -151,7 +151,7 @@ class ReportServiceTest {
                     String prefecture,
                     String municipality,
                     String townArea,
-                    String addressDetails) {
+                    String blockAndHouseNumber) {
                 return new GeoPoint(33.5902, 130.4017);
             }
         };
@@ -199,7 +199,7 @@ class ReportServiceTest {
              * @param prefecture 都道府県
              * @param municipality 市区町村
              * @param townArea 町域・丁目
-             * @param addressDetails 番地以降の任意情報
+             * @param blockAndHouseNumber 番地・号の任意情報
              * @return 正常終了しないため返却値なし
              */
             @Override
@@ -207,7 +207,7 @@ class ReportServiceTest {
                     String prefecture,
                     String municipality,
                     String townArea,
-                    String addressDetails) {
+                    String blockAndHouseNumber) {
                 throw geocodingException;
             }
         };
@@ -268,7 +268,7 @@ class ReportServiceTest {
              * @param prefecture 都道府県
              * @param municipality 市区町村
              * @param townArea 町域・丁目
-             * @param addressDetails 番地以降の任意情報
+             * @param blockAndHouseNumber 番地・号の任意情報
              * @return テスト用の固定座標
              */
             @Override
@@ -276,7 +276,7 @@ class ReportServiceTest {
                     String prefecture,
                     String municipality,
                     String townArea,
-                    String addressDetails) {
+                    String blockAndHouseNumber) {
                 return new GeoPoint(33.5902, 130.4017);
             }
         };
@@ -316,11 +316,11 @@ class ReportServiceTest {
     }
 
     /**
-     * 番地以降がない場合に、空文字ではなく null が Entity へ設定されて保存されることを確認する。
+     * 番地・号がない場合に、空文字ではなく null が Entity へ設定されて保存されることを確認する。
      */
     @Test
-    void savesNullWhenAddressDetailsIsMissing() {
-        String messageWithoutAddressDetails = VALID_REPORT_MESSAGE.replace("天神1丁目1-1", "天神1丁目");
+    void savesNullWhenBlockAndHouseNumberIsMissing() {
+        String messageWithoutBlockAndHouseNumber = VALID_REPORT_MESSAGE.replace("天神1丁目1-1", "天神1丁目");
         AtomicReference<ReportEntity> savedReport = new AtomicReference<>();
         ReportRepository reportRepository = reportRepositoryCapturingSavedReport(savedReport);
         GeocodeService geocodeService = new GeocodeService(
@@ -333,7 +333,7 @@ class ReportServiceTest {
              * @param prefecture 都道府県
              * @param municipality 市区町村
              * @param townArea 町域・丁目
-             * @param addressDetails 番地以降の任意情報
+             * @param blockAndHouseNumber 番地・号の任意情報
              * @return テスト用の固定座標
              */
             @Override
@@ -341,7 +341,7 @@ class ReportServiceTest {
                     String prefecture,
                     String municipality,
                     String townArea,
-                    String addressDetails) {
+                    String blockAndHouseNumber) {
                 return new GeoPoint(33.5902, 130.4017);
             }
         };
@@ -351,10 +351,10 @@ class ReportServiceTest {
             ReportParserTestSupport.createParser()
         );
 
-        reportService.processReportMessage("line-user-id", messageWithoutAddressDetails, 1792897200000L);
+        reportService.processReportMessage("line-user-id", messageWithoutBlockAndHouseNumber, 1792897200000L);
 
         assertThat(savedReport.get()).isNotNull();
-        assertThat(savedReport.get().getAddressDetails()).isNull();
+        assertThat(savedReport.get().getBlockAndHouseNumber()).isNull();
     }
 
     /**
@@ -377,7 +377,7 @@ class ReportServiceTest {
              * @param prefecture 都道府県
              * @param municipality 市区町村
              * @param townArea 町域・丁目
-             * @param addressDetails 番地以降の任意情報
+             * @param blockAndHouseNumber 番地・号の任意情報
              * @return テスト用の固定座標
              */
             @Override
@@ -385,12 +385,12 @@ class ReportServiceTest {
                     String prefecture,
                     String municipality,
                     String townArea,
-                    String addressDetails) {
+                    String blockAndHouseNumber) {
                 geocodedAddressItems.set(List.of(
                     prefecture,
                     municipality,
                     townArea,
-                    addressDetails
+                    blockAndHouseNumber
                 ));
                 return new GeoPoint(33.5902, 130.4017);
             }
@@ -413,7 +413,7 @@ class ReportServiceTest {
         assertThat(savedReport.get().getPrefecture()).isEqualTo("福岡県");
         assertThat(savedReport.get().getMunicipality()).isEqualTo("福岡市中央区");
         assertThat(savedReport.get().getTownArea()).isEqualTo("天神1丁目");
-        assertThat(savedReport.get().getAddressDetails()).isEqualTo("4-5");
+        assertThat(savedReport.get().getBlockAndHouseNumber()).isEqualTo("4-5");
     }
 
     /**

@@ -114,11 +114,11 @@ class ReportMessageParserTest {
     @ParameterizedTest
     @CsvSource({"五十川二丁目十一番,五十川2丁目,11番", "一番町四丁目2番,一番町4丁目,2番",
         "向野一丁目1-1,向野1丁目,1-1", "井尻四丁目2番3号,井尻4丁目,2-3号"})
-    void convertsOnlyAddressNumbers(String address, String townArea, String details) {
+    void convertsOnlyAddressNumbers(String address, String townArea, String blockAndHouseNumber) {
         ParsedReportMessage parsedReport = parser.parse(
             createReportMessage("1月4日午後9時").replace("高宮1丁目11番", address), EVENT_TIMESTAMP);
         assertThat(parsedReport.townArea()).isEqualTo(townArea);
-        assertThat(parsedReport.addressDetails()).isEqualTo(details);
+        assertThat(parsedReport.blockAndHouseNumber()).isEqualTo(blockAndHouseNumber);
     }
 
     /**

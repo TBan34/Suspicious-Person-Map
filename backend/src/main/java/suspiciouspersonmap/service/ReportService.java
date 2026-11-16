@@ -118,7 +118,7 @@ public class ReportService {
                 parsedMessage.prefecture(),
                 parsedMessage.municipality(),
                 parsedMessage.townArea(),
-                parsedMessage.addressDetails()
+                parsedMessage.blockAndHouseNumber()
             );
         } catch (GeocodingException e) {
             throw new ReportException(
@@ -172,7 +172,7 @@ public class ReportService {
             report.setPrefecture(parsedMessage.prefecture());
             report.setMunicipality(parsedMessage.municipality());
             report.setTownArea(parsedMessage.townArea());
-            report.setAddressDetails(parsedMessage.addressDetails());
+            report.setBlockAndHouseNumber(parsedMessage.blockAndHouseNumber());
             report.setLatitude(location.getLatitude());
             report.setLongitude(location.getLongitude());
             report.setDescription(parsedMessage.description());

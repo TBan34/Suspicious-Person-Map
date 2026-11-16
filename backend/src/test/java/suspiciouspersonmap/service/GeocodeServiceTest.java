@@ -25,7 +25,7 @@ class GeocodeServiceTest {
     private static final String PREFECTURE = "福岡県";
     private static final String MUNICIPALITY = "福岡市中央区";
     private static final String TOWN_AREA = "天神1丁目";
-    private static final String ADDRESS_DETAILS = "1-1";
+    private static final String BLOCK_AND_HOUSE_NUMBER = "1-1";
 
     /**
      * Geocoding 成功時のDEBUGログにAPIキーおよび完全なリクエストURIが含まれないことを確認する。
@@ -71,7 +71,7 @@ class GeocodeServiceTest {
                 PREFECTURE,
                 MUNICIPALITY,
                 TOWN_AREA,
-                ADDRESS_DETAILS
+                BLOCK_AND_HOUSE_NUMBER
             );
 
             assertThat(point.getLatitude()).isEqualTo(33.5902);
@@ -117,7 +117,7 @@ class GeocodeServiceTest {
                 PREFECTURE,
                 MUNICIPALITY,
                 TOWN_AREA,
-                ADDRESS_DETAILS
+                BLOCK_AND_HOUSE_NUMBER
             )
         );
 
@@ -156,7 +156,7 @@ class GeocodeServiceTest {
                 PREFECTURE,
                 MUNICIPALITY,
                 TOWN_AREA,
-                ADDRESS_DETAILS
+                BLOCK_AND_HOUSE_NUMBER
             )
         );
 

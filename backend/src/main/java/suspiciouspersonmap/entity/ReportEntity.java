@@ -54,9 +54,9 @@ public class ReportEntity {
     @Column(name = "district", length = 100)
     private String townArea;
 
-    // 番地以降
+    // 番地・号
     @Column(name = "address_details", length = 255)
-    private String addressDetails;
+    private String blockAndHouseNumber;
 
     // 緯度
     @Column(name = "latitude", nullable = false)

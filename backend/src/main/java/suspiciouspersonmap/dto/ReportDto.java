@@ -37,8 +37,8 @@ public class ReportDto {
     // 町域・丁目
     private String townArea;
 
-    // 番地以降
-    private String addressDetails;
+    // 番地・号
+    private String blockAndHouseNumber;
 
     // 緯度
     private double latitude;

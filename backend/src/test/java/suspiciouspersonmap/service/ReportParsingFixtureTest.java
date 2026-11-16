@@ -75,11 +75,11 @@ class ReportParsingFixtureTest {
             }
             LocalDateTime occurDatetime = LocalDateTime.parse(expected.path("occurDatetime").asText());
             assertThat(occurDatetime).as(identifier).isBeforeOrEqualTo(japanDateTime.toLocalDateTime());
-            assertThat(expected.has("addressDetails")).as(identifier).isTrue();
-            JsonNode addressDetails = expected.path("addressDetails");
-            assertThat(addressDetails.isNull() || addressDetails.isTextual()).as(identifier).isTrue();
-            if (addressDetails.isTextual()) {
-                assertThat(addressDetails.asText()).as(identifier).isNotBlank();
+            assertThat(expected.has("blockAndHouseNumber")).as(identifier).isTrue();
+            JsonNode blockAndHouseNumber = expected.path("blockAndHouseNumber");
+            assertThat(blockAndHouseNumber.isNull() || blockAndHouseNumber.isTextual()).as(identifier).isTrue();
+            if (blockAndHouseNumber.isTextual()) {
+                assertThat(blockAndHouseNumber.asText()).as(identifier).isNotBlank();
             }
             JsonNode tags = expected.path("tags");
             assertThat(tags.isArray()).as(identifier).isTrue();

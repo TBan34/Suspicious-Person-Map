@@ -71,7 +71,7 @@ function AddressList({ reports, onSelect, selectedReport }) {
                       report.prefecture,
                       report.municipality,
                       report.townArea,
-                      report.addressDetails,
+                      report.blockAndHouseNumber,
                     ]
                       .filter(Boolean)
                       .join(' ') || '住所未設定';

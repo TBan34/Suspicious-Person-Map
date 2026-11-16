@@ -10,8 +10,8 @@ import java.util.List;
  * @param prefecture 都道府県
  * @param municipality 市区町村
  * @param townArea 町域・丁目
- * @param addressDetails 番地以降。記載がなければnull
+ * @param blockAndHouseNumber 番地・号。記載がなければnull
  * @param description 日時と住所の一般的な導入部を除いた概要
  */
 public record ParsedReportMessage(List<String> tags, LocalDateTime occurDatetime, String prefecture,
-        String municipality, String townArea, String addressDetails, String description) {}
+        String municipality, String townArea, String blockAndHouseNumber, String description) {}

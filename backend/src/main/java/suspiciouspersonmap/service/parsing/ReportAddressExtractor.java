@@ -18,12 +18,12 @@ public class ReportAddressExtractor {
     private static final Pattern MUNICIPALITY_PATTERN = Pattern.compile(
         "^(?:福岡県)?(?:福岡市)?(?<ward>東区|博多区|中央区|南区|城南区|早良区|西区)"
     );
-    // 「高宮1丁目11番」のように丁目がある住所。町域、丁目、任意の番地以降を分けて取得する。
+    // 「高宮1丁目11番」のように丁目がある住所。町域、丁目、任意の番地・号を分けて取得する。
     // 後続語まで先読みし、人物説明などを町域の続きとして取り込まない。
     private static final Pattern ADDRESS_WITH_CHOME_PATTERN = Pattern.compile(
         "^(?<town>[一-龠々ヶケぁ-んァ-ヶー]+?)"
         + "(?<chome>[0-9一二三四五六七八九十百]+丁目)"
-        + "(?<details>[0-9一二三四五六七八九十百]+"
+        + "(?<blockAndHouseNumber>[0-9一二三四五六七八九十百]+"
         + "(?:番地?|号|[-ー][0-9]+)(?:[0-9一二三四五六七八九十百]+号?)?)?"
         + "(?=付近|周辺|所在|の|に所在|にある|において|で|を|、|$)"
     );
@@ -32,7 +32,7 @@ public class ReportAddressExtractor {
     private static final Pattern ADDRESS_WITH_OPTIONAL_CHOME_PATTERN = Pattern.compile(
         "^(?<town>[一-龠々ヶケぁ-んァ-ヶー]+?団地|[一-龠々ヶケぁ-んァ-ヶー]+?)"
         + "(?<chome>[0-9一二三四五六七八九十百]+丁目)?"
-        + "(?<details>[0-9一二三四五六七八九十百]+"
+        + "(?<blockAndHouseNumber>[0-9一二三四五六七八九十百]+"
         + "(?:番地?|号|[-ー][0-9]+)(?:[0-9一二三四五六七八九十百]+号?)?)?"
         + "(?=付近|周辺|所在|の|に所在|にある|において|で|を|、|$)"
     );
@@ -61,13 +61,13 @@ public class ReportAddressExtractor {
      * 抽出した住所構成要素と、原文上で概要が始まる位置。
      * @param municipality 市区町村
      * @param townArea 町域・丁目
-     * @param addressDetails 番地以降。記載がなければnull
+     * @param blockAndHouseNumber 番地・号。記載がなければnull
      * @param descriptionStartIndex 日時除去後の原文上で概要が始まる位置
      */
     public record ParsedAddress(
         String municipality,
         String townArea,
-        String addressDetails,
+        String blockAndHouseNumber,
         int descriptionStartIndex
     ) {}
 
@@ -101,11 +101,11 @@ public class ReportAddressExtractor {
         String chome = addressMatcher.group("chome") == null
             ? ""
             : convertKanjiAddressNumbers(addressMatcher.group("chome"));
-        String addressDetails = convertKanjiAddressNumbers(addressMatcher.group("details"));
+        String blockAndHouseNumber = convertKanjiAddressNumbers(addressMatcher.group("blockAndHouseNumber"));
         return new ParsedAddress(
             "福岡市" + municipalityMatcher.group("ward"),
             addressNormalizer.normalize(town + chome),
-            addressNormalizer.normalize(addressDetails),
+            addressNormalizer.normalize(blockAndHouseNumber),
             ReportMessageTextUtils.toOriginalIndex(messageAfterDateTime, descriptionStartIndex)
         );
     }

@@ -48,7 +48,7 @@ public class ReportController {
                 entity.getPrefecture(),
                 entity.getMunicipality(),
                 entity.getTownArea(),
-                entity.getAddressDetails(),
+                entity.getBlockAndHouseNumber(),
                 entity.getLatitude(),
                 entity.getLongitude(),
                 entity.getDescription(),
