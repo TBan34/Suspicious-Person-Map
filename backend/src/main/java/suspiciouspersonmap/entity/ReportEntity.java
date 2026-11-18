@@ -39,7 +39,7 @@ public class ReportEntity {
     private String tag3;
 
     // 発生日時
-    @Column(name = "occurDate", length = 100)
+    @Column(name = "occur_datetime", length = 100)
     private LocalDateTime occurDatetime;
 
     // 都道府県
@@ -51,11 +51,11 @@ public class ReportEntity {
     private String municipality;
 
     // 町域・丁目
-    @Column(name = "district", length = 100)
+    @Column(name = "town_area", length = 100)
     private String townArea;
 
     // 番地・号
-    @Column(name = "address_details", length = 255)
+    @Column(name = "block_and_house_number", length = 255)
     private String blockAndHouseNumber;
 
     // 緯度
@@ -67,11 +67,11 @@ public class ReportEntity {
     private double longitude;
 
     // 概要
-    @Column(name = "summary", columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     // 作成日時
     @CreatedDate
-    @Column(name = "created", nullable = false, updatable = false)
+    @Column(name = "create_datetime", nullable = false, updatable = false)
     private LocalDateTime createDatetime;
 }

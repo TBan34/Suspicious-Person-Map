@@ -253,7 +253,7 @@ class ReportServiceTest {
             "SQLと登録値を含み得るメッセージ",
             sqlException,
             "insert into reports ...",
-            "reports_created_not_null"
+            "reports_create_datetime_not_null"
         );
         DataIntegrityViolationException databaseException = new DataIntegrityViolationException(
             "登録値を含み得るメッセージ", constraintViolationException);
@@ -300,7 +300,7 @@ class ReportServiceTest {
                 .contains("exceptionType=DataIntegrityViolationException")
                 .contains("rootCauseType=SQLException")
                 .contains("sqlState=23502")
-                .contains("constraint=reports_created_not_null")
+                .contains("constraint=reports_create_datetime_not_null")
                 .doesNotContain("失敗行に")
                 .doesNotContain("SQLと登録値を")
                 .doesNotContain("登録値を含み得る")
