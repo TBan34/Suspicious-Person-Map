@@ -12,7 +12,8 @@ LINE 公式アカウントで受信した不審者情報を Webhook 経由でバ
 flowchart LR
     line[LINE Platform] -->|HTTPS Webhook| ngrok[ngrok]
     ngrok -->|localhost:8080| backend[Spring Boot]
-    backend --> service[ReportService]
+    backend --> webhookService[LineWebhookService]
+    webhookService --> service[ReportService]
     service --> geocoding[Google Geocoding API]
     service --> db[(H2 / PostgreSQL)]
     frontend[React :5173] -->|GET /api/reports| backend
@@ -24,10 +25,11 @@ flowchart LR
 | HTTP 受信              | `LineController`                                |
 | Webhook 署名検証       | `LineWebhookSignatureVerifier`                  |
 | Webhook JSON の解析    | Jackson の `JsonNode`                           |
+| イベント単位の登録処理 | `LineWebhookService`                            |
 | メッセージ解析・保存   | `ReportService`                                 |
 | 接続検証で使用した経路 | ngrok から Spring Boot の `8080` 番ポートへ転送 |
 
-Controller は Webhook の HTTP 入出力を担当し、署名検証に成功したリクエストからユーザー ID、メッセージ本文、イベントの`timestamp`（UTCの1970年1月1日を起点とするUnix時間のミリ秒値）を抽出して `ReportService` へ渡す。`timestamp`自体にタイムゾーンは含まれないため、日時解析では`Asia/Tokyo`を明示して日本標準時へ変換する。解析は`service.parsing`配下のコンポーネントが担当し、`ReportService`は解析、Geocoding、データベース保存を調整する。
+Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON解析とイベントの取り出しを担当する。`LineWebhookService` は署名検証済みの単一イベントからユーザー ID、メッセージ本文、イベントの`timestamp`（UTCの1970年1月1日を起点とするUnix時間のミリ秒値）を抽出して `ReportService` へ渡す。ユーザー IDまたは本文がnull・空文字のイベントは処理しない。`timestamp`自体にタイムゾーンは含まれないため、日時解析では`Asia/Tokyo`を明示して日本標準時へ変換する。解析は`service.parsing`配下のコンポーネントが担当し、`ReportService`は解析、Geocoding、データベース保存を調整する。
 
 ## メッセージ解析
 
@@ -78,7 +80,7 @@ Controller は Webhook の HTTP 入出力を担当し、署名検証に成功し
 | `UNCLASSIFIABLE_TAG` | 判定可能なタグなし |
 | `TOO_MANY_TAGS` | 重複整理後に4種類以上 |
 
-解析失敗時はGeocoding・DB保存を行わない。イベント時刻の欠落・JSON型不正・`Long`範囲外は`LineController`で検証し、それ以外の解析失敗は`ReportService`で処理する。エラーを検出した側で処理段階・エラー種別・項目・アプリケーション定義の原因をERRORレベルで1回だけ記録し、上位層では重複記録しない。Webhook本文、署名、LINEユーザーID、入力値を埋め込んだ例外メッセージは記録しない。JSON構文エラーも入力断片を含み得る例外をログへ渡さない。
+解析失敗時はGeocoding・DB保存を行わない。イベント時刻の欠落・JSON型不正・`Long`範囲外は`LineWebhookService`で検証し、それ以外の解析失敗は`ReportService`で処理する。エラーを検出した側で処理段階・エラー種別・項目・アプリケーション定義の原因をERRORレベルで1回だけ記録し、上位層では重複記録しない。Webhook本文、署名、LINEユーザーID、入力値を埋め込んだ例外メッセージは記録しない。JSON構文エラーも入力断片を含み得る例外をログへ渡さない。
 
 ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。HTTP応答は従来どおり失敗時に固定文言の500を返す。LINEへの返信、時間範囲の開始時刻採用、複数日時の分割登録は未実装。同一Webhook内の2件目以降を処理しない既存の制約も今回変更していない。
 
@@ -147,6 +149,8 @@ X-Line-Signature と未解析の本文を検証
     ↓
 Jackson の JsonNode で JSON を解析
     ↓
+LineWebhookService でイベント項目を取得・検証
+    ↓
 ReportService でメッセージを解析
     ↓
 Geocoding
@@ -175,6 +179,7 @@ Geocoding
 
 - [`../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java`](../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java)
+- [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java`](../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java)
 - [`../../backend/pom.xml`](../../backend/pom.xml)
 - [`../security/security-and-privacy.md`](../security/security-and-privacy.md)

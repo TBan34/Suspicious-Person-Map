@@ -24,6 +24,7 @@ import suspiciouspersonmap.model.GeoPoint;
 import suspiciouspersonmap.repository.ReportRepository;
 import suspiciouspersonmap.service.GeocodeService;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
+import suspiciouspersonmap.service.LineWebhookService;
 import suspiciouspersonmap.service.ReportParserTestSupport;
 import suspiciouspersonmap.service.ReportService;
 
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class LineControllerTest {
@@ -54,7 +56,9 @@ class LineControllerTest {
         """;
 
     /**
-     * 署名済みイベントの時刻欠落・型不正・Long範囲外をControllerで一度だけ記録し、保存しないことを確認する。
+     * 署名済みイベントの時刻欠落・型不正・Long範囲外を一度だけ記録し、保存しないことを確認する。
+     *
+     * @param timestampJson 欠落状態またはJSON形式のイベント時刻
      */
     @ParameterizedTest
     @ValueSource(strings = {"missing", "null", "\"1792897200000\"", "1.5", "true", "{}", "9223372036854775808"})
@@ -67,20 +71,50 @@ class LineControllerTest {
         LineController controller = createController(service);
         ListAppender<ILoggingEvent> serviceAppender = attachListAppender(ReportService.class);
         ListAppender<ILoggingEvent> controllerAppender = attachListAppender(LineController.class);
+        ListAppender<ILoggingEvent> webhookServiceAppender = attachListAppender(LineWebhookService.class);
         try {
             ResponseEntity<String> response = controller.callback(body, createSignature(body));
             assertThat(response.getStatusCode().value()).isEqualTo(500);
             assertThat(response.getBody()).isEqualTo("Internal Server Error");
             assertThat(errorEvents(serviceAppender)).isEmpty();
-            assertThat(errorEvents(controllerAppender)).hasSize(1);
-            assertThat(errorEvents(controllerAppender).get(0).getFormattedMessage())
+            assertThat(errorEvents(controllerAppender)).isEmpty();
+            assertThat(errorEvents(webhookServiceAppender)).hasSize(1);
+            assertThat(errorEvents(webhookServiceAppender).get(0).getFormattedMessage())
                 .contains("error=INVALID_DATETIME", "item=eventTimestamp", "イベントタイムスタンプ")
                 .doesNotContain("line-user-id", body, createSignature(body));
-            assertThat(errorEvents(controllerAppender).get(0).getThrowableProxy()).isNull();
+            assertThat(errorEvents(webhookServiceAppender).get(0).getThrowableProxy()).isNull();
         } finally {
             detachListAppender(ReportService.class, serviceAppender);
             detachListAppender(LineController.class, controllerAppender);
+            detachListAppender(LineWebhookService.class, webhookServiceAppender);
         }
+    }
+
+    /**
+     * ユーザーIDまたは本文が欠落・null・空文字のイベントでは、Geocodingと保存を行わないことを確認する。
+     *
+     * @param eventJson 登録に必要なユーザーIDまたは本文を持たないイベントJSON
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "{\"message\":{\"text\":\"不審者情報\"}}",
+        "{\"source\":{\"userId\":null},\"message\":{\"text\":\"不審者情報\"}}",
+        "{\"source\":{\"userId\":\"\"},\"message\":{\"text\":\"不審者情報\"}}",
+        "{\"source\":{\"userId\":\"line-user-id\"}}",
+        "{\"source\":{\"userId\":\"line-user-id\"},\"message\":{\"text\":null}}",
+        "{\"source\":{\"userId\":\"line-user-id\"},\"message\":{\"text\":\"\"}}"
+    })
+    void ignoresEventWithoutUserIdOrText(String eventJson) {
+        String body = "{\"events\":[" + eventJson + "]}";
+        ReportRepository reportRepository = mock(ReportRepository.class);
+        GeocodeService geocodeService = mock(GeocodeService.class);
+        LineController controller = createController(new ReportService(
+            reportRepository, geocodeService, ReportParserTestSupport.createParser()));
+
+        ResponseEntity<String> response = controller.callback(body, createSignature(body));
+
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        verifyNoInteractions(reportRepository, geocodeService);
     }
 
     /**
@@ -283,12 +317,12 @@ class LineControllerTest {
     /**
      * テスト用の署名検証サービスを設定した LineController を生成する。
      *
-     * @param reportService Controller から呼び出す ReportService
+     * @param reportService イベント処理から呼び出す ReportService
      * @return テスト用の LineController
      */
     private LineController createController(ReportService reportService) {
         return new LineController(
-            reportService,
+            new LineWebhookService(reportService),
             new LineWebhookSignatureVerifier(TEST_CHANNEL_SECRET),
             new ObjectMapper()
         );

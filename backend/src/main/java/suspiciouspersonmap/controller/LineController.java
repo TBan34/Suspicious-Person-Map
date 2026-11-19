@@ -5,17 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
-import suspiciouspersonmap.service.ReportService;
+import suspiciouspersonmap.service.LineWebhookService;
 
 @Slf4j
 @RestController
@@ -26,7 +24,7 @@ public class LineController {
     private static final String BAD_REQUEST_MESSAGE = "Bad Request";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
 
-    private final ReportService reportService;
+    private final LineWebhookService lineWebhookService;
     private final LineWebhookSignatureVerifier lineWebhookSignatureVerifier;
     private final ObjectMapper objectMapper;
 
@@ -58,22 +56,8 @@ public class LineController {
 
             if (events.isArray() && events.size() > 0) {
                 for (JsonNode event : events) {
-                    String userId = event.path("source").path("userId").asText(null);
-                    String text   = event.path("message").path("text").asText(null);
-    
-                    if (StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(text)) {
-                        Long eventTimestamp;
-                        try {
-                            eventTimestamp = extractEventTimestamp(event);
-                        } catch (ReportException e) {
-                            // Serviceへ到達しない入力エラーのため、Controllerで一度だけ記録する。
-                            log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
-                                e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getDetail());
-                            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
-                        }
-                        reportService.processReportMessage(userId, text, eventTimestamp);
-                    }
-    
+                    lineWebhookService.processEvent(event);
+
                     return ResponseEntity.ok("OK");
                 }
             }
@@ -81,7 +65,7 @@ public class LineController {
             return ResponseEntity.ok("None");
 
         } catch (ReportException e) {
-            // ReportServiceで処理段階と例外を記録済みのため、ここでは重複出力しない。
+            // Serviceで処理段階と例外を記録済みのため、ここでは重複出力しない。
             return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (JsonProcessingException e) {
             // Jacksonの診断には入力断片が含まれ得るため、本文や例外メッセージを記録しない。
@@ -93,28 +77,4 @@ public class LineController {
         }
     }
 
-    /**
-     * LINEイベントからミリ秒単位のUnix時間を検証して取得する。
-     * @param event LINE WebhookのイベントJSON
-     * @return LINEイベント時刻
-     * @throws ReportException イベント時刻が欠落、またはlongの範囲内の整数として取得できない場合
-     */
-    private Long extractEventTimestamp(JsonNode event) {
-        JsonNode timestampNode = event.path("timestamp");
-        if (timestampNode.isMissingNode() || timestampNode.isNull()) {
-            throw new ReportException(
-                ReportErrorEnum.INVALID_DATETIME,
-                "eventTimestamp",
-                "イベントタイムスタンプが指定されていません"
-            );
-        }
-        if (!timestampNode.isIntegralNumber() || !timestampNode.canConvertToLong()) {
-            throw new ReportException(
-                ReportErrorEnum.INVALID_DATETIME,
-                "eventTimestamp",
-                "イベントタイムスタンプの型または範囲が不正です"
-            );
-        }
-        return timestampNode.longValue();
-    }
 }

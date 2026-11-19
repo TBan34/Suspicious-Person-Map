@@ -62,6 +62,7 @@ flowchart LR
 
     subgraph service[Service]
         signature[LineWebhookSignatureVerifier]
+        webhookService[LineWebhookService]
         reportService[ReportService]
         parser[ReportMessageParser]
         normalizer[AddressNormalizer]
@@ -76,7 +77,8 @@ flowchart LR
     end
 
     lineController --> signature
-    lineController --> reportService
+    lineController --> webhookService
+    webhookService --> reportService
     reportService --> parser
     parser --> normalizer
     reportService --> geocode
@@ -90,8 +92,9 @@ flowchart LR
 
 | コンポーネント | 主な責務 |
 | --- | --- |
-| `LineController` | `POST /line/callback` を受信し、署名検証後に Webhook JSON からユーザー ID・テキストを取り出し、イベント時刻を検証して取得する |
+| `LineController` | `POST /line/callback` を受信し、署名検証・JSON解析後にイベント単位の処理を呼び出してHTTP応答を返す |
 | `LineWebhookSignatureVerifier` | 未加工のリクエスト本文と `X-Line-Signature` をチャネルシークレットで検証する |
+| `LineWebhookService` | 単一イベントからユーザー ID・テキスト・イベント時刻を取得・検証し、`ReportService`へ登録を委譲する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
 | `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
 | `AddressNormalizer` | 住所項目の Unicode・空白・数字間の区切り表記を正規化する |
@@ -126,6 +129,7 @@ sequenceDiagram
     participant LINE as LINE Platform
     participant Controller as LineController
     participant Verifier as 署名検証
+    participant WebhookService as LineWebhookService
     participant Service as ReportService
     participant Geocode as GeocodeService
     participant Generator as GeocodingAddressCandidateGenerator
@@ -138,7 +142,9 @@ sequenceDiagram
     alt 署名が不正
         Controller-->>LINE: 400 Bad Request
     else 署名が有効
-        Controller->>Service: ユーザー ID・テキスト・イベント時刻
+        Controller->>WebhookService: 単一イベント
+        WebhookService->>WebhookService: 項目取得・イベント時刻検証
+        WebhookService->>Service: ユーザー ID・テキスト・イベント時刻
         Service->>Service: 検証・項目抽出・日時変換・住所正規化
         Service->>Geocode: 正規化済みの住所項目
         Geocode->>Generator: 住所候補を生成
@@ -149,7 +155,8 @@ sequenceDiagram
         end
         Geocode-->>Service: 採用した座標
         Service->>DB: 報告と採用した座標を保存
-        Service-->>Controller: 登録完了
+        Service-->>WebhookService: 登録完了
+        WebhookService-->>Controller: イベント処理完了
         Controller-->>LINE: 200 OK
     end
 ```
