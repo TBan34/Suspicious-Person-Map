@@ -161,7 +161,7 @@ sequenceDiagram
     end
 ```
 
-登録処理は Webhook リクエスト内で同期的に実行される。解析エラーではGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。対応形式・拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。Geocoding で有効な座標を得られない場合や保存に失敗した場合は `ReportException` として処理され、報告は保存されず、Webhook へ `500 Internal Server Error` を返す。
+上図は単一イベントが正常に登録される経路を示す。登録処理は Webhook リクエスト内で同期的に実行され、同一リクエストの全イベントを順に処理する。解析エラーではそのイベントのGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。1件の失敗でも後続イベントへ進み、成功したイベントの登録は保持する。対応形式・拒否条件は[メッセージ解析](../integrations/line-messaging-api.md#メッセージ解析)、イベント単位の失敗処理とWebhook全体のHTTP応答は[複数イベントの仕様](../integrations/line-messaging-api.md#同一webhook内の複数イベント)を参照する。
 
 `ReportService.processReportMessage` には `@Transactional` が付いている。現在の処理順は Geocoding の完了後に 1 件を保存するため、外部 API の呼び出し結果とデータベース保存が別々の報告として残る構成ではない。ただし、外部の Geocoding API 自体はデータベーストランザクションの対象外である。
 

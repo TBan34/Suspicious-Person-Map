@@ -55,24 +55,36 @@ public class LineController {
             JsonNode events = root.path("events");
 
             if (events.isArray() && events.size() > 0) {
+                boolean eventProcessingFailedFlg = false;
                 for (JsonNode event : events) {
-                    lineWebhookService.processEvent(event);
-
-                    return ResponseEntity.ok("OK");
+                    try {
+                        lineWebhookService.processEvent(event);
+                    } catch (ReportException e) {
+                        // このイベントのエラーはServiceで記録済みのため、
+                        // Controllerでは再記録せず、次のイベントへ進む。
+                        eventProcessingFailedFlg = true;
+                    } catch (Exception e) {
+                        // 例外メッセージや原因には非公開値が含まれ得るため、種別だけを記録する。
+                        log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
+                            e.getClass().getSimpleName());
+                        eventProcessingFailedFlg = true;
+                    }
                 }
+                if (eventProcessingFailedFlg) {
+                    return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
+                }
+                return ResponseEntity.ok("OK");
             }
 
             return ResponseEntity.ok("None");
 
-        } catch (ReportException e) {
-            // Serviceで処理段階と例外を記録済みのため、ここでは重複出力しない。
-            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (JsonProcessingException e) {
             // Jacksonの診断には入力断片が含まれ得るため、本文や例外メッセージを記録しない。
             log.error("LINE WebhookのJSON解析に失敗しました。stage=webhook_json_parsing");
             return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (Exception e) {
-            log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing", e);
+            log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
+                e.getClass().getSimpleName());
             return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         }
     }
