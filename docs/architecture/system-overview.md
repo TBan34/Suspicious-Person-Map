@@ -19,7 +19,7 @@
 - 保存済み報告を画面表示用 DTO として提供する
 - 報告を住所一覧、Google Maps のマーカー、詳細欄へ表示する
 
-ユーザー管理、報告の更新・削除、管理画面、通知、公開環境へのデプロイは現在の実装範囲に含まれない。本番の接続先と運用基盤も未決定である。
+登録失敗時は送信元のLINEトークへ固定文言のエラー返信を試みる。ユーザー管理、報告の更新・削除、管理画面、その他の通知、公開環境へのデプロイは現在の実装範囲に含まれない。本番の接続先と運用基盤も未決定である。
 
 ## システムコンテキスト
 
@@ -36,6 +36,7 @@ flowchart LR
 
     reporter -->|不審者情報の文章を送信| line
     line -->|署名付き HTTPS Webhook| backend
+    backend -->|登録失敗時のエラー返信| line
     backend -->|住所候補を送信| geocoding
     geocoding -->|緯度・経度| backend
     backend -->|報告を保存・取得| database
@@ -63,6 +64,7 @@ flowchart LR
     subgraph service[Service]
         signature[LineWebhookSignatureVerifier]
         webhookService[LineWebhookService]
+        replyService[LineReplyService]
         reportService[ReportService]
         parser[ReportMessageParser]
         normalizer[AddressNormalizer]
@@ -79,6 +81,8 @@ flowchart LR
     lineController --> signature
     lineController --> webhookService
     webhookService --> reportService
+    webhookService -->|登録失敗時| replyService
+    replyService -->|HTTPS| line[LINE Messaging API]
     reportService --> parser
     parser --> normalizer
     reportService --> geocode
@@ -94,7 +98,8 @@ flowchart LR
 | --- | --- |
 | `LineController` | `POST /line/callback` を受信し、署名検証・JSON解析後にイベント単位の処理を呼び出してHTTP応答を返す |
 | `LineWebhookSignatureVerifier` | 未加工のリクエスト本文と `X-Line-Signature` をチャネルシークレットで検証する |
-| `LineWebhookService` | 単一イベントからユーザー ID・テキスト・イベント時刻を取得・検証し、`ReportService`へ登録を委譲する |
+| `LineWebhookService` | 単一イベントの登録を調整し、登録トランザクションの外で失敗を捕捉してLINE返信を呼び出す |
+| `LineReplyService` | 応答トークンを使い、固定文言の登録エラーを送信元のLINEトークへ返信する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
 | `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
 | `AddressNormalizer` | 住所項目の Unicode・空白・数字間の区切り表記を正規化する |
@@ -105,7 +110,7 @@ flowchart LR
 
 `ReportController` は現在 Service を介さず `ReportRepository` を直接参照している。これは現状の読み取り処理が全件取得と DTO 変換だけで構成されているためである。
 
-`LineReplyService`はLINEエラー返信の通信部品として実装済みだが、Spring Bean登録とWebhook処理への接続は未実施であるため、上図の実行経路には含めていない。部品の入出力と現在の接続状況は[LINE連携仕様](../integrations/line-messaging-api.md#lineエラー返信の通信部品)を参照する。
+LINE返信の入出力・アクセストークンの設定・通信失敗時の扱いは[LINE連携仕様](../integrations/line-messaging-api.md#lineエラー返信の通信部品)を参照する。
 
 ### フロントエンド
 

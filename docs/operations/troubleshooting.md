@@ -56,7 +56,9 @@ Spring Boot（local-h2）→ ngrok
 
 ### 解析エラーの確認
 
-`stage=report_message_transformation`のERRORログには`error`（種別）、`item`（項目）、`reason`（安全な原因）が出る。`item=eventTimestamp`なら発生日時の文面ではなくWebhookイベントの時刻を確認する。拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。解析失敗時はGeocodingと保存を行わず、LINEへの返信も行わない。
+`stage=report_message_transformation`のERRORログには`error`（種別）、`item`（項目）、`reason`（安全な原因）が出る。`item=eventTimestamp`なら発生日時の文面ではなくWebhookイベントの時刻を確認する。拒否条件は[LINE連携仕様](../integrations/line-messaging-api.md#メッセージ解析)を参照する。解析失敗時はGeocodingと保存を行わず、送信元のLINEトークへ固定文言のエラー返信を試みる。
+
+WebhookのHTTP 200は、登録や返信の成功を意味しない。登録エラーはその処理段階のログ、返信エラーは`stage=line_reply`のログを確認する。返信の`httpStatus=401`ではアクセストークンの設定元、`reason=missing_reply_token`では返信可能なイベントかを確認する。認証情報や応答トークンの値をログへ出力して調査しない。設定方法は[LINE連携仕様](../integrations/line-messaging-api.md#lineエラー返信の通信部品)を参照する。
 
 ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。通常の起動手順では解析エラーを `backend/logs/error.log` で確認できる。保存先の変更、圧縮済み過去ログの確認、保持期間は [`logging.md`](logging.md) を参照する。Webhook本文・署名・ユーザーIDを追加ログで出力して調査しない。
 

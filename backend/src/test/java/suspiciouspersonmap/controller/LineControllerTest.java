@@ -13,16 +13,23 @@ import java.util.Base64;
 import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.client.MockRestServiceServer;
 import suspiciouspersonmap.entity.ReportEntity;
 import suspiciouspersonmap.model.GeoPoint;
 import suspiciouspersonmap.repository.ReportRepository;
 import suspiciouspersonmap.service.GeocodeService;
+import suspiciouspersonmap.service.LineReplyService;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
 import suspiciouspersonmap.service.LineWebhookService;
 import suspiciouspersonmap.service.ReportParserTestSupport;
@@ -35,6 +42,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class LineControllerTest {
 
@@ -46,6 +56,7 @@ class LineControllerTest {
           "events": [
             {
               "timestamp": 1792897200000,
+              "replyToken": "test-reply-token",
               "source": {"userId": "line-user-id"},
               "message": {
                 "text": "2025年9月8日午後6時10分、福岡市中央区天神1丁目1-1付近の路上で、女性が男から「何年生？」と声をかけられました。"
@@ -55,6 +66,28 @@ class LineControllerTest {
         }
         """;
 
+    private LineReplyService lineReplyService;
+    private MockRestServiceServer replyServer;
+
+    /**
+     * LINE返信のHTTP送受信先を差し替えた実際の返信サービスを用意する。
+     * レスポンス: なし。
+     */
+    @BeforeEach
+    void setUpReplyService() {
+        MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
+        lineReplyService = new LineReplyService(new RestTemplateBuilder(customizer), "test-channel-access-token");
+        replyServer = customizer.getServer();
+    }
+
+    /**
+     * 期待した返信だけが送信されたことを確認する。レスポンス: なし。
+     */
+    @AfterEach
+    void verifyReplies() {
+        replyServer.verify();
+    }
+
     /**
      * 署名済みイベントの時刻欠落・型不正・Long範囲外を一度だけ記録し、保存しないことを確認する。
      *
@@ -63,6 +96,7 @@ class LineControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"missing", "null", "\"1792897200000\"", "1.5", "true", "{}", "9223372036854775808"})
     void rejectsInvalidSignedEventTimestamp(String timestampJson) {
+        expectErrorReply();
         String body = timestampJson.equals("missing")
             ? VALID_WEBHOOK_BODY.replace("\"timestamp\": 1792897200000,", "")
             : VALID_WEBHOOK_BODY.replace("1792897200000", timestampJson);
@@ -74,8 +108,8 @@ class LineControllerTest {
         ListAppender<ILoggingEvent> webhookServiceAppender = attachListAppender(LineWebhookService.class);
         try {
             ResponseEntity<String> response = controller.callback(body, createSignature(body));
-            assertThat(response.getStatusCode().value()).isEqualTo(500);
-            assertThat(response.getBody()).isEqualTo("Internal Server Error");
+            assertThat(response.getStatusCode().value()).isEqualTo(200);
+            assertThat(response.getBody()).isEqualTo("OK");
             assertThat(errorEvents(serviceAppender)).isEmpty();
             assertThat(errorEvents(controllerAppender)).isEmpty();
             assertThat(errorEvents(webhookServiceAppender)).hasSize(1);
@@ -257,6 +291,7 @@ class LineControllerTest {
      */
     @Test
     void doesNotLogReportExceptionTwice() {
+        expectErrorReply();
         GeocodeService geocodeService = mock(GeocodeService.class);
         when(geocodeService.getLatLng(anyString(), anyString(), anyString(), any()))
             .thenThrow(new RuntimeException("Geocoding失敗"));
@@ -275,8 +310,8 @@ class LineControllerTest {
                 createSignature(VALID_WEBHOOK_BODY)
             );
 
-            assertThat(response.getStatusCode().value()).isEqualTo(500);
-            assertThat(response.getBody()).isEqualTo("Internal Server Error");
+            assertThat(response.getStatusCode().value()).isEqualTo(200);
+            assertThat(response.getBody()).isEqualTo("OK");
             assertThat(response.getBody()).doesNotContain("Geocoding失敗");
             assertThat(errorEvents(serviceAppender)).hasSize(1);
             assertThat(errorEvents(controllerAppender)).isEmpty();
@@ -322,10 +357,20 @@ class LineControllerTest {
      */
     private LineController createController(ReportService reportService) {
         return new LineController(
-            new LineWebhookService(reportService),
+            new LineWebhookService(reportService, lineReplyService),
             new LineWebhookSignatureVerifier(TEST_CHANNEL_SECRET),
             new ObjectMapper()
         );
+    }
+
+    /**
+     * 失敗したイベントの応答トークンへエラー返信が送られることを期待する。
+     * レスポンス: なし。
+     */
+    private void expectErrorReply() {
+        replyServer.expect(requestTo("https://api.line.me/v2/bot/message/reply"))
+            .andExpect(jsonPath("$.replyToken").value("test-reply-token"))
+            .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
     }
 
     /**

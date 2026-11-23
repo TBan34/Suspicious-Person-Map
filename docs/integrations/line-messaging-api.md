@@ -14,6 +14,8 @@ flowchart LR
     ngrok -->|localhost:8080| backend[Spring Boot]
     backend --> webhookService[LineWebhookService]
     webhookService --> service[ReportService]
+    webhookService -->|登録失敗時| replyService[LineReplyService]
+    replyService -->|応答メッセージAPI| line
     service --> geocoding[Google Geocoding API]
     service --> db[(H2 / PostgreSQL)]
     frontend[React :5173] -->|GET /api/reports| backend
@@ -27,6 +29,7 @@ flowchart LR
 | Webhook JSON の解析    | Jackson の `JsonNode`                           |
 | イベント単位の登録処理 | `LineWebhookService`                            |
 | メッセージ解析・保存   | `ReportService`                                 |
+| 登録失敗時のLINE返信   | `LineReplyService`                              |
 | 接続検証で使用した経路 | ngrok から Spring Boot の `8080` 番ポートへ転送 |
 
 Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON解析とイベントの取り出しを担当する。`LineWebhookService` は署名検証済みの単一イベントからユーザー ID、メッセージ本文、イベントの`timestamp`（UTCの1970年1月1日を起点とするUnix時間のミリ秒値）を抽出して `ReportService` へ渡す。ユーザー IDまたは本文がnull・空文字のイベントは処理しない。`timestamp`自体にタイムゾーンは含まれないため、日時解析では`Asia/Tokyo`を明示して日本標準時へ変換する。解析は`service.parsing`配下のコンポーネントが担当し、`ReportService`は解析、Geocoding、データベース保存を調整する。
@@ -82,7 +85,7 @@ Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON�
 
 解析失敗時はGeocoding・DB保存を行わない。イベント時刻の欠落・JSON型不正・`Long`範囲外は`LineWebhookService`で検証し、それ以外の解析失敗は`ReportService`で処理する。エラーを検出した側で処理段階・エラー種別・項目・アプリケーション定義の原因をERRORレベルで1回だけ記録し、上位層では重複記録しない。Webhook本文、署名、LINEユーザーID、入力値を埋め込んだ例外メッセージは記録しない。JSON構文エラーも入力断片を含み得る例外をログへ渡さない。
 
-ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。LINE返信の通信部品は実装済みだが、登録失敗時の呼び出しは未接続である。時間範囲の開始時刻採用、複数日時の分割登録は未実装。
+ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。登録失敗時は後述のLINEエラー返信を試みる。時間範囲の開始時刻採用、複数日時の分割登録は未実装。
 
 ## 同一Webhook内の複数イベント
 
@@ -91,13 +94,14 @@ Controllerは`events`配列の順にすべてのイベントを処理する。�
 - ユーザーIDまたは本文がnull・空文字のイベントは無視し、次のイベントへ進む。
 - イベント時刻の検証、解析、Geocoding、DB保存で失敗しても、後続イベントを処理する。
 - `ReportService`のトランザクションはイベントごとに完了する。他のイベントの失敗によって成功分を取り消さず、DB保存失敗後も別のトランザクションで次のイベントを処理する。
-- Serviceで記録済みの`ReportException`をControllerで重複記録しない。それ以外のイベント処理例外（トランザクション境界の例外など）は、Controllerで処理段階と例外クラス名だけをERRORログへ記録する。非公開値を含み得る例外メッセージ・原因・スタックトレースは出力しない。
+- `LineWebhookService`は`ReportService`のトランザクションの外側で登録失敗を捕捉する。記録済みの`ReportException`は再記録せず、それ以外の例外（トランザクション境界の例外など）は処理段階と例外クラス名だけをERRORログへ記録する。
+- 登録失敗時はそのイベントの`replyToken`で固定文言の返信を試みる。返信APIの失敗や応答トークン欠落は`stage=line_reply`へ記録し、後続イベントを処理する。
 
-HTTP応答は全イベントの処理後に返す。現段階では、1件でも処理に失敗した場合は固定文言`Internal Server Error`の500、失敗がなければ`OK`の200を返す。空のイベント配列では従来どおり`None`の200を返す。
+HTTP応答は全イベントの処理後に返す。登録や返信が失敗した場合も、処理済みとして`OK`の200を返す。空のイベント配列では`None`の200を返す。署名不正は400、不正JSONなどイベントとして処理できないリクエストは500とし、LINE返信は行わない。
 
-LINE返信を接続する段階で、処理済みの登録失敗も200に変更する方針であり、この段階ではまだ変更していない。イベントIDによる重複排除も未実装のため、同じイベントを再受信すると成功分も重複登録され得る。
+現在は同期処理であり、LINEがWebhookのHTTP応答を待つ時間を超えると、アプリケーションが200を返してもLINE側でタイムアウトになる場合がある。LINEの説明ではWebhookへのHTTP応答が2秒以内に返らない場合を`request_timeout`としている。[公式説明](https://developers.line.biz/ja/docs/messaging-api/check-webhook-error-statistics/)を参照する。イベントIDによる重複排除も未実装のため、同じイベントを再受信すると成功分も重複登録され得る。
 
-複数イベントの保存・失敗後の継続・成功分の保持は、`LineWebhookProcessingTest`で実際のSpringトランザクションとインメモリH2を使用して検証する。外部Geocodingだけを差し替え、後で変更するHTTP 500応答は新しいテストの期待値に固定しない。
+複数イベントの保存・失敗後の継続・成功分の保持・返信・HTTP 200応答は、`LineWebhookProcessingTest`で実際のSpringトランザクションとインメモリH2を使用して検証する。外部GeocodingとLINE返信APIの通信境界だけを差し替え、返信が登録トランザクションの外で行われることも確認する。
 
 ## LINEエラー返信の通信部品
 
@@ -106,6 +110,8 @@ LINE返信を接続する段階で、処理済みの登録失敗も200に変更�
 ```text
 エラーが発生したため、不審者情報を登録できませんでした。
 ```
+
+入力検証、イベント時刻検証、メッセージ解析、Geocoding、Entity生成、DB保存などの登録処理で例外を捕捉した場合に、`LineWebhookService`が呼び出す。成功時や、ユーザーID・本文がnull・空文字の対象外イベントには返信しない。
 
 通信には既存依存関係の`RestTemplate`を使用する。送信先は`POST https://api.line.me/v2/bot/message/reply`で、`Authorization: Bearer {channel access token}`と`Content-Type: application/json`を付ける。JSON本文には`replyToken`と、固定文言を持つテキストメッセージ1件の`messages`配列を設定する。[LINE公式仕様](https://developers.line.biz/ja/reference/messaging-api/nojs/#send-reply-message)を参照する。
 
@@ -122,7 +128,15 @@ LINE返信を接続する段階で、処理済みの登録失敗も200に変更�
 
 アクセストークン、応答トークン、HTTP応答本文、元の例外メッセージ・原因・スタックトレースはログへ出さない。送信本文の内部型は値を含まない`toString()`を持ち、`RestTemplate`のDEBUGログにも応答トークンが出ないようにする。
 
-ステップ3時点ではSpring Bean登録とWebhookからの呼び出しを行っていない。実アクセストークンの外部設定、登録失敗との接続、処理済みの失敗に対するHTTP 200応答はステップ4で追加する。既存のProfileや環境変数には設定を追加しておらず、現在の起動に新しい認証情報は不要である。
+`LineReplyService`はSpring Beanとして登録し、`line.bot.channelAccessToken`を起動時に読み込む。チャネルシークレットは受信署名検証、チャネルアクセストークンは返信API認証に使用する。アクセストークンの種類はこの実装では限定しない。
+
+| Profile | アクセストークンの設定元 |
+| --- | --- |
+| `local-h2` / `local-postgres` | `LINE_CHANNEL_ACCESS_TOKEN`を優先し、未指定時は既存のGit管理外ファイルの`local.line.channel-access-token`を参照する |
+| `prod` | 環境変数`LINE_CHANNEL_ACCESS_TOKEN`から取得する |
+| `test` | Git管理するテスト専用のダミー値を使用する |
+
+ローカル実値の配置とignore確認は[セットアップ手順](../development/setup.md#2-ローカル設定を作成する)、設定キーと環境変数の対応表は[共通設定](../development/database.md#ローカル共通設定)を参照する。実値は文書・ソース・ログへ出力しない。
 
 `LineReplyServiceTest`では、実際の`RestTemplate`の送受信境界を`MockRestServiceServer`で差し替え、認証ヘッダー・固定文言のJSON・HTTPエラー・通信例外・欠落トークン・ログを検証する。タイムアウトは例外を再現して扱いを検証しており、実ネットワークの待ち時間やLINE実環境との疎通は未検証である。
 
@@ -133,6 +147,8 @@ LINE返信を接続する段階で、処理済みの登録失敗も200に変更�
 1. Spring Boot を `local-h2` Profileで `localhost:8080` に起動する。
 2. ngrok で `8080` 番ポートを公開する。
 3. LINE Developers に ngrok の HTTPS URL を設定する。
+
+起動前に[セットアップ手順](../development/setup.md#2-ローカル設定を作成する)のチャネルアクセストークンを設定する。正常な文章を送信して保存だけが行われることを確認し、次に既存仕様で解析を拒否する文章（不存在日を含む文章など）を送信して、固定文言のエラー返信、DB未登録、WebhookへのHTTP 200を確認する。グループ投稿でも返信先は投稿されたトークとなる。実LINE環境での確認は自動テストには含めない。
 
 ```bash
 cd backend

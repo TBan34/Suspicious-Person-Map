@@ -17,9 +17,10 @@ import suspiciouspersonmap.exception.ReportException;
 public class LineWebhookService {
 
     private final ReportService reportService;
+    private final LineReplyService lineReplyService;
 
     /**
-     * 単一イベントから登録に必要な項目を取得し、不審者情報を登録する。
+     * 単一イベントから不審者情報を登録し、登録失敗時はLINEへエラーを返信する。
      * ユーザーIDまたはテキストがnull・空文字の場合は処理しない。レスポンス: なし。
      *
      * @param event 署名検証済みのLINE WebhookイベントJSON
@@ -29,17 +30,38 @@ public class LineWebhookService {
         String text = event.path("message").path("text").asText(null);
 
         if (StringUtils.isNotEmpty(userId) && StringUtils.isNotEmpty(text)) {
-            Long eventTimestamp;
             try {
-                eventTimestamp = extractEventTimestamp(event);
-            } catch (ReportException e) {
-                // ReportServiceへ到達しない入力エラーのため、ここで一度だけ記録する。
-                log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
-                    e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getDetail());
-                throw e;
+                processReportEvent(userId, text, event);
+            } catch (Exception e) {
+                // ReportExceptionはこのイベントのエラーを記録済みのため、再記録しない。
+                if (!(e instanceof ReportException)) {
+                    log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
+                        e.getClass().getSimpleName());
+                }
+                lineReplyService.replyRegistrationError(event.path("replyToken").asText(null));
             }
-            reportService.processReportMessage(userId, text, eventTimestamp);
         }
+    }
+
+    /**
+     * イベント時刻を検証し、登録トランザクションの完了まで不審者情報の処理を実行する。
+     * レスポンス: なし。
+     *
+     * @param userId 登録元のLINEユーザーID
+     * @param text 不審者情報メッセージ
+     * @param event LINE WebhookのイベントJSON
+     */
+    private void processReportEvent(String userId, String text, JsonNode event) {
+        Long eventTimestamp;
+        try {
+            eventTimestamp = extractEventTimestamp(event);
+        } catch (ReportException e) {
+            // ReportServiceへ到達しない入力エラーのため、ここで一度だけ記録する。
+            log.error("不審者情報の解析に失敗しました。stage={}, error={}, item={}, reason={}",
+                e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getDetail());
+            throw e;
+        }
+        reportService.processReportMessage(userId, text, eventTimestamp);
     }
 
     /**

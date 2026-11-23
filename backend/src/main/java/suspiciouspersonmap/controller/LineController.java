@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.LineWebhookSignatureVerifier;
 import suspiciouspersonmap.service.LineWebhookService;
 
@@ -55,23 +54,14 @@ public class LineController {
             JsonNode events = root.path("events");
 
             if (events.isArray() && events.size() > 0) {
-                boolean eventProcessingFailedFlg = false;
                 for (JsonNode event : events) {
                     try {
                         lineWebhookService.processEvent(event);
-                    } catch (ReportException e) {
-                        // このイベントのエラーはServiceで記録済みのため、
-                        // Controllerでは再記録せず、次のイベントへ進む。
-                        eventProcessingFailedFlg = true;
                     } catch (Exception e) {
                         // 例外メッセージや原因には非公開値が含まれ得るため、種別だけを記録する。
                         log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
                             e.getClass().getSimpleName());
-                        eventProcessingFailedFlg = true;
                     }
-                }
-                if (eventProcessingFailedFlg) {
-                    return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
                 }
                 return ResponseEntity.ok("OK");
             }

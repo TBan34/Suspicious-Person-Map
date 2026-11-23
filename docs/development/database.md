@@ -28,6 +28,7 @@ READMEには初回起動に必要な最短手順だけを記載し、データ�
 ```properties
 local.google.geocoding-api-key=YOUR_GOOGLE_GEOCODING_API_KEY
 local.line.channel-secret=YOUR_LINE_CHANNEL_SECRET
+local.line.channel-access-token=YOUR_LINE_CHANNEL_ACCESS_TOKEN
 local.cors.allowed-origins=http://localhost:5173
 
 local.postgres.datasource.url=jdbc:postgresql://localhost:5432/personal_develop_db
@@ -35,7 +36,7 @@ local.postgres.datasource.username=postgres
 local.postgres.datasource.password=YOUR_DATABASE_PASSWORD
 ```
 
-パスワード、APIキー、チャネルシークレットの実値は、README、本書、ソースコード、コミット対象ファイル、メモの共有先へ記載しない。PostgreSQLのパスワードは、コンテナ作成時に設定した値と `local.postgres.datasource.password` を一致させる。
+パスワード、APIキー、チャネルシークレット・アクセストークンの実値は、README、本書、ソースコード、コミット対象ファイル、メモの共有先へ記載しない。PostgreSQLのパスワードは、コンテナ作成時に設定した値と `local.postgres.datasource.password` を一致させる。
 
 同じ項目を環境変数で渡した場合は、環境変数を優先する。対応関係は次のとおりである。
 
@@ -46,6 +47,7 @@ local.postgres.datasource.password=YOUR_DATABASE_PASSWORD
 | PostgreSQLパスワード | `local.postgres.datasource.password` | `LOCAL_DB_PASSWORD` |
 | Geocoding APIキー | `local.google.geocoding-api-key` | `GOOGLE_GEOCODING_API_KEY` |
 | LINEチャネルシークレット | `local.line.channel-secret` | `LINE_CHANNEL_SECRET` |
+| LINEチャネルアクセストークン | `local.line.channel-access-token` | `LINE_CHANNEL_ACCESS_TOKEN` |
 | CORS許可元 | `local.cors.allowed-origins` | `APP_CORS_ALLOWED_ORIGINS` |
 
 ## local-h2

@@ -18,7 +18,7 @@
 | Node.js              | 20.19 以上または 22.12 以上。Vite 7 の要件を満たすバージョンを使用する |
 | npm                  | `frontend/package-lock.json` に基づく依存関係のインストールに使用する  |
 | Google Maps Platform | Maps JavaScript API と Geocoding API を有効化した API キーを用意する   |
-| LINE 公式アカウント  | 現在のバックエンド起動に必要なチャネルシークレットを用意する           |
+| LINE 公式アカウント  | チャネルシークレットと、返信API用のチャネルアクセストークンを用意する |
 
 Maps JavaScript API と Geocoding API には、用途に合った制限を設定した別々の API キーを使用することを推奨する。フロントエンド用のキーはブラウザへ配信されるため、HTTP リファラーと利用可能な API を制限する。詳しくは [`../integrations/google-maps.md`](../integrations/google-maps.md) を参照する。
 
@@ -50,6 +50,7 @@ git check-ignore -v frontend/.env.development
 ```properties
 local.google.geocoding-api-key=YOUR_GOOGLE_GEOCODING_API_KEY
 local.line.channel-secret=YOUR_LINE_CHANNEL_SECRET
+local.line.channel-access-token=YOUR_LINE_CHANNEL_ACCESS_TOKEN
 local.cors.allowed-origins=http://localhost:5173
 
 local.postgres.datasource.url=jdbc:postgresql://localhost:5432/personal_develop_db
@@ -60,6 +61,8 @@ local.postgres.datasource.password=YOUR_DATABASE_PASSWORD
 `local-h2` だけを使用する場合、`local.postgres.datasource.*` の3項目は起動に使用されない。`local-postgres` を使用する場合は、実際に作成したデータベースの接続情報と一致させる。
 
 ローカル Profile はこのファイルを Spring Boot 起動時に読み込む。同じ項目を環境変数で指定した場合は環境変数が優先される。対応する環境変数と Profile ごとの設定は [`database.md`](database.md) を参照する。
+
+LINEのチャネルシークレットはWebhookの署名検証、チャネルアクセストークンは登録失敗時の返信API認証に使用する。両方とも必須であり、アクセストークンが未設定・空の場合は起動できない。対象のMessaging APIチャネルで発行した値を使用し、Git管理対象ファイルやログには記載しない。実際の返信確認は[LINE連携手順](../integrations/line-messaging-api.md#ローカル接続手順)を参照する。
 
 ### フロントエンド
 

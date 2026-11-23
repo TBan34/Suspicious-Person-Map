@@ -22,8 +22,18 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -37,13 +47,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(LineWebhookProcessingTest.LineReplyHttpConfiguration.class)
 class LineWebhookProcessingTest {
 
     // test Profileの署名検証に使用するダミーのチャネルシークレット。
     private static final String TEST_CHANNEL_SECRET = "test-line-channel-secret";
+    // test ProfileでLINE返信の認証に使用するダミーのアクセストークン。
+    private static final String TEST_CHANNEL_ACCESS_TOKEN = "test-line-channel-access-token";
     // 既存のControllerテストで登録可能なことを確認している不審者情報。
     private static final String VALID_REPORT_MESSAGE = "2025年9月8日午後6時10分、福岡市中央区天神1丁目1-1付近の路上で、"
         + "女性が男から「何年生？」と声をかけられました。";
@@ -57,10 +75,14 @@ class LineWebhookProcessingTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MockServerRestTemplateCustomizer replyHttpCustomizer;
+
     @MockitoBean
     private GeocodeService geocodeService;
 
     private ListAppender<ILoggingEvent> logAppender;
+    private MockRestServiceServer replyServer;
 
     /**
      * DBを空にし、外部Geocodingの代替とアプリケーションログの収集を準備する。
@@ -69,6 +91,8 @@ class LineWebhookProcessingTest {
     @BeforeEach
     void setUp() {
         reportRepository.deleteAll();
+        replyServer = replyHttpCustomizer.getServer();
+        replyServer.reset();
         when(geocodeService.getLatLng(anyString(), anyString(), anyString(), any()))
             .thenReturn(new GeoPoint(33.5, 130.4));
         logAppender = new ListAppender<>();
@@ -85,6 +109,7 @@ class LineWebhookProcessingTest {
         ((Logger) LoggerFactory.getLogger("suspiciouspersonmap")).detachAppender(logAppender);
         logAppender.stop();
         reportRepository.deleteAll();
+        replyServer.verify();
     }
 
     /**
@@ -132,6 +157,7 @@ class LineWebhookProcessingTest {
             default -> throw new IllegalArgumentException("未知のテストケースです");
         }
 
+        expectReply(failedEvent, withSuccess("{}", MediaType.APPLICATION_JSON));
         processEvents(createEvent("sender-before"), failedEvent, createEvent("sender-after"));
 
         assertThat(reportRepository.findAll()).extracting(ReportEntity::getUserId)
@@ -166,12 +192,75 @@ class LineWebhookProcessingTest {
         ObjectNode secondEvent = createEvent("sender-second");
         secondEvent.put("timestamp", "invalid-timestamp");
 
+        expectReply(firstEvent, withSuccess("{}", MediaType.APPLICATION_JSON));
+        expectReply(secondEvent, withSuccess("{}", MediaType.APPLICATION_JSON));
         processEvents(firstEvent, secondEvent);
 
         assertThat(reportRepository.findAll()).isEmpty();
         assertThat(errorEvents()).hasSize(2).allSatisfy(event ->
             assertThat(event.getFormattedMessage()).contains("error=INVALID_DATETIME")
                 .doesNotContain("sender-first", "sender-second", "invalid-timestamp"));
+    }
+
+    /**
+     * 最初の返信が失敗しても、次の失敗への返信と後続の正常イベントの保存を続けることを確認する。
+     */
+    @Test
+    void continuesRepliesAndRegistrationAfterReplyFailure() throws Exception {
+        ObjectNode firstEvent = createEvent("sender-first");
+        firstEvent.remove("timestamp");
+        ObjectNode secondEvent = createEvent("sender-second");
+        secondEvent.remove("timestamp");
+        expectReply(firstEvent, withStatus(HttpStatus.BAD_REQUEST)
+            .body(TEST_CHANNEL_ACCESS_TOKEN + " " + firstEvent.path("replyToken").asText()));
+        expectReply(secondEvent, withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        processEvents(firstEvent, secondEvent, createEvent("sender-after"));
+
+        assertThat(reportRepository.findAll()).extracting(ReportEntity::getUserId)
+            .containsExactly("sender-after");
+        assertThat(errorEvents()).hasSize(3).allSatisfy(event -> {
+            assertThat(event.getFormattedMessage()).doesNotContain(TEST_CHANNEL_ACCESS_TOKEN,
+                firstEvent.path("replyToken").asText(), secondEvent.path("replyToken").asText());
+            assertThat(event.getThrowableProxy()).isNull();
+        });
+        assertThat(errorEvents()).filteredOn(event -> event.getFormattedMessage().contains("stage=line_reply"))
+            .singleElement().satisfies(event -> assertThat(event.getFormattedMessage()).contains("httpStatus=400"));
+    }
+
+    /**
+     * 応答トークンが欠落して返信できなくても、エラーを記録して後続イベントを保存することを確認する。
+     */
+    @Test
+    void savesValidEventAfterMissingReplyToken() throws Exception {
+        ObjectNode failedEvent = createEvent("sender-failed");
+        failedEvent.remove("timestamp");
+        failedEvent.remove("replyToken");
+
+        processEvents(failedEvent, createEvent("sender-after"));
+
+        assertThat(reportRepository.findAll()).extracting(ReportEntity::getUserId)
+            .containsExactly("sender-after");
+        assertThat(errorEvents()).hasSize(2);
+        assertThat(errorEvents()).filteredOn(event -> event.getFormattedMessage().contains("stage=line_reply"))
+            .singleElement().satisfies(event ->
+                assertThat(event.getFormattedMessage()).contains("reason=missing_reply_token"));
+    }
+
+    /**
+     * グループ投稿でも、失敗したイベントの応答トークンでエラー返信することを確認する。
+     */
+    @Test
+    void repliesToFailedGroupEvent() throws Exception {
+        ObjectNode event = createEvent("sender-group");
+        ((ObjectNode) event.path("source")).put("type", "group").put("groupId", "test-group-id");
+        event.remove("timestamp");
+        expectReply(event, withSuccess("{}", MediaType.APPLICATION_JSON));
+
+        processEvents(event);
+
+        assertThat(reportRepository.findAll()).isEmpty();
+        assertThat(errorEvents()).hasSize(1);
     }
 
     /**
@@ -182,10 +271,27 @@ class LineWebhookProcessingTest {
      */
     private ObjectNode createEvent(String userId) {
         ObjectNode event = objectMapper.createObjectNode();
+        event.put("type", "message");
         event.put("timestamp", 1792897200000L);
-        event.putObject("source").put("userId", userId);
-        event.putObject("message").put("text", VALID_REPORT_MESSAGE);
+        event.put("replyToken", "test-reply-token-" + userId);
+        event.putObject("source").put("type", "user").put("userId", userId);
+        event.putObject("message").put("type", "text").put("text", VALID_REPORT_MESSAGE);
         return event;
+    }
+
+    /**
+     * 指定イベントにだけ返信が送られることを期待し、LINE APIの応答を差し替える。
+     * レスポンス: なし。
+     *
+     * @param event 返信対象のイベント
+     * @param responseCreator LINE APIの応答または通信障害の再現方法
+     */
+    private void expectReply(JsonNode event, ResponseCreator responseCreator) {
+        replyServer.expect(requestTo("https://api.line.me/v2/bot/message/reply"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer " + TEST_CHANNEL_ACCESS_TOKEN))
+            .andExpect(jsonPath("$.replyToken").value(event.path("replyToken").asText()))
+            .andExpect(request -> assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isFalse())
+            .andRespond(responseCreator);
     }
 
     /**
@@ -209,7 +315,7 @@ class LineWebhookProcessingTest {
     }
 
     /**
-     * イベントを一つの署名付きWebhookへまとめ、実際のControllerで処理する。
+     * イベントを一つの署名付きWebhookへまとめ、実際のControllerで処理してHTTP 200応答を確認する。
      * レスポンス: なし。
      *
      * @param events 同じWebhookへ含めるイベント
@@ -221,7 +327,9 @@ class LineWebhookProcessingTest {
             eventArray.add(event);
         }
         String body = objectMapper.writeValueAsString(root);
-        lineController.callback(body, createSignature(body));
+        ResponseEntity<String> response = lineController.callback(body, createSignature(body));
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isEqualTo("OK");
     }
 
     /**
@@ -243,5 +351,22 @@ class LineWebhookProcessingTest {
      */
     private List<ILoggingEvent> errorEvents() {
         return logAppender.list.stream().filter(event -> event.getLevel() == Level.ERROR).toList();
+    }
+
+    /**
+     * LINE返信のHTTP通信だけを差し替えるテスト設定。
+     */
+    @TestConfiguration(proxyBeanMethods = false)
+    static class LineReplyHttpConfiguration {
+
+        /**
+         * 返信サービスのHTTPクライアントをテスト用送受信先へ接続する。
+         *
+         * @return LINE返信のHTTP送受信を検証するCustomizer
+         */
+        @Bean
+        MockServerRestTemplateCustomizer replyHttpCustomizer() {
+            return new MockServerRestTemplateCustomizer();
+        }
     }
 }

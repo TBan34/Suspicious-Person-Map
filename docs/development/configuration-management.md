@@ -22,7 +22,7 @@ Spring Boot と Vite の設定を変更するときに、秘密情報の誤コ�
 | --- | --- | --- | --- |
 | `backend/src/main/resources/application-local-h2.properties` | Docker を使わないローカル動作確認用 | 対象 | 実値は記載せず、共通シークレットまたは環境変数を参照する |
 | `backend/src/main/resources/application-local-postgres.properties` | ローカル PostgreSQL 互換性確認用 | 対象 | 実値は記載せず、共通シークレットまたは環境変数を参照する |
-| `backend/config/application-local-secrets.properties` | ローカル Profile 共通の実値 | 対象外 | DB 認証情報、Google API キー、LINE チャネルシークレットを記載する |
+| `backend/config/application-local-secrets.properties` | ローカル Profile 共通の実値 | 対象外 | DB 認証情報、Google API キー、LINE チャネルシークレット・アクセストークンを記載する |
 | `backend/.local-data/` | ファイル型 H2 のDBファイル | 対象外 | ローカル検証で登録したデータを保持する |
 | `backend/src/main/resources/application-prod.properties` | 未使用の本番用設定 | 対象 | 実値は記載せず、デプロイ環境の環境変数を参照する |
 | `backend/src/test/resources/application-test.properties` | 自動テスト用 | 対象 | 明らかなテスト用ダミー値だけを記載する |

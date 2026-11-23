@@ -9,7 +9,8 @@ import org.springframework.test.context.ActiveProfiles;
         "LOCAL_DB_USERNAME=sa",
         "LOCAL_DB_PASSWORD=",
         "GOOGLE_GEOCODING_API_KEY=test-google-api-key",
-        "LINE_CHANNEL_SECRET=test-line-channel-secret"
+        "LINE_CHANNEL_SECRET=test-line-channel-secret",
+        "LINE_CHANNEL_ACCESS_TOKEN=test-line-channel-access-token"
 })
 @ActiveProfiles("local-postgres")
 class LocalPostgresProfileTest {

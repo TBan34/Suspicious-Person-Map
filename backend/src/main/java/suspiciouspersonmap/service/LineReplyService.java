@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
  * LINE応答メッセージAPIで、不審者情報の登録エラーを返信する。
  */
 @Slf4j
+@Service
 public class LineReplyService {
 
     // LINE応答メッセージAPIの送信先。
@@ -40,7 +43,8 @@ public class LineReplyService {
      * @param restTemplateBuilder 専用HTTPクライアントの生成元
      * @param channelAccessToken LINE Messaging APIのチャネルアクセストークン
      */
-    public LineReplyService(RestTemplateBuilder restTemplateBuilder, String channelAccessToken) {
+    public LineReplyService(RestTemplateBuilder restTemplateBuilder,
+            @Value("${line.bot.channelAccessToken}") String channelAccessToken) {
         if (StringUtils.isBlank(channelAccessToken)) {
             throw new IllegalArgumentException("LINEチャネルアクセストークンは必須です");
         }
