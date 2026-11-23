@@ -82,7 +82,7 @@ Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON�
 
 解析失敗時はGeocoding・DB保存を行わない。イベント時刻の欠落・JSON型不正・`Long`範囲外は`LineWebhookService`で検証し、それ以外の解析失敗は`ReportService`で処理する。エラーを検出した側で処理段階・エラー種別・項目・アプリケーション定義の原因をERRORレベルで1回だけ記録し、上位層では重複記録しない。Webhook本文、署名、LINEユーザーID、入力値を埋め込んだ例外メッセージは記録しない。JSON構文エラーも入力断片を含み得る例外をログへ渡さない。
 
-ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。LINEへの返信、時間範囲の開始時刻採用、複数日時の分割登録は未実装。
+ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。LINE返信の通信部品は実装済みだが、登録失敗時の呼び出しは未接続である。時間範囲の開始時刻採用、複数日時の分割登録は未実装。
 
 ## 同一Webhook内の複数イベント
 
@@ -98,6 +98,33 @@ HTTP応答は全イベントの処理後に返す。現段階では、1件でも
 LINE返信を接続する段階で、処理済みの登録失敗も200に変更する方針であり、この段階ではまだ変更していない。イベントIDによる重複排除も未実装のため、同じイベントを再受信すると成功分も重複登録され得る。
 
 複数イベントの保存・失敗後の継続・成功分の保持は、`LineWebhookProcessingTest`で実際のSpringトランザクションとインメモリH2を使用して検証する。外部Geocodingだけを差し替え、後で変更するHTTP 500応答は新しいテストの期待値に固定しない。
+
+## LINEエラー返信の通信部品
+
+`LineReplyService.replyRegistrationError(replyToken)`は、受け取った応答トークンを使い、次の固定文言をLINE応答メッセージAPIへ送信する。
+
+```text
+エラーが発生したため、不審者情報を登録できませんでした。
+```
+
+通信には既存依存関係の`RestTemplate`を使用する。送信先は`POST https://api.line.me/v2/bot/message/reply`で、`Authorization: Bearer {channel access token}`と`Content-Type: application/json`を付ける。JSON本文には`replyToken`と、固定文言を持つテキストメッセージ1件の`messages`配列を設定する。[LINE公式仕様](https://developers.line.biz/ja/reference/messaging-api/nojs/#send-reply-message)を参照する。
+
+| 項目 | 通信部品の動作 |
+| --- | --- |
+| 生成時の引数 | `RestTemplateBuilder`とチャネルアクセストークン。トークンがnull・空文字・空白のみなら、値を含まない例外で拒否する |
+| HTTPクライアント | LINE返信用の`RestTemplate`を生成する |
+| タイムアウト | 接続3秒、応答読み取り5秒 |
+| リダイレクト・再試行 | リダイレクトを追跡せず、この部品で自動再試行しない |
+| 返信対象 | 渡された`replyToken`で指定する。個人・グループによる送信制限は設けない |
+| 成功時 | HTTP 200番台を受け取ったら`true`を返す。利用者の既読・受信を保証する戻り値ではない |
+| 応答トークン欠落時 | null・空文字・空白のみならHTTP送信せず、理由をERRORログへ記録して`false`を返す |
+| 通信失敗時 | HTTPエラー、タイムアウト、通信切断などを記録して`false`を返す。ログは処理段階、HTTPステータス（取得できる場合）、例外クラス名に限定する |
+
+アクセストークン、応答トークン、HTTP応答本文、元の例外メッセージ・原因・スタックトレースはログへ出さない。送信本文の内部型は値を含まない`toString()`を持ち、`RestTemplate`のDEBUGログにも応答トークンが出ないようにする。
+
+ステップ3時点ではSpring Bean登録とWebhookからの呼び出しを行っていない。実アクセストークンの外部設定、登録失敗との接続、処理済みの失敗に対するHTTP 200応答はステップ4で追加する。既存のProfileや環境変数には設定を追加しておらず、現在の起動に新しい認証情報は不要である。
+
+`LineReplyServiceTest`では、実際の`RestTemplate`の送受信境界を`MockRestServiceServer`で差し替え、認証ヘッダー・固定文言のJSON・HTTPエラー・通信例外・欠落トークン・ログを検証する。タイムアウトは例外を再現して扱いを検証しており、実ネットワークの待ち時間やLINE実環境との疎通は未検証である。
 
 ## ローカル接続手順
 
@@ -195,6 +222,7 @@ Geocoding
 - [`../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java`](../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java)
+- [`../../backend/src/main/java/suspiciouspersonmap/service/LineReplyService.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineReplyService.java)
 - [`../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java`](../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java)
 - [`../../backend/pom.xml`](../../backend/pom.xml)
 - [`../security/security-and-privacy.md`](../security/security-and-privacy.md)

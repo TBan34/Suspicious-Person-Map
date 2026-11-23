@@ -105,6 +105,8 @@ flowchart LR
 
 `ReportController` は現在 Service を介さず `ReportRepository` を直接参照している。これは現状の読み取り処理が全件取得と DTO 変換だけで構成されているためである。
 
+`LineReplyService`はLINEエラー返信の通信部品として実装済みだが、Spring Bean登録とWebhook処理への接続は未実施であるため、上図の実行経路には含めていない。部品の入出力と現在の接続状況は[LINE連携仕様](../integrations/line-messaging-api.md#lineエラー返信の通信部品)を参照する。
+
 ### フロントエンド
 
 フロントエンドは React の単一ページアプリケーションである。初回表示時に報告一覧を取得し、同じ報告オブジェクトを一覧、地図、詳細欄で共有する。
