@@ -1,23 +1,66 @@
 package suspiciouspersonmap.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 
 /**
- * 署名検証済みのLINE Webhookイベントから、不審者情報の登録処理を実行する。
+ * 署名検証済みのLINE Webhookを非同期に処理し、不審者情報の登録と失敗時の返信を行う。
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class LineWebhookService {
 
     private final ReportService reportService;
     private final LineReplyService lineReplyService;
+    private final TaskExecutor taskExecutor;
+
+    /**
+     * Spring Bootのタスク実行基盤で登録・返信を行うWebhookサービスを生成する。
+     *
+     * @param reportService 不審者情報の登録処理
+     * @param lineReplyService 登録失敗時のLINE返信処理
+     * @param taskExecutor アプリケーションの非同期タスク実行基盤
+     */
+    public LineWebhookService(ReportService reportService, LineReplyService lineReplyService,
+            @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
+        this.reportService = reportService;
+        this.lineReplyService = lineReplyService;
+        this.taskExecutor = taskExecutor;
+    }
+
+    /**
+     * Webhook内のイベントを一つのタスクとして引き渡し、登録・返信の完了を待たずに戻る。
+     * レスポンス: なし。
+     *
+     * @param events 署名検証済みWebhookのイベント配列
+     */
+    public void submitEvents(JsonNode events) {
+        taskExecutor.execute(() -> processEvents(events));
+    }
+
+    /**
+     * 同じWebhookのイベントを順番に処理し、予期しない失敗時も後続イベントへ進む。
+     * レスポンス: なし。
+     *
+     * @param events 登録・返信対象のイベント配列
+     */
+    private void processEvents(JsonNode events) {
+        for (JsonNode event : events) {
+            try {
+                processEvent(event);
+            } catch (Exception e) {
+                // 例外メッセージや原因には非公開値が含まれ得るため、種別だけを記録する。
+                log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
+                    e.getClass().getSimpleName());
+            }
+        }
+    }
 
     /**
      * 単一イベントから不審者情報を登録し、登録失敗時はLINEへエラーを返信する。

@@ -22,6 +22,9 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -350,14 +353,56 @@ class LineControllerTest {
     }
 
     /**
-     * テスト用の署名検証サービスを設定した LineController を生成する。
+     * タスクを引き渡せなかった場合は500を返し、登録・返信せず安全なログを記録することを確認する。
+     */
+    @Test
+    void rejectsWebhookWhenTaskSubmissionFails() {
+        // DB・Geocodingを差し替え、受付失敗時にこれらへアクセスしていないことを検証できるようにする。
+        ReportRepository reportRepository = mock(ReportRepository.class);
+        GeocodeService geocodeService = mock(GeocodeService.class);
+        ReportService reportService = new ReportService(reportRepository, geocodeService,
+            ReportParserTestSupport.createParser());
+
+        // タスクの受付を必ず拒否する実行基盤で、登録開始前の受付失敗を再現する。
+        TaskExecutor rejectingExecutor = task -> {
+            throw new TaskRejectedException("test-private-rejection-value");
+        };
+
+        // 受付を拒否する実行基盤をControllerへ組み込み、エラーログの収集を準備する。
+        LineController controller = new LineController(
+            new LineWebhookService(reportService, lineReplyService, rejectingExecutor),
+            new LineWebhookSignatureVerifier(TEST_CHANNEL_SECRET), new ObjectMapper());
+        ListAppender<ILoggingEvent> appender = attachListAppender(LineController.class);
+        try {
+            // 正しい署名でWebhookを送り、署名検証を通過した後の受付失敗を確認する。
+            ResponseEntity<String> response = controller.callback(VALID_WEBHOOK_BODY, createSignature(VALID_WEBHOOK_BODY));
+
+            // 固定文言のHTTP 500を返し、DB保存・Geocodingには進んでいないことを確認する。
+            assertThat(response.getStatusCode().value()).isEqualTo(500);
+            assertThat(response.getBody()).isEqualTo("Internal Server Error");
+            verifyNoInteractions(reportRepository, geocodeService);
+
+            // 受付失敗のログが1件あり、非公開値や例外の詳細を記録していないことを確認する。
+            assertThat(errorEvents(appender)).hasSize(1);
+            assertThat(errorEvents(appender).get(0).getFormattedMessage())
+                .contains("stage=webhook_task_submission", "exceptionType=TaskRejectedException")
+                .doesNotContain("test-private-rejection-value", VALID_WEBHOOK_BODY, TEST_CHANNEL_SECRET);
+            assertThat(errorEvents(appender).get(0).getThrowableProxy()).isNull();
+        } finally {
+            // 次のテストのログまで収集しないよう、テスト用Appenderを解除する。
+            detachListAppender(LineController.class, appender);
+        }
+    }
+
+    /**
+     * 既存の入力・ログ検証を決定的に実行するため、同期実行のタスク実行基盤を使うControllerを生成する。
      *
      * @param reportService イベント処理から呼び出す ReportService
      * @return テスト用の LineController
      */
     private LineController createController(ReportService reportService) {
         return new LineController(
-            new LineWebhookService(reportService, lineReplyService),
+            new LineWebhookService(reportService, lineReplyService, new SyncTaskExecutor()),
             new LineWebhookSignatureVerifier(TEST_CHANNEL_SECRET),
             new ObjectMapper()
         );

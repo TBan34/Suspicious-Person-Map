@@ -10,8 +10,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -44,6 +51,7 @@ import suspiciouspersonmap.repository.ReportRepository;
 import suspiciouspersonmap.service.GeocodeService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -55,7 +63,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(LineWebhookProcessingTest.LineReplyHttpConfiguration.class)
+@Import(LineWebhookProcessingTest.LineWebhookTestConfiguration.class)
 class LineWebhookProcessingTest {
 
     // test Profileの署名検証に使用するダミーのチャネルシークレット。
@@ -65,6 +73,8 @@ class LineWebhookProcessingTest {
     // 既存のControllerテストで登録可能なことを確認している不審者情報。
     private static final String VALID_REPORT_MESSAGE = "2025年9月8日午後6時10分、福岡市中央区天神1丁目1-1付近の路上で、"
         + "女性が男から「何年生？」と声をかけられました。";
+    // 非同期処理の不具合でテストが停止し続けることを防ぐ待機上限。製品のタイムアウト設定ではない。
+    private static final Duration TEST_WAIT_TIMEOUT = Duration.ofSeconds(5);
 
     @Autowired
     private LineController lineController;
@@ -77,6 +87,9 @@ class LineWebhookProcessingTest {
 
     @Autowired
     private MockServerRestTemplateCustomizer replyHttpCustomizer;
+
+    @Autowired
+    private TrackingTaskExecutor taskExecutor;
 
     @MockitoBean
     private GeocodeService geocodeService;
@@ -101,15 +114,62 @@ class LineWebhookProcessingTest {
     }
 
     /**
-     * ログ収集を解除し、後続テストへ登録データを残さない。
+     * 非同期処理の完了後にログ収集を解除し、後続テストへ登録データを残さない。
      * レスポンス: なし。
      */
     @AfterEach
-    void tearDown() {
-        ((Logger) LoggerFactory.getLogger("suspiciouspersonmap")).detachAppender(logAppender);
-        logAppender.stop();
-        reportRepository.deleteAll();
-        replyServer.verify();
+    void tearDown() throws Exception {
+        try {
+            // ログ収集の解除やDBの後片付けと競合しないよう、非同期処理の完了を待つ。
+            taskExecutor.awaitCompletion();
+        } finally {
+            // 完了待ちで例外が出た場合も、テスト用のログ収集を解除する。
+            ((Logger) LoggerFactory.getLogger("suspiciouspersonmap")).detachAppender(logAppender);
+            logAppender.stop();
+
+            // 次のテストが空のDBから始められるよう、登録データを削除する。
+            reportRepository.deleteAll();
+
+            // 各テストで期待したLINE返信がすべて送られたことを確認する。
+            replyServer.verify();
+        }
+    }
+
+    /**
+     * 登録処理の完了前に200を返し、待機中のWebhookとは別のWebhookを並行して保存できることを確認する。
+     */
+    @Test
+    void acceptsWebhookBeforeRegistrationCompletesAndProcessesAnotherWebhook() throws Exception {
+        CountDownLatch firstRegistrationStarted = new CountDownLatch(1);
+        CountDownLatch releaseFirstRegistration = new CountDownLatch(1);
+        when(geocodeService.getLatLng(anyString(), anyString(), anyString(), any()))
+            .thenAnswer(invocation -> {
+                firstRegistrationStarted.countDown();
+                releaseFirstRegistration.await();
+                return new GeoPoint(33.5, 130.4);
+            })
+            .thenReturn(new GeoPoint(33.5, 130.4));
+
+        Future<?> firstTask;
+        try {
+            firstTask = assertTimeoutPreemptively(TEST_WAIT_TIMEOUT,
+                () -> acceptEvents(createEvent("sender-waiting")));
+            assertThat(firstRegistrationStarted.await(TEST_WAIT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)).isTrue();
+            assertThat(reportRepository.findAll()).isEmpty();
+
+            Future<?> secondTask = assertTimeoutPreemptively(TEST_WAIT_TIMEOUT,
+                () -> acceptEvents(createEvent("sender-parallel")));
+            secondTask.get(TEST_WAIT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+            assertThat(reportRepository.findAll()).extracting(ReportEntity::getUserId)
+                .containsExactly("sender-parallel");
+        } finally {
+            releaseFirstRegistration.countDown();
+        }
+
+        firstTask.get(TEST_WAIT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+        assertThat(reportRepository.findAll()).extracting(ReportEntity::getUserId)
+            .containsExactlyInAnyOrder("sender-waiting", "sender-parallel");
+        assertThat(errorEvents()).isEmpty();
     }
 
     /**
@@ -315,12 +375,22 @@ class LineWebhookProcessingTest {
     }
 
     /**
-     * イベントを一つの署名付きWebhookへまとめ、実際のControllerで処理してHTTP 200応答を確認する。
+     * 署名付きWebhookのHTTP 200応答を確認し、登録・返信が完了するまで待つ。
      * レスポンス: なし。
      *
      * @param events 同じWebhookへ含めるイベント
      */
     private void processEvents(JsonNode... events) throws Exception {
+        acceptEvents(events).get(TEST_WAIT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * イベントを一つの署名付きWebhookへまとめ、実際のControllerで受付のHTTP 200応答を確認する。
+     *
+     * @param events 同じWebhookへ含めるイベント
+     * @return 受け付けた登録・返信処理の完了を確認するタスク
+     */
+    private Future<?> acceptEvents(JsonNode... events) throws Exception {
         ObjectNode root = objectMapper.createObjectNode();
         ArrayNode eventArray = root.putArray("events");
         for (JsonNode event : events) {
@@ -330,6 +400,7 @@ class LineWebhookProcessingTest {
         ResponseEntity<String> response = lineController.callback(body, createSignature(body));
         assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo("OK");
+        return taskExecutor.latestTask();
     }
 
     /**
@@ -354,10 +425,24 @@ class LineWebhookProcessingTest {
     }
 
     /**
-     * LINE返信のHTTP通信だけを差し替えるテスト設定。
+     * LINE返信のHTTP通信を差し替え、バックグラウンド処理の完了を観測するテスト設定。
      */
     @TestConfiguration(proxyBeanMethods = false)
-    static class LineReplyHttpConfiguration {
+    static class LineWebhookTestConfiguration {
+
+        /**
+         * 並行処理を検証できる2スレッドの実行基盤を生成し、Springに初期化・終了を委ねる。
+         *
+         * @return 実際に別スレッドで処理し、完了を待てるタスク実行基盤
+         */
+        @Bean(name = "applicationTaskExecutor")
+        TrackingTaskExecutor taskExecutor() {
+            TrackingTaskExecutor executor = new TrackingTaskExecutor();
+            executor.setCorePoolSize(2);
+            executor.setMaxPoolSize(2);
+            executor.setThreadNamePrefix("webhook-test-");
+            return executor;
+        }
 
         /**
          * 返信サービスのHTTPクライアントをテスト用送受信先へ接続する。
@@ -367,6 +452,48 @@ class LineWebhookProcessingTest {
         @Bean
         MockServerRestTemplateCustomizer replyHttpCustomizer() {
             return new MockServerRestTemplateCustomizer();
+        }
+    }
+
+    /**
+     * 実際のスレッドプールでタスクを実行し、テストから完了を観測できるようにする。
+     */
+    static class TrackingTaskExecutor extends ThreadPoolTaskExecutor {
+
+        private final List<FutureTask<Void>> submittedTasks = new CopyOnWriteArrayList<>();
+
+        /**
+         * 渡されたタスクを別スレッドで実行し、完了確認のために保持する。レスポンス: なし。
+         *
+         * @param task 実行対象の処理
+         */
+        @Override
+        public void execute(Runnable task) {
+            FutureTask<Void> trackedTask = new FutureTask<>(task, null);
+            super.execute(trackedTask);
+            submittedTasks.add(trackedTask);
+        }
+
+        /**
+         * 最後に受け付けたタスクを取得する。
+         *
+         * @return 完了確認用のタスク
+         */
+        Future<?> latestTask() {
+            return submittedTasks.get(submittedTasks.size() - 1);
+        }
+
+        /**
+         * 受け付けた全タスクの完了を確認して、テスト間に処理を持ち越さない。レスポンス: なし。
+         */
+        void awaitCompletion() throws Exception {
+            try {
+                for (FutureTask<Void> task : submittedTasks) {
+                    task.get(TEST_WAIT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+                }
+            } finally {
+                submittedTasks.clear();
+            }
         }
     }
 }

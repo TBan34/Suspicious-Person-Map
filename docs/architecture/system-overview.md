@@ -80,7 +80,7 @@ flowchart LR
 
     lineController --> signature
     lineController --> webhookService
-    webhookService --> reportService
+    webhookService -->|別スレッド| reportService
     webhookService -->|登録失敗時| replyService
     replyService -->|HTTPS| line[LINE Messaging API]
     reportService --> parser
@@ -96,9 +96,9 @@ flowchart LR
 
 | コンポーネント | 主な責務 |
 | --- | --- |
-| `LineController` | `POST /line/callback` を受信し、署名検証・JSON解析後にイベント単位の処理を呼び出してHTTP応答を返す |
+| `LineController` | `POST /line/callback` を受信し、署名検証・JSON解析後に非同期処理を受け付け、登録・返信の完了を待たずにHTTP応答を返す |
 | `LineWebhookSignatureVerifier` | 未加工のリクエスト本文と `X-Line-Signature` をチャネルシークレットで検証する |
-| `LineWebhookService` | 単一イベントの登録を調整し、登録トランザクションの外で失敗を捕捉してLINE返信を呼び出す |
+| `LineWebhookService` | Webhookを一つのタスクとして実行基盤へ引き渡し、別スレッドでイベントを順に処理する。登録トランザクションの外で失敗を捕捉してLINE返信を呼び出す |
 | `LineReplyService` | 応答トークンを使い、固定文言の登録エラーを送信元のLINEトークへ返信する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
 | `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
@@ -149,26 +149,29 @@ sequenceDiagram
     alt 署名が不正
         Controller-->>LINE: 400 Bad Request
     else 署名が有効
-        Controller->>WebhookService: 単一イベント
-        WebhookService->>WebhookService: 項目取得・イベント時刻検証
-        WebhookService->>Service: ユーザー ID・テキスト・イベント時刻
-        Service->>Service: 検証・項目抽出・日時変換・住所正規化
-        Service->>Geocode: 正規化済みの住所項目
-        Geocode->>Generator: 住所候補を生成
-        Generator-->>Geocode: 詳細なものから順に住所候補を返す
-        loop 詳細な住所候補から順に試す
-            Geocode->>Google: 住所候補
-            Google-->>Geocode: 検索結果
+        Controller->>WebhookService: イベント配列をタスクとして引き渡す
+        par HTTP応答
+            WebhookService-->>Controller: タスク受付完了
+            Controller-->>LINE: 200 OK（登録完了を待たない）
+        and 別スレッドでの登録
+            WebhookService->>WebhookService: 項目取得・イベント時刻検証
+            WebhookService->>Service: ユーザー ID・テキスト・イベント時刻
+            Service->>Service: 検証・項目抽出・日時変換・住所正規化
+            Service->>Geocode: 正規化済みの住所項目
+            Geocode->>Generator: 住所候補を生成
+            Generator-->>Geocode: 詳細なものから順に住所候補を返す
+            loop 詳細な住所候補から順に試す
+                Geocode->>Google: 住所候補
+                Google-->>Geocode: 検索結果
+            end
+            Geocode-->>Service: 採用した座標
+            Service->>DB: 報告と採用した座標を保存
+            Service-->>WebhookService: 登録完了
         end
-        Geocode-->>Service: 採用した座標
-        Service->>DB: 報告と採用した座標を保存
-        Service-->>WebhookService: 登録完了
-        WebhookService-->>Controller: イベント処理完了
-        Controller-->>LINE: 200 OK
     end
 ```
 
-上図は単一イベントが正常に登録される経路を示す。登録処理は Webhook リクエスト内で同期的に実行され、同一リクエストの全イベントを順に処理する。解析エラーではそのイベントのGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。1件の失敗でも後続イベントへ進み、成功したイベントの登録は保持する。対応形式・拒否条件は[メッセージ解析](../integrations/line-messaging-api.md#メッセージ解析)、イベント単位の失敗処理とWebhook全体のHTTP応答は[複数イベントの仕様](../integrations/line-messaging-api.md#同一webhook内の複数イベント)を参照する。
+上図は単一イベントが正常に登録される経路を示す。登録処理は別スレッドで実行され、同一リクエストの全イベントを順に処理する。別々のWebhookは並行して処理できる。解析エラーではそのイベントのGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。1件の失敗でも後続イベントへ進み、成功したイベントの登録は保持する。対応形式・拒否条件は[メッセージ解析](../integrations/line-messaging-api.md#メッセージ解析)、HTTP応答と実行基盤は[非同期受付](../integrations/line-messaging-api.md#webhookの非同期受付)、イベント単位の失敗処理は[複数イベントの仕様](../integrations/line-messaging-api.md#同一webhook内の複数イベント)を参照する。
 
 `ReportService.processReportMessage` には `@Transactional` が付いている。現在の処理順は Geocoding の完了後に 1 件を保存するため、外部 API の呼び出し結果とデータベース保存が別々の報告として残る構成ではない。ただし、外部の Geocoding API 自体はデータベーストランザクションの対象外である。
 
@@ -244,7 +247,7 @@ H2 は日常的な動作確認と自動テストを容易にするために使�
 ## 現在の主な制約
 
 - 報告登録は LINE の不審者情報メッセージを入口とし、Web 画面からは登録できない。
-- Webhook 内で Geocoding と保存を同期実行するため、外部 API の応答時間や障害が Webhook の処理結果へ直接影響する。
+- 非同期タスクはメモリ上で管理し、プロセス異常終了後の復元は行わない。詳細は[LINE連携仕様](../integrations/line-messaging-api.md#webhookの非同期受付)を参照する。
 - 報告取得 API は全件取得のみで、ページング、期間・地域による絞り込み、並び順の明示指定はない。
 - 住所を短縮した候補で取得した座標は、入力された詳細住所そのものを示すとは限らない。採用した候補や座標精度は保存していない。
 - DB スキーマはローカルでは Hibernate の自動更新に依存し、再現可能なマイグレーション管理は未導入である。
@@ -258,11 +261,12 @@ H2 は日常的な動作確認と自動テストを容易にするために使�
 
 1. [`../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java`](../../backend/src/main/java/suspiciouspersonmap/controller/LineController.java)
 2. [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookSignatureVerifier.java)
-3. [`../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java`](../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java)
-4. [`../../backend/src/main/java/suspiciouspersonmap/service/AddressNormalizer.java`](../../backend/src/main/java/suspiciouspersonmap/service/AddressNormalizer.java)
-5. [`../../backend/src/main/java/suspiciouspersonmap/service/GeocodingAddressCandidateGenerator.java`](../../backend/src/main/java/suspiciouspersonmap/service/GeocodingAddressCandidateGenerator.java)
-6. [`../../backend/src/main/java/suspiciouspersonmap/service/GeocodeService.java`](../../backend/src/main/java/suspiciouspersonmap/service/GeocodeService.java)
-7. [`../../backend/src/main/java/suspiciouspersonmap/entity/ReportEntity.java`](../../backend/src/main/java/suspiciouspersonmap/entity/ReportEntity.java)
+3. [`../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java`](../../backend/src/main/java/suspiciouspersonmap/service/LineWebhookService.java)
+4. [`../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java`](../../backend/src/main/java/suspiciouspersonmap/service/ReportService.java)
+5. [`../../backend/src/main/java/suspiciouspersonmap/service/AddressNormalizer.java`](../../backend/src/main/java/suspiciouspersonmap/service/AddressNormalizer.java)
+6. [`../../backend/src/main/java/suspiciouspersonmap/service/GeocodingAddressCandidateGenerator.java`](../../backend/src/main/java/suspiciouspersonmap/service/GeocodingAddressCandidateGenerator.java)
+7. [`../../backend/src/main/java/suspiciouspersonmap/service/GeocodeService.java`](../../backend/src/main/java/suspiciouspersonmap/service/GeocodeService.java)
+8. [`../../backend/src/main/java/suspiciouspersonmap/entity/ReportEntity.java`](../../backend/src/main/java/suspiciouspersonmap/entity/ReportEntity.java)
 
 閲覧処理を追う場合は、次の順序で読む。
 

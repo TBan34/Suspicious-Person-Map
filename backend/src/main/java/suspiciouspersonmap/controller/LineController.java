@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,7 @@ public class LineController {
     private final ObjectMapper objectMapper;
 
     /**
-     * LINE Webhook のイベントを受け取り、不審者情報の登録処理を実行する。
+     * LINE Webhookを検証し、不審者情報の登録・返信処理を非同期に受け付ける。
      *
      * @param body LINE Webhook のリクエスト本文
      * @param signature LINE Webhook の署名
@@ -54,20 +55,17 @@ public class LineController {
             JsonNode events = root.path("events");
 
             if (events.isArray() && events.size() > 0) {
-                for (JsonNode event : events) {
-                    try {
-                        lineWebhookService.processEvent(event);
-                    } catch (Exception e) {
-                        // 例外メッセージや原因には非公開値が含まれ得るため、種別だけを記録する。
-                        log.error("LINE Webhookのイベント処理に失敗しました。stage=webhook_event_processing, exceptionType={}",
-                            e.getClass().getSimpleName());
-                    }
-                }
+                lineWebhookService.submitEvents(events);
                 return ResponseEntity.ok("OK");
             }
 
             return ResponseEntity.ok("None");
 
+        } catch (TaskRejectedException e) {
+            // 非同期処理を引き受けられなかった場合は、受付成功の200を返さない。
+            log.error("LINE Webhookの非同期処理を受け付けられませんでした。stage=webhook_task_submission, exceptionType={}",
+                e.getClass().getSimpleName());
+            return ResponseEntity.status(500).body(INTERNAL_SERVER_ERROR_MESSAGE);
         } catch (JsonProcessingException e) {
             // Jacksonの診断には入力断片が含まれ得るため、本文や例外メッセージを記録しない。
             log.error("LINE WebhookのJSON解析に失敗しました。stage=webhook_json_parsing");

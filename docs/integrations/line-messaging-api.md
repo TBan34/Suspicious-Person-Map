@@ -13,7 +13,7 @@ flowchart LR
     line[LINE Platform] -->|HTTPS Webhook| ngrok[ngrok]
     ngrok -->|localhost:8080| backend[Spring Boot]
     backend --> webhookService[LineWebhookService]
-    webhookService --> service[ReportService]
+    webhookService -->|別スレッド| service[ReportService]
     webhookService -->|登録失敗時| replyService[LineReplyService]
     replyService -->|応答メッセージAPI| line
     service --> geocoding[Google Geocoding API]
@@ -27,12 +27,12 @@ flowchart LR
 | HTTP 受信              | `LineController`                                |
 | Webhook 署名検証       | `LineWebhookSignatureVerifier`                  |
 | Webhook JSON の解析    | Jackson の `JsonNode`                           |
-| イベント単位の登録処理 | `LineWebhookService`                            |
+| 非同期受付・イベント処理 | `LineWebhookService`                          |
 | メッセージ解析・保存   | `ReportService`                                 |
 | 登録失敗時のLINE返信   | `LineReplyService`                              |
 | 接続検証で使用した経路 | ngrok から Spring Boot の `8080` 番ポートへ転送 |
 
-Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON解析とイベントの取り出しを担当する。`LineWebhookService` は署名検証済みの単一イベントからユーザー ID、メッセージ本文、イベントの`timestamp`（UTCの1970年1月1日を起点とするUnix時間のミリ秒値）を抽出して `ReportService` へ渡す。ユーザー IDまたは本文がnull・空文字のイベントは処理しない。`timestamp`自体にタイムゾーンは含まれないため、日時解析では`Asia/Tokyo`を明示して日本標準時へ変換する。解析は`service.parsing`配下のコンポーネントが担当し、`ReportService`は解析、Geocoding、データベース保存を調整する。
+Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON解析とイベントの取り出しを担当し、`LineWebhookService`へ処理を引き渡す。`LineWebhookService` はイベントを別スレッドで順に処理し、各イベントからユーザー ID、メッセージ本文、イベントの`timestamp`（UTCの1970年1月1日を起点とするUnix時間のミリ秒値）を抽出して `ReportService` へ渡す。ユーザー IDまたは本文がnull・空文字のイベントは処理しない。`timestamp`自体にタイムゾーンは含まれないため、日時解析では`Asia/Tokyo`を明示して日本標準時へ変換する。解析は`service.parsing`配下のコンポーネントが担当し、`ReportService`は解析、Geocoding、データベース保存を調整する。
 
 ## メッセージ解析
 
@@ -87,9 +87,24 @@ Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON�
 
 ログは標準出力に加え、`test` Profileを除いてレベル別ファイルへ保存する。保存先・ローテーション・保持設定は [`../operations/logging.md`](../operations/logging.md) を参照する。登録失敗時は後述のLINEエラー返信を試みる。時間範囲の開始時刻採用、複数日時の分割登録は未実装。
 
+## Webhookの非同期受付
+
+1. `LineController`が未加工本文の署名を検証し、JSONを解析する。
+2. イベント配列を`LineWebhookService`へ引き渡し、タスクの受付後、登録・返信の完了を待たずに`OK`のHTTP 200を返す。
+3. 別スレッドで登録処理を実行する。別々のWebhookは並行して処理できる。
+4. 登録が失敗したイベントには、その登録トランザクションが終了してからLINE返信を試みる。
+
+`LineWebhookService`は、Spring Bootが自動構成する`applicationTaskExecutor`へWebhook一つを一つのタスクとして渡す。Java 17ではスレッドプールで実行され、このアプリケーション独自のスレッド数や待ち行列の上限は設定していない。実行基盤の詳細は[Spring Bootの公式説明](https://docs.spring.io/spring-boot/3.5/reference/features/task-execution-and-scheduling.html)を参照する。
+
+HTTP 200は処理の受付を表し、登録や返信の成功を表さない。受付後の登録・返信が失敗しても、WebhookのHTTP応答は変更しない。空のイベント配列では`None`の200を返す。署名不正は400、不正JSONは500とし、タスクを登録しない。実行基盤がタスクを拒否した場合も500を返し、`stage=webhook_task_submission`のERRORログへ例外クラス名だけを記録する。
+
+LINEはWebhookへのHTTP応答が2秒以内に返らない場合を`request_timeout`としている。非同期化によって登録・返信の待ち時間をHTTP応答から切り離すが、ネットワークなどを含む応答時間を保証するものではない。[LINEの公式説明](https://developers.line.biz/ja/docs/messaging-api/check-webhook-error-statistics/)を参照する。
+
+タスクはアプリケーションのメモリ上で管理し、永続化・再起動後の復元は行わない。受付後にプロセスが異常終了すると、待機中・処理中のタスクが失われる場合がある。また、イベントIDによる重複排除は未実装のため、同じイベントを再受信すると重複登録され得る。
+
 ## 同一Webhook内の複数イベント
 
-Controllerは`events`配列の順にすべてのイベントを処理する。登録対象は各イベントのテキスト1件ずつであり、一つのテキストから複数の事案を分割登録する機能ではない。
+`LineWebhookService`は、同じWebhookの`events`配列を順番に処理する。登録対象は各イベントのテキスト1件ずつであり、一つのテキストから複数の事案を分割登録する機能ではない。
 
 - ユーザーIDまたは本文がnull・空文字のイベントは無視し、次のイベントへ進む。
 - イベント時刻の検証、解析、Geocoding、DB保存で失敗しても、後続イベントを処理する。
@@ -97,11 +112,7 @@ Controllerは`events`配列の順にすべてのイベントを処理する。�
 - `LineWebhookService`は`ReportService`のトランザクションの外側で登録失敗を捕捉する。記録済みの`ReportException`は再記録せず、それ以外の例外（トランザクション境界の例外など）は処理段階と例外クラス名だけをERRORログへ記録する。
 - 登録失敗時はそのイベントの`replyToken`で固定文言の返信を試みる。返信APIの失敗や応答トークン欠落は`stage=line_reply`へ記録し、後続イベントを処理する。
 
-HTTP応答は全イベントの処理後に返す。登録や返信が失敗した場合も、処理済みとして`OK`の200を返す。空のイベント配列では`None`の200を返す。署名不正は400、不正JSONなどイベントとして処理できないリクエストは500とし、LINE返信は行わない。
-
-現在は同期処理であり、LINEがWebhookのHTTP応答を待つ時間を超えると、アプリケーションが200を返してもLINE側でタイムアウトになる場合がある。LINEの説明ではWebhookへのHTTP応答が2秒以内に返らない場合を`request_timeout`としている。[公式説明](https://developers.line.biz/ja/docs/messaging-api/check-webhook-error-statistics/)を参照する。イベントIDによる重複排除も未実装のため、同じイベントを再受信すると成功分も重複登録され得る。
-
-複数イベントの保存・失敗後の継続・成功分の保持・返信・HTTP 200応答は、`LineWebhookProcessingTest`で実際のSpringトランザクションとインメモリH2を使用して検証する。外部GeocodingとLINE返信APIの通信境界だけを差し替え、返信が登録トランザクションの外で行われることも確認する。
+複数イベントの保存・失敗後の継続・成功分の保持・返信は、`LineWebhookProcessingTest`で実際のSpringトランザクションとインメモリH2を使用して検証する。外部GeocodingとLINE返信APIの通信境界を差し替え、実際のスレッドプールで処理する。返信が登録トランザクションの外で行われることに加え、登録待機中もHTTP 200が返ることと、別Webhookを並行して保存できることを確認する。
 
 ## LINEエラー返信の通信部品
 
@@ -112,6 +123,8 @@ HTTP応答は全イベントの処理後に返す。登録や返信が失敗し�
 ```
 
 入力検証、イベント時刻検証、メッセージ解析、Geocoding、Entity生成、DB保存などの登録処理で例外を捕捉した場合に、`LineWebhookService`が呼び出す。成功時や、ユーザーID・本文がnull・空文字の対象外イベントには返信しない。
+
+応答トークンは原則としてWebhook受信後1分以内に使用する必要がある。待ち行列や同じWebhook内の先行イベントの処理も、この時間を消費する。非同期化によってトークンの期限が延びるわけではなく、期限切れなどで返信できなかった場合は`stage=line_reply`へ記録する。[LINE公式仕様](https://developers.line.biz/ja/reference/messaging-api/nojs/#send-reply-message)を参照する。
 
 通信には既存依存関係の`RestTemplate`を使用する。送信先は`POST https://api.line.me/v2/bot/message/reply`で、`Authorization: Bearer {channel access token}`と`Content-Type: application/json`を付ける。JSON本文には`replyToken`と、固定文言を持つテキストメッセージ1件の`messages`配列を設定する。[LINE公式仕様](https://developers.line.biz/ja/reference/messaging-api/nojs/#send-reply-message)を参照する。
 
@@ -207,6 +220,8 @@ X-Line-Signature と未解析の本文を検証
     ↓
 Jackson の JsonNode で JSON を解析
     ↓
+LineWebhookService へタスクを引き渡し、完了を待たずHTTP 200を応答
+    ↓ 別スレッド
 LineWebhookService でイベント項目を取得・検証
     ↓
 ReportService でメッセージを解析
