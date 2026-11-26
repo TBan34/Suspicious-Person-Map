@@ -35,7 +35,7 @@ flowchart TD
 
 LINE メッセージから抽出した各住所構成要素は、Geocoding の候補生成前に正規化する。正規化した値は Geocoding とデータベース保存の両方で使用するため、保存する住所についても同じ表記へ統一される。
 
-自然文の日時・住所・概要・タグの検証はGeocodingより前に完了する。`ReportAddressExtractor`は抽出した丁目・番地の漢数字だけを数値変換し、施設名・駅名は概要に残す。`AddressNormalizer`自体が漢数字を一括変換するわけではない。入力仕様は[LINE連携仕様](line-messaging-api.md#メッセージ解析)を参照する。
+自然文の日時・住所・概要・タグの検証はGeocodingより前に完了する。`ReportTextAddressParser`は抽出した丁目・番地の漢数字だけを数値変換し、施設名・駅名は概要に残す。`AddressNormalizer`自体が漢数字を一括変換するわけではない。入力仕様は[LINE連携仕様](line-messaging-api.md#メッセージ解析)を参照する。
 
 各住所構成要素には次の正規化を適用する。
 

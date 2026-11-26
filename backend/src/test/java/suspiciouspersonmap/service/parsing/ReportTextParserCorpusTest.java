@@ -11,14 +11,14 @@ import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import suspiciouspersonmap.exception.ReportException;
-import suspiciouspersonmap.model.ParsedReportMessage;
+import suspiciouspersonmap.model.ParsedReportText;
 import suspiciouspersonmap.service.ReportParserTestSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** 固定した全274件の期待値を、実際の解析器へ入力して照合する。 */
-class ReportMessageParserCorpusTest {
+class ReportTextParserCorpusTest {
 
     /**
      * 全原文について登録項目または拒否理由が独立に定義した期待値と一致することを確認する。
@@ -39,7 +39,7 @@ class ReportMessageParserCorpusTest {
             List<DynamicTest> dynamicTests = new ArrayList<>();
             for (JsonNode testCase : fixtureRoot.path("cases")) {
                 dynamicTests.add(DynamicTest.dynamicTest(testCase.path("id").asText(), () -> {
-                    ReportMessageParser parser = ReportParserTestSupport.createParser();
+                    ReportTextParser parser = ReportParserTestSupport.createParser();
                     if (testCase.has("expectedError")) {
                         ReportException error = assertThrows(ReportException.class,
                             () -> parser.parse(testCase.path("input").asText(), eventTimestamp));
@@ -47,7 +47,7 @@ class ReportMessageParserCorpusTest {
                             .isEqualTo(testCase.path("expectedError").asText());
                     } else {
                         JsonNode expectedReport = testCase.path("expected");
-                        ParsedReportMessage actualReport = parser.parse(
+                        ParsedReportText actualReport = parser.parse(
                             testCase.path("input").asText(), eventTimestamp);
                         assertThat(actualReport.occurDatetime()).isEqualTo(
                             LocalDateTime.parse(expectedReport.path("occurDatetime").asText()));

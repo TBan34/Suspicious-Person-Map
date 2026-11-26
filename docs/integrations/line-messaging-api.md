@@ -38,10 +38,10 @@ Controller は Webhook の HTTP 入出力、署名検証の呼び出し、JSON�
 
 一次情報の文章を解析する。項目名を使った旧形式は受け付けない。新しい外部サービスや依存ライブラリは使用していない。
 
-- `ReportMessageParser`: 日時・住所・概要の抽出とタグ分類を調整する。
-- `DateTimeParser`: 厳密な日付検証、令和年変換、省略年補完、未来日時の拒否。
-- `ReportAddressExtractor`: 福岡市内の住所と概要の境界を抽出する。
-- `ReportMessageTextUtils`: 判定用NFKC正規化と原文の境界対応、概要の段落整理、HTML文字参照の拒否。
+- `ReportTextParser`: 日時・住所・概要の抽出とタグ分類を調整する。
+- `ReportTextDateTimeParser`: 厳密な日付検証、令和年変換、省略年補完、未来日時の拒否。
+- `ReportTextAddressParser`: 福岡市内の住所と概要の境界を抽出する。
+- `ReportTextUtils`: 判定用NFKC正規化と原文の境界対応、概要の段落整理、HTML文字参照の拒否。
 - `ReportTagClassifier`: 明示された行為の分類、重複抑制、件数検証。
 
 ### 日時・住所・概要

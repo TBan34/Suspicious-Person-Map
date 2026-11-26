@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 
-/** 不審者情報メッセージの先頭にある単一の発生日時を厳密に解析する。 */
+/** 不審者情報テキストの先頭にある単一の発生日時を厳密に解析する。 */
 @Component
-public class DateTimeParser {
+public class ReportTextDateTimeParser {
     private static final ZoneId JAPAN_TIME_ZONE = ZoneId.of("Asia/Tokyo");
 
     // 年省略・西暦・令和と「午前／午後＋数値時刻」を解析する。
@@ -35,11 +35,11 @@ public class DateTimeParser {
     );
 
     /**
-     * 解析した発生日時と、正規化済みメッセージ上で日時が終了する位置。
+     * 日時の解析結果。発生日時と、正規化済みテキスト上で日時が終了する位置を保持する。
      * @param occurDatetime 発生日時
-     * @param dateTimeEndIndex 正規化済みメッセージ上の日時終了位置
+     * @param dateTimeEndIndex 正規化済みテキスト上の日時終了位置
      */
-    public record ParsedDateTime(LocalDateTime occurDatetime, int dateTimeEndIndex) {}
+    public record Result(LocalDateTime occurDatetime, int dateTimeEndIndex) {}
 
     /**
      * LINEイベントのUnix時間を日本標準時へ変換する。
@@ -68,20 +68,20 @@ public class DateTimeParser {
     }
 
     /**
-     * 正規化済みメッセージの先頭から発生日時を抽出し、未来日時でないことを検証する。
-     * @param normalizedMessage 正規化済みの不審者情報メッセージ
+     * 正規化済みテキストの先頭から発生日時を抽出し、未来日時でないことを検証する。
+     * @param normalizedText 正規化済みの不審者情報テキスト
      * @param japanDateTime LINEイベント時刻を日本標準時へ変換した日時
-     * @return 発生日時と、正規化済みメッセージ上の日時終了位置
+     * @return 発生日時と、正規化済みテキスト上の日時終了位置
      */
-    public ParsedDateTime parse(String normalizedMessage, LocalDateTime japanDateTime) {
-        Matcher dateTimeMatcher = DATE_TIME_PATTERN.matcher(normalizedMessage);
+    public Result parse(String normalizedText, LocalDateTime japanDateTime) {
+        Matcher dateTimeMatcher = DATE_TIME_PATTERN.matcher(normalizedText);
         if (!dateTimeMatcher.lookingAt()) {
             throw invalidDateTime();
         }
 
         // 日時の直後に、未対応の期間・複数日時表現が続いていないか確認する。
-        String messageAfterDateTime = normalizedMessage.substring(dateTimeMatcher.end());
-        if (UNSUPPORTED_DATE_TIME_FORMAT_PATTERN.matcher(messageAfterDateTime).find()) {
+        String textAfterDateTime = normalizedText.substring(dateTimeMatcher.end());
+        if (UNSUPPORTED_DATE_TIME_FORMAT_PATTERN.matcher(textAfterDateTime).find()) {
             throw new ReportException(ReportErrorEnum.UNSUPPORTED_DATETIME, "occurDatetime", "未対応の日時形式です");
         }
 
@@ -95,7 +95,7 @@ public class DateTimeParser {
             if (occurDatetime.isAfter(japanDateTime)) {
                 throw new ReportException(ReportErrorEnum.INVALID_DATETIME, "occurDatetime", "発生日時が未来です");
             }
-            return new ParsedDateTime(occurDatetime, dateTimeMatcher.end());
+            return new Result(occurDatetime, dateTimeMatcher.end());
         } catch (DateTimeException | NumberFormatException e) {
             throw invalidDateTime();
         }

@@ -465,7 +465,7 @@ class LineControllerTest {
          * @param eventTimestamp LINEイベント時刻（ミリ秒）
          */
         @Override
-        public void processReportMessage(String userId, String text, Long eventTimestamp) {
+        public void registerReport(String userId, String text, Long eventTimestamp) {
             callCount++;
             receivedUserId = userId;
             receivedText = text;

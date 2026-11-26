@@ -15,9 +15,9 @@ import suspiciouspersonmap.entity.ReportEntity;
 import suspiciouspersonmap.exception.GeocodingException;
 import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.model.GeoPoint;
-import suspiciouspersonmap.model.ParsedReportMessage;
+import suspiciouspersonmap.model.ParsedReportText;
 import suspiciouspersonmap.repository.ReportRepository;
-import suspiciouspersonmap.service.parsing.ReportMessageParser;
+import suspiciouspersonmap.service.parsing.ReportTextParser;
 
 /**
  * 不審者情報周りのサービスロジック
@@ -34,23 +34,23 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final GeocodeService geocodeService;
-    private final ReportMessageParser reportMessageParser;
+    private final ReportTextParser reportTextParser;
 
     /**
      * LINE から受信した不審者情報を検証・変換し、座標とともにデータベースへ登録する。
      * レスポンス: なし。
      *
      * @param userId 登録元の LINE ユーザー ID
-     * @param text 不審者情報メッセージ
+     * @param text 不審者情報テキスト
      * @param eventTimestamp LINEイベント時刻（ミリ秒）
      */
     @Transactional
-    public void processReportMessage(String userId, String text, Long eventTimestamp) {
+    public void registerReport(String userId, String text, Long eventTimestamp) {
         try {
             validateInput(userId, text);
-            ParsedReportMessage parsedMessage = reportMessageParser.parse(text, eventTimestamp);
-            GeoPoint location = geocode(parsedMessage);
-            ReportEntity report = createReport(userId, parsedMessage, location);
+            ParsedReportText parsedReportText = reportTextParser.parse(text, eventTimestamp);
+            GeoPoint location = geocode(parsedReportText);
+            ReportEntity report = createReport(userId, parsedReportText, location);
             saveReport(report);
         } catch (ReportException e) {
             logProcessingFailure(e);
@@ -82,7 +82,7 @@ public class ReportService {
      * レスポンス: なし。
      *
      * @param userId 登録元の LINE ユーザー ID
-     * @param text 不審者情報メッセージ
+     * @param text 不審者情報テキスト
      */
     private void validateInput(String userId, String text) {
         if (StringUtils.isBlank(userId)) {
@@ -109,16 +109,16 @@ public class ReportService {
     /**
      * 住所を Geocoding して座標情報を取得し、失敗時の処理情報を例外へ設定する。
      *
-     * @param parsedMessage 解析済みの住所項目を含む不審者情報メッセージ
+     * @param parsedReportText 解析済みの住所項目を含む不審者情報テキスト
      * @return 住所に対応する座標情報
      */
-    private GeoPoint geocode(ParsedReportMessage parsedMessage) {
+    private GeoPoint geocode(ParsedReportText parsedReportText) {
         try {
             return geocodeService.getLatLng(
-                parsedMessage.prefecture(),
-                parsedMessage.municipality(),
-                parsedMessage.townArea(),
-                parsedMessage.blockAndHouseNumber()
+                parsedReportText.prefecture(),
+                parsedReportText.municipality(),
+                parsedReportText.townArea(),
+                parsedReportText.blockAndHouseNumber()
             );
         } catch (GeocodingException e) {
             throw new ReportException(
@@ -141,13 +141,13 @@ public class ReportService {
      * 変換済みの不審者情報と座標から、データベース登録用 Entity を生成する。
      *
      * @param userId 登録元の LINE ユーザー ID
-     * @param parsedMessage 解析済みの不審者情報メッセージ
+     * @param parsedReportText 解析済みの不審者情報テキスト
      * @param location 発生場所の座標情報
      * @return データベース登録用の不審者情報 Entity
      */
     private ReportEntity createReport(
             String userId,
-            ParsedReportMessage parsedMessage,
+            ParsedReportText parsedReportText,
             GeoPoint location) {
         try {
             ReportEntity report = new ReportEntity();
@@ -155,7 +155,7 @@ public class ReportService {
 
             // タグ設定（最大3個）
             int tagCounter = CommonConst.COUNT.ZERO;
-            for (String tag : parsedMessage.tags()) {
+            for (String tag : parsedReportText.tags()) {
                 if (tagCounter == CommonConst.COUNT.ZERO) {
                     report.setTag1(tag);
                     tagCounter++;
@@ -168,14 +168,14 @@ public class ReportService {
             }
 
             // Entity設定
-            report.setOccurDatetime(parsedMessage.occurDatetime());
-            report.setPrefecture(parsedMessage.prefecture());
-            report.setMunicipality(parsedMessage.municipality());
-            report.setTownArea(parsedMessage.townArea());
-            report.setBlockAndHouseNumber(parsedMessage.blockAndHouseNumber());
+            report.setOccurDatetime(parsedReportText.occurDatetime());
+            report.setPrefecture(parsedReportText.prefecture());
+            report.setMunicipality(parsedReportText.municipality());
+            report.setTownArea(parsedReportText.townArea());
+            report.setBlockAndHouseNumber(parsedReportText.blockAndHouseNumber());
             report.setLatitude(location.getLatitude());
             report.setLongitude(location.getLongitude());
-            report.setDescription(parsedMessage.description());
+            report.setDescription(parsedReportText.description());
             // createDatetimeは@CreatedDateにより自動設定される
 
             return report;

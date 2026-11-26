@@ -9,11 +9,11 @@ import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 import suspiciouspersonmap.service.AddressNormalizer;
 
-/** 日時より後ろの文章から、福岡市内の住所と概要の開始位置を抽出する。 */
+/** 日時より後ろの文章を解析し、福岡市内の住所と概要の開始位置を求める。 */
 @Component
 @RequiredArgsConstructor
-public class ReportAddressExtractor {
-    // メッセージ先頭の「福岡県」「福岡市」は省略可能だが、行政区は必須。
+public class ReportTextAddressParser {
+    // テキスト先頭の「福岡県」「福岡市」は省略可能だが、行政区は必須。
     // 先頭一致に限定し、「東京都福岡市」や「福岡南区」から途中一致で行政区を拾わない。
     private static final Pattern MUNICIPALITY_PATTERN = Pattern.compile(
         "^(?:福岡県)?(?:福岡市)?(?<ward>東区|博多区|中央区|南区|城南区|早良区|西区)"
@@ -58,13 +58,13 @@ public class ReportAddressExtractor {
     private final AddressNormalizer addressNormalizer;
 
     /**
-     * 抽出した住所構成要素と、原文上で概要が始まる位置。
+     * 住所の解析結果。住所構成要素と、原文上で概要が始まる位置を保持する。
      * @param municipality 市区町村
      * @param townArea 町域・丁目
      * @param blockAndHouseNumber 番地・号。記載がなければnull
      * @param descriptionStartIndex 日時除去後の原文上で概要が始まる位置
      */
-    public record ParsedAddress(
+    public record Result(
         String municipality,
         String townArea,
         String blockAndHouseNumber,
@@ -72,41 +72,49 @@ public class ReportAddressExtractor {
     ) {}
 
     /**
-     * 日時とその直後の区切りを除いた原文から、住所構成要素と概要の境界を抽出する。
-     * @param messageAfterDateTime 日時とその直後の区切りを除いた原文
+     * 日時とその直後の区切りを除いた原文を解析し、住所構成要素と概要の境界を求める。
+     * @param textAfterDateTime 日時とその直後の区切りを除いた原文
      * @return 住所構成要素と、原文上の概要開始位置
      */
-    public ParsedAddress extract(String messageAfterDateTime) {
-        String normalizedMessage = ReportMessageTextUtils.normalizeForParsing(messageAfterDateTime);
-        Matcher municipalityMatcher = MUNICIPALITY_PATTERN.matcher(normalizedMessage);
+    public Result parse(String textAfterDateTime) {
+        // 全角英数字や半角カナの表記をそろえ、福岡市の行政区で始まる住所か確認する。
+        String normalizedText = ReportTextUtils.normalize(textAfterDateTime);
+        Matcher municipalityMatcher = MUNICIPALITY_PATTERN.matcher(normalizedText);
         if (!municipalityMatcher.lookingAt()) {
             throw invalidAddress();
         }
 
+        // 行政区に続く町域・丁目・番地を読み取り、施設名などを町域と誤認していないか確認する。
         int addressStartIndex = municipalityMatcher.end();
-        Matcher addressMatcher = findAddressMatcher(normalizedMessage.substring(addressStartIndex));
+        Matcher addressMatcher = findAddressMatcher(normalizedText.substring(addressStartIndex));
         String town = addressMatcher.group("town");
         if (isInvalidTown(town)) {
             throw invalidAddress();
         }
 
+        // 住所に続く「付近の路上で」などの表現を読み飛ばし、概要が始まる箇所を探す。
         int addressEndIndex = addressStartIndex + addressMatcher.end();
-        int descriptionStartIndex = findDescriptionStartIndex(normalizedMessage, addressEndIndex);
+        int descriptionStartIndex = findDescriptionStartIndex(normalizedText, addressEndIndex);
 
-        // HTML文字参照は、住所と概要のどちら側に存在するか確定してから該当項目の不正にする。
-        ReportMessageTextUtils.validateNoHtmlCharacterReference(
-            normalizedMessage.substring(0, addressEndIndex), ReportErrorEnum.INVALID_ADDRESS, "address");
-        validateNoAdditionalAddress(normalizedMessage.substring(descriptionStartIndex).stripLeading());
+        // 住所にHTML文字参照が含まれていないか確認し、含まれていれば住所の入力エラーにする。
+        ReportTextUtils.validateNoHtmlCharacterReference(
+            normalizedText.substring(0, addressEndIndex), ReportErrorEnum.INVALID_ADDRESS, "address");
 
+        // 複数の住所を1件として登録しないよう、概要の先頭に別の住所が残っていないか確認する。
+        validateNoAdditionalAddress(normalizedText.substring(descriptionStartIndex).stripLeading());
+
+        // 地名の漢数字は残し、丁目・番地に含まれる漢数字だけを算用数字へ変換する。
         String chome = addressMatcher.group("chome") == null
             ? ""
             : convertKanjiAddressNumbers(addressMatcher.group("chome"));
         String blockAndHouseNumber = convertKanjiAddressNumbers(addressMatcher.group("blockAndHouseNumber"));
-        return new ParsedAddress(
+
+        // 住所の表記を統一し、原文で概要が始まる位置とともに返す。
+        return new Result(
             "福岡市" + municipalityMatcher.group("ward"),
             addressNormalizer.normalize(town + chome),
             addressNormalizer.normalize(blockAndHouseNumber),
-            ReportMessageTextUtils.toOriginalIndex(messageAfterDateTime, descriptionStartIndex)
+            ReportTextUtils.findOriginalIndex(textAfterDateTime, descriptionStartIndex)
         );
     }
 
@@ -116,14 +124,19 @@ public class ReportAddressExtractor {
      * @return 住所に一致したMatcher
      */
     private Matcher findAddressMatcher(String normalizedAddress) {
+        // 丁目を含む住所として読めるか、先に確認する。
         Matcher addressMatcher = ADDRESS_WITH_CHOME_PATTERN.matcher(normalizedAddress);
         if (addressMatcher.lookingAt()) {
             return addressMatcher;
         }
+
+        // 一致しなければ、丁目が省略されていてもよい形式で確認する。
         addressMatcher = ADDRESS_WITH_OPTIONAL_CHOME_PATTERN.matcher(normalizedAddress);
         if (addressMatcher.lookingAt()) {
             return addressMatcher;
         }
+
+        // どちらの形式にも一致しない文章は、住所として受け付けない。
         throw invalidAddress();
     }
 
@@ -144,44 +157,55 @@ public class ReportAddressExtractor {
 
     /**
      * 住所より後ろの導入表現を確認し、概要が始まる位置を求める。
-     * @param normalizedMessage 日時除去後の正規化済みメッセージ
+     * @param normalizedText 日時除去後の正規化済みテキスト
      * @param addressEndIndex 住所が終了する位置
-     * @return 正規化済みメッセージ上の概要開始位置
+     * @return 正規化済みテキスト上の概要開始位置
      */
-    private int findDescriptionStartIndex(String normalizedMessage, int addressEndIndex) {
-        String messageAfterAddress = normalizedMessage.substring(addressEndIndex);
-        Matcher prefixMatcher = LOCATION_PREFIX_PATTERN.matcher(messageAfterAddress);
+    private int findDescriptionStartIndex(String normalizedText, int addressEndIndex) {
+        // 概要に残さない「付近の」「周辺にある」などを読み飛ばす。
+        String textAfterAddress = normalizedText.substring(addressEndIndex);
+        Matcher prefixMatcher = LOCATION_PREFIX_PATTERN.matcher(textAfterAddress);
         int descriptionStartIndex = addressEndIndex;
         if (prefixMatcher.lookingAt()) {
             descriptionStartIndex += prefixMatcher.end();
         }
 
-        String descriptionCandidate = normalizedMessage.substring(descriptionStartIndex);
+        // 「路上」「歩道上」などの一般的な場所表現も概要から除く。
+        String descriptionCandidate = normalizedText.substring(descriptionStartIndex);
         Matcher roadMatcher = ROAD_PATTERN.matcher(descriptionCandidate);
         if (roadMatcher.lookingAt()) {
             descriptionStartIndex += roadMatcher.end();
-            descriptionCandidate = normalizedMessage.substring(descriptionStartIndex);
+            descriptionCandidate = normalizedText.substring(descriptionStartIndex);
         }
 
+        // 「で、」「において」などがあれば、その直後を概要の開始位置にする。
         Matcher connectiveMatcher = CONNECTIVE_PATTERN.matcher(descriptionCandidate);
         if (connectiveMatcher.lookingAt()) {
             return descriptionStartIndex + connectiveMatcher.end();
         }
+
+        // 接続表現がなく読点だけがある場合も、その直後から概要を取り出す。
         if (descriptionCandidate.startsWith("、")) {
             return descriptionStartIndex + 1;
         }
+
+        // 場所表現を除いた後に文章が残っていなければ、概要の入力エラーにする。
         if (StringUtils.isBlank(descriptionCandidate)) {
             throw new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要が指定されていません");
         }
 
+        // 施設名などを概要に残す場合は、その後に「で」などの接続表現があることを確認する。
         Matcher locationDetailMatcher = LOCATION_DETAIL_PATTERN.matcher(descriptionCandidate);
         if (!locationDetailMatcher.lookingAt()) {
             throw invalidAddress();
         }
+
+        // 場所の説明だけで本文がない場合は、概要の入力エラーにする。
         if (StringUtils.isBlank(descriptionCandidate.substring(locationDetailMatcher.end()))) {
             throw new ReportException(ReportErrorEnum.INVALID_DESCRIPTION, "description", "概要が指定されていません");
         }
-        // 施設名等は概要に残すため、場所補足の開始位置をそのまま返す。
+
+        // 施設名なども保存できるよう、接続表現の後ではなく、場所の説明が始まる位置を返す。
         return descriptionStartIndex;
     }
 
@@ -203,21 +227,28 @@ public class ReportAddressExtractor {
      * @return 数値変換済み文字列。記載がなければnull
      */
     private String convertKanjiAddressNumbers(String addressComponent) {
+        // 番地・号が省略されている場合は、未指定のまま返す。
         if (addressComponent == null) {
             return null;
         }
+
+        // 「丁目」「番」「号」の直前にある漢数字を、まとまりごとに数値へ変換する。
         return KANJI_ADDRESS_NUMBER_PATTERN.matcher(addressComponent).replaceAll(matchResult -> {
+            // 左から順に読み、一～九の数字と十・百の位を組み合わせて合計する。
             int total = 0;
             int digit = 0;
             for (char character : matchResult.group().toCharArray()) {
                 int unit = character == '百' ? 100 : character == '十' ? 10 : 0;
                 if (unit > 0) {
+                    // 「二十」は2×10、「十」は1×10として加算し、次の数字を読む準備をする。
                     total += (digit == 0 ? 1 : digit) * unit;
                     digit = 0;
                 } else {
+                    // 一～九は、次に現れる十・百の係数、または最後の一の位として保持する。
                     digit = "一二三四五六七八九".indexOf(character) + 1;
                 }
             }
+            // 最後に残った一の位を加え、算用数字の文字列にする。
             return Integer.toString(total + digit);
         });
     }

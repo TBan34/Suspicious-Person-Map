@@ -104,7 +104,7 @@ public class LineWebhookService {
                 e.getStage().getLogValue(), e.getErrorType(), e.getItem(), e.getDetail());
             throw e;
         }
-        reportService.processReportMessage(userId, text, eventTimestamp);
+        reportService.registerReport(userId, text, eventTimestamp);
     }
 
     /**

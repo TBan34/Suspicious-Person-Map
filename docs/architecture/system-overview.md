@@ -66,7 +66,7 @@ flowchart LR
         webhookService[LineWebhookService]
         replyService[LineReplyService]
         reportService[ReportService]
-        parser[ReportMessageParser]
+        parser[ReportTextParser]
         normalizer[AddressNormalizer]
         candidates[GeocodingAddressCandidateGenerator]
         geocode[GeocodeService]
@@ -101,7 +101,7 @@ flowchart LR
 | `LineWebhookService` | Webhookを一つのタスクとして実行基盤へ引き渡し、別スレッドでイベントを順に処理する。登録トランザクションの外で失敗を捕捉してLINE返信を呼び出す |
 | `LineReplyService` | 応答トークンを使い、固定文言の登録エラーを送信元のLINEトークへ返信する |
 | `ReportService` | 入力検証、メッセージ解析、日時変換、住所正規化、Geocoding、Entity 生成、保存を一つのトランザクションで調整する |
-| `ReportMessageParser` | メッセージから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
+| `ReportTextParser` | テキストから日時・住所・概要・正規タグを外部APIなしで検証・抽出する |
 | `AddressNormalizer` | 住所項目の Unicode・空白・数字間の区切り表記を正規化する |
 | `GeocodingAddressCandidateGenerator` | 必須の住所部分を保ったまま、詳細なものから順に Geocoding 用候補を生成する |
 | `GeocodeService` | Google Geocoding API を呼び、部分一致や道路として解釈された候補を除外して座標を返す |
@@ -173,7 +173,7 @@ sequenceDiagram
 
 上図は単一イベントが正常に登録される経路を示す。登録処理は別スレッドで実行され、同一リクエストの全イベントを順に処理する。別々のWebhookは並行して処理できる。解析エラーではそのイベントのGeocodingと保存に進まず、入力値を含まないエラー種別・項目・原因をERRORログへ1回だけ出力する。1件の失敗でも後続イベントへ進み、成功したイベントの登録は保持する。対応形式・拒否条件は[メッセージ解析](../integrations/line-messaging-api.md#メッセージ解析)、HTTP応答と実行基盤は[非同期受付](../integrations/line-messaging-api.md#webhookの非同期受付)、イベント単位の失敗処理は[複数イベントの仕様](../integrations/line-messaging-api.md#同一webhook内の複数イベント)を参照する。
 
-`ReportService.processReportMessage` には `@Transactional` が付いている。現在の処理順は Geocoding の完了後に 1 件を保存するため、外部 API の呼び出し結果とデータベース保存が別々の報告として残る構成ではない。ただし、外部の Geocoding API 自体はデータベーストランザクションの対象外である。
+`ReportService.registerReport` には `@Transactional` が付いている。現在の処理順は Geocoding の完了後に 1 件を保存するため、外部 API の呼び出し結果とデータベース保存が別々の報告として残る構成ではない。ただし、外部の Geocoding API 自体はデータベーストランザクションの対象外である。
 
 ### 2. 保存済み報告を閲覧する
 

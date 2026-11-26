@@ -1,9 +1,9 @@
 package suspiciouspersonmap.service;
 
-import suspiciouspersonmap.service.parsing.DateTimeParser;
-import suspiciouspersonmap.service.parsing.ReportAddressExtractor;
-import suspiciouspersonmap.service.parsing.ReportMessageParser;
 import suspiciouspersonmap.service.parsing.ReportTagClassifier;
+import suspiciouspersonmap.service.parsing.ReportTextAddressParser;
+import suspiciouspersonmap.service.parsing.ReportTextDateTimeParser;
+import suspiciouspersonmap.service.parsing.ReportTextParser;
 
 /** テストで実際の解析コンポーネントを組み合わせる。 */
 public final class ReportParserTestSupport {
@@ -14,11 +14,11 @@ public final class ReportParserTestSupport {
      * 外部依存のない解析器を生成する。
      * @return 実物の解析器
      */
-    public static ReportMessageParser createParser() {
+    public static ReportTextParser createParser() {
         AddressNormalizer addressNormalizer = new AddressNormalizer();
-        DateTimeParser dateTimeParser = new DateTimeParser();
+        ReportTextDateTimeParser dateTimeParser = new ReportTextDateTimeParser();
         ReportTagClassifier tagClassifier = new ReportTagClassifier();
-        ReportAddressExtractor addressExtractor = new ReportAddressExtractor(addressNormalizer);
-        return new ReportMessageParser(dateTimeParser, addressExtractor, tagClassifier);
+        ReportTextAddressParser addressParser = new ReportTextAddressParser(addressNormalizer);
+        return new ReportTextParser(dateTimeParser, addressParser, tagClassifier);
     }
 }

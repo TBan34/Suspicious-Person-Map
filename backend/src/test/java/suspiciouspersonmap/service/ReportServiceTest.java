@@ -44,7 +44,7 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage(null, VALID_REPORT_MESSAGE, 1792897200000L))
+            assertThatThrownBy(() -> reportService.registerReport(null, VALID_REPORT_MESSAGE, 1792897200000L))
                 .isInstanceOf(ReportException.class)
                 .hasCauseInstanceOf(IllegalArgumentException.class);
 
@@ -78,7 +78,7 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", invalidMessage, 1792897200000L))
+            assertThatThrownBy(() -> reportService.registerReport("line-user-id", invalidMessage, 1792897200000L))
                 .isInstanceOf(ReportException.class);
 
             List<ILoggingEvent> errorEvents = errorEvents(appender);
@@ -109,7 +109,7 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", messageWithoutAddress, 1792897200000L))
+            assertThatThrownBy(() -> reportService.registerReport("line-user-id", messageWithoutAddress, 1792897200000L))
                 .isInstanceOf(ReportException.class)
                 .hasNoCause();
 
@@ -163,7 +163,7 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", unclassifiableMessage, 1792897200000L))
+            assertThatThrownBy(() -> reportService.registerReport("line-user-id", unclassifiableMessage, 1792897200000L))
                 .isInstanceOf(ReportException.class)
                 .hasNoCause();
 
@@ -221,7 +221,7 @@ class ReportServiceTest {
         try {
             ReportException exception = assertThrows(
                 ReportException.class,
-                () -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L)
+                () -> reportService.registerReport("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L)
             );
 
             assertThat(exception.getStage()).isEqualTo(ReportProcessingStageEnum.GEOCODING);
@@ -288,7 +288,7 @@ class ReportServiceTest {
         ListAppender<ILoggingEvent> appender = attachListAppender();
 
         try {
-            assertThatThrownBy(() -> reportService.processReportMessage("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L))
+            assertThatThrownBy(() -> reportService.registerReport("line-user-id", VALID_REPORT_MESSAGE, 1792897200000L))
                 .isInstanceOf(ReportException.class)
                 .hasCause(databaseException);
 
@@ -351,7 +351,7 @@ class ReportServiceTest {
             ReportParserTestSupport.createParser()
         );
 
-        reportService.processReportMessage("line-user-id", messageWithoutBlockAndHouseNumber, 1792897200000L);
+        reportService.registerReport("line-user-id", messageWithoutBlockAndHouseNumber, 1792897200000L);
 
         assertThat(savedReport.get()).isNotNull();
         assertThat(savedReport.get().getBlockAndHouseNumber()).isNull();
@@ -401,7 +401,7 @@ class ReportServiceTest {
             ReportParserTestSupport.createParser()
         );
 
-        reportService.processReportMessage("line-user-id", messageWithFullWidthDigits, 1792897200000L);
+        reportService.registerReport("line-user-id", messageWithFullWidthDigits, 1792897200000L);
 
         assertThat(geocodedAddressItems.get()).containsExactly(
             "福岡県",

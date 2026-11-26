@@ -6,9 +6,9 @@
 
 - `cases.json`: 期待値を定義した274件（登録対象267件、拒否対象7件）。
 - `pending-cases.json`: 確認待ちは0件（空配列）。回帰テストと整合性テストの両方で空であることを必須条件とする。
-- `ReportParsingFixtureTest`: 件数・ID・データ構造・値の整合性だけを検証する。抽出結果は別の`ReportMessageParserCorpusTest`で全274件を検証する。
+- `ReportParsingFixtureTest`: 件数・ID・データ構造・値の整合性だけを検証する。抽出結果は別の`ReportTextParserCorpusTest`で全274件を検証する。
 
-人工的な境界条件は`ReportMessageParserTest`と`ReportTagClassifierTest`、保存との接続は`ReportServiceParsingTest`、署名・イベント時刻の受け渡しは`LineControllerTest`で検証する。入力は一次情報の文章だけを対象とする。
+人工的な境界条件は`ReportTextParserTest`と`ReportTagClassifierTest`、保存との接続は`ReportServiceParsingTest`、署名・イベント時刻の受け渡しは`LineControllerTest`で検証する。入力は一次情報の文章だけを対象とする。
 
 ## データの扱い
 

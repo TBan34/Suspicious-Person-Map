@@ -137,7 +137,7 @@ public class ReportTagClassifier {
      * @return 重複を除いた1～3件の正規タグ
      */
     public List<String> classify(String description) {
-        String suspiciousPersonContext = ReportMessageTextUtils.normalizeForParsing(description);
+        String suspiciousPersonContext = ReportTextUtils.normalize(description);
         suspiciousPersonContext = NON_SUSPICIOUS_PERSON_RESPONSE_PATTERN
             .matcher(suspiciousPersonContext)
             .replaceAll("");

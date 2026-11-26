@@ -61,7 +61,7 @@ class ReportServiceParsingTest {
                 try {
                     ReportException error = assertThrows(
                         ReportException.class,
-                        () -> reportService.processReportMessage(
+                        () -> reportService.registerReport(
                             "private-line-user-id",
                             rejectionCase.message(),
                             rejectionCase.eventTimestamp()
@@ -186,7 +186,7 @@ class ReportServiceParsingTest {
 
         ReportService reportService = new ReportService(
             reportRepository, geocodeService, ReportParserTestSupport.createParser());
-        reportService.processReportMessage(
+        reportService.registerReport(
             "private-line-user-id", VALID_REPORT_MESSAGE, EVENT_TIMESTAMP);
 
         verify(geocodeService).getLatLng("福岡県", "福岡市南区", "高宮1丁目", "11番");

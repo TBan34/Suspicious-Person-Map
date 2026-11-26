@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
 
-/** 不審者情報メッセージの解析で共通して使用する文字列処理。 */
-final class ReportMessageTextUtils {
+/** 不審者情報テキストの解析で共通して使用する文字列処理。 */
+final class ReportTextUtils {
     // 「&amp;」「&#12354;」「&#x3042;」形式のHTML文字参照。入力値はデコードせず不正として扱う。
     private static final Pattern HTML_CHARACTER_REFERENCE_PATTERN = Pattern.compile(
         "&(?:[A-Za-z][A-Za-z0-9]*|#[0-9]+|#[xX][0-9a-fA-F]+);"
@@ -16,15 +16,15 @@ final class ReportMessageTextUtils {
     private static final Pattern PARAGRAPH_BREAK_PATTERN = Pattern.compile("[\\h]*\\R[\\h\\r\\n]*");
 
     /** インスタンス化を禁止する。 */
-    private ReportMessageTextUtils() {}
+    private ReportTextUtils() {}
 
     /**
      * 正規表現による判定用に、全角英数字や半角カナなどの表記を統一する。
      * 保存する概要にはこの戻り値を使用せず、原文表記を維持する。
-     * @param text 不審者情報メッセージまたはその一部
+     * @param text 不審者情報テキストまたはその一部
      * @return NFKC正規化した判定用文字列
      */
-    static String normalizeForParsing(String text) {
+    static String normalize(String text) {
         return Normalizer.normalize(text, Normalizer.Form.NFKC);
     }
 
@@ -44,20 +44,20 @@ final class ReportMessageTextUtils {
     }
 
     /**
-     * NFKC正規化後の文字位置を、正規化前の原文上の文字位置へ変換する。
+     * NFKC正規化後の文字位置に対応する、正規化前の原文上の文字位置を探す。
      * 半角カナ＋濁点など、正規化によって文字数が変わる入力でも原文を正しい位置で切り出す。
      * @param originalText 正規化前の原文
      * @param normalizedIndex 正規化後の文字列上の位置
      * @return 正規化後の位置に対応する原文上の位置
      */
-    static int toOriginalIndex(String originalText, int normalizedIndex) {
-        String normalizedText = normalizeForParsing(originalText);
+    static int findOriginalIndex(String originalText, int normalizedIndex) {
+        String normalizedText = normalize(originalText);
         if (normalizedIndex < 0 || normalizedIndex > normalizedText.length()) {
             throw invalidDescriptionBoundary();
         }
         String expectedNormalizedPrefix = normalizedText.substring(0, normalizedIndex);
         for (int originalIndex = 0; originalIndex <= originalText.length(); originalIndex++) {
-            String normalizedPrefix = normalizeForParsing(originalText.substring(0, originalIndex));
+            String normalizedPrefix = normalize(originalText.substring(0, originalIndex));
             // 文字数だけでは「ﾊ」と「ﾊﾟ」の正規化後がともに1文字となる位置を区別できない。
             if (normalizedPrefix.equals(expectedNormalizedPrefix)) {
                 return originalIndex;

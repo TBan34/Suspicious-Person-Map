@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import suspiciouspersonmap.common.constant.ReportErrorEnum;
 import suspiciouspersonmap.exception.ReportException;
-import suspiciouspersonmap.model.ParsedReportMessage;
+import suspiciouspersonmap.model.ParsedReportText;
 import suspiciouspersonmap.service.ReportParserTestSupport;
 
 import java.time.LocalDateTime;
@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** 実サンプルにない日時・住所・概要の境界条件を検証する。 */
-class ReportMessageParserTest {
+class ReportTextParserTest {
     private static final long EVENT_TIMESTAMP = OffsetDateTime
         .parse("2026-10-25T10:00:00+09:00").toInstant().toEpochMilli();
-    private final ReportMessageParser parser = ReportParserTestSupport.createParser();
+    private final ReportTextParser parser = ReportParserTestSupport.createParser();
 
     /**
      * 時半・和暦・全角・午前午後・実在するうるう日を厳密に変換することを確認する。
@@ -115,7 +115,7 @@ class ReportMessageParserTest {
     @CsvSource({"五十川二丁目十一番,五十川2丁目,11番", "一番町四丁目2番,一番町4丁目,2番",
         "向野一丁目1-1,向野1丁目,1-1", "井尻四丁目2番3号,井尻4丁目,2-3号"})
     void convertsOnlyAddressNumbers(String address, String townArea, String blockAndHouseNumber) {
-        ParsedReportMessage parsedReport = parser.parse(
+        ParsedReportText parsedReport = parser.parse(
             createReportMessage("1月4日午後9時").replace("高宮1丁目11番", address), EVENT_TIMESTAMP);
         assertThat(parsedReport.townArea()).isEqualTo(townArea);
         assertThat(parsedReport.blockAndHouseNumber()).isEqualTo(blockAndHouseNumber);
@@ -130,7 +130,7 @@ class ReportMessageParserTest {
     void preservesPlaceContextAndOriginalCharacters(String place) {
         String body = "女児が男から「何年生？」と声を掛けられました。\n　男は３０歳代、Ｔシャツでした。";
         String message = "1月4日午後9時、福岡市南区高宮1丁目の" + place + body;
-        ParsedReportMessage parsedReport = parser.parse(message, EVENT_TIMESTAMP);
+        ParsedReportText parsedReport = parser.parse(message, EVENT_TIMESTAMP);
         assertThat(parsedReport.townArea()).isEqualTo("高宮1丁目");
         assertThat(parsedReport.description())
             .isEqualTo(place + "女児が男から「何年生？」と声を掛けられました。 男は３０歳代、Ｔシャツでした。");
@@ -142,9 +142,9 @@ class ReportMessageParserTest {
     @Test
     void mapsNormalizedBoundaryAfterCombinedCharacters() {
         String originalText = "ﾊﾟーク";
-        String normalizedText = ReportMessageTextUtils.normalizeForParsing(originalText);
+        String normalizedText = ReportTextUtils.normalize(originalText);
 
-        assertThat(ReportMessageTextUtils.toOriginalIndex(originalText, normalizedText.indexOf("ー")))
+        assertThat(ReportTextUtils.findOriginalIndex(originalText, normalizedText.indexOf("ー")))
             .isEqualTo(2);
     }
 
